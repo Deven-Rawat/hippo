@@ -32,8 +32,9 @@
     <link rel="mask-icon" href="<@hst.webfile path="icons/safari-pinned-tab.svg"/>">
     <meta name="theme-color" content="#ffffff">
 
-    <link rel="stylesheet" href="https://design-system.digital.nhs.uk/cdn/latest/stylesheets/nhsd-frontend.css" />
-    <link rel="stylesheet" href="<@hst.webfile path="/dist/nhsd-intranet-edge-cases.css" />" />
+    <link rel="stylesheet" href="${designSystemUrl}/cdn/v0.120.0/stylesheets/nhsd-frontend.css" type="text/css"/>
+    <link rel="stylesheet" href="<@hst.webfile path="/dist/nhsd-frontend-edge-cases.css"/>" type="text/css"/>
+    <link rel="stylesheet" href="<@hst.webfile path="/dist/nhsd-print.css"/>" media="print" type="text/css"/>
     <script src="https://design-system.digital.nhs.uk/cdn/latest/scripts/nhsd-frontend.js"></script>
     <script src="<@hst.webfile path="/dist/nhsd-intranet-priority-scripts.bundle.js"/>"></script>
 
