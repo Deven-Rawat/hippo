@@ -65,18 +65,23 @@ public class S3SdkConnector implements S3Connector {
     }
 
     @Override
-    public S3ObjectMetadata copyFile(final String sourceObjectPath, final String fileName) {
-        reportAction("Copying S3 resource {}", sourceObjectPath);
+    public S3ObjectMetadata copyFileFromOtherBucket(final String sourceObjectPath, final String sourceBucketName, final String fileName) {
+        reportAction("Copying S3 resource {} from bucket {}", sourceObjectPath, sourceBucketName);
 
         final String targetObjectPath = s3ObjectKeyGenerator.generateObjectKey(fileName);
 
-        s3.copyObject(bucketName, sourceObjectPath, bucketName, targetObjectPath);
+        s3.copyObject(sourceBucketName, sourceObjectPath, bucketName, targetObjectPath);
 
         final ObjectMetadata targetObjectMetadata = s3.getObjectMetadata(bucketName, targetObjectPath);
 
         reportAction("Copied S3 resource {} to {}", sourceObjectPath, targetObjectPath);
 
         return new S3ObjectMetadataImpl(targetObjectMetadata, bucketName, targetObjectPath);
+    }
+
+    @Override
+    public S3ObjectMetadata copyFile(final String sourceObjectPath, final String fileName) {
+        return copyFileFromOtherBucket(sourceObjectPath, bucketName, fileName);
     }
 
     @Override

@@ -23,6 +23,14 @@ public interface PooledS3Connector {
 
     /**
      * Instantly triggers copying of given S3 file by delegating the call directly to
+     * {@linkplain uk.nhs.digital.externalstorage.s3.S3SdkConnector#copyFileFromOtherBucket} method.
+     *
+     * @return Reference of the newly created copy.
+     */
+    S3ObjectMetadata copyFileFromOtherBucket(final String sourceObjectPath, final String sourceBucketName, final String fileName);
+
+    /**
+     * Instantly triggers copying of given S3 file by delegating the call directly to
      * {@linkplain uk.nhs.digital.externalstorage.s3.S3SdkConnector#copyFile} method.
      *
      * @return Reference of the newly created copy.
