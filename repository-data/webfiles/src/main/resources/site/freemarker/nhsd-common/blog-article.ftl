@@ -134,9 +134,9 @@
                         <div class="nhsd-a-box nhsd-a-box--border-grey">
                             <div class="nhsd-m-card__image_container">
                                 <figure class="nhsd-a-image nhsd-a-image--round-top-corners">
+                                    <meta itemprop="url" content="${leadImage}">
                                     <picture class="nhsd-a-image__picture ">
                                         <@hst.link hippobean=document.leadImage.newsPostImageLarge2x fullyQualified=true var="leadImageLarge2x" />
-                                        <meta itemprop="url" content="${leadImage}">
                                         <img src="${leadImageLarge2x}" alt="<#if hasLeadImageAltText>${document.leadImageAltText}</#if>" />
                                     </picture>
                                 </figure>
