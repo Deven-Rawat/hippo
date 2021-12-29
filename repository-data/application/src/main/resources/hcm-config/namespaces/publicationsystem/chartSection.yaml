@@ -154,7 +154,7 @@ definitions:
           jcr:primaryType: publicationsystem:chartSection
           publicationsystem:title: ''
           publicationsystem:yTitle: ''
-          website:htmlCode: <img src="" id="chartPrintFriendly" style="display:none">
+          website:htmlCode: <!-- <img src="" style="display:none" alt=""> -->
         jcr:primaryType: hipposysedit:prototypeset
       jcr:mixinTypes:
       - editor:editable
