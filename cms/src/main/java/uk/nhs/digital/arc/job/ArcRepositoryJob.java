@@ -4,7 +4,7 @@ import org.onehippo.repository.scheduling.RepositoryJob;
 import org.onehippo.repository.scheduling.RepositoryJobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.arc.process.ManifestProcessor2;
+import uk.nhs.digital.arc.process.ManifestProcessor;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ public class ArcRepositoryJob implements RepositoryJob {
 
             log.info("TestRepositoryJob executing repo job now with manifest_file value of '" + manifestFile + "'");
 
-            ManifestProcessor2 manifestProcessor = new ManifestProcessor2(session, manifestFile, nodePath);
+            ManifestProcessor manifestProcessor = new ManifestProcessor(session, manifestFile, nodePath);
             try {
                 manifestProcessor.readWrapperFromFile();
             } catch (IOException e) {

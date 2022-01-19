@@ -2,7 +2,7 @@ package uk.nhs.digital.arc.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ArcDoctype {
+public class ArcDoctype extends ReferencableUrlElement {
 
     @JsonProperty("doctype_REQ")
     protected String doctypeReq;

@@ -38,6 +38,23 @@ public interface PooledS3Connector {
     S3ObjectMetadata copyFile(String sourceS3FileReference, String fileName);
 
     /**
+     * Determine whether an Object exists in a nominated bucket using
+     * the {@linkplain uk.nhs.digital.externalstorage.s3.S3SdkConnector#doesObjectExist} method.
+     * @param otherBucket is any bucket you want to check (subject to IAM etc)
+     * @param objectPath is the location of the object you want to check
+     * @return indication of success or failure
+     */
+    boolean doesObjectExist(String otherBucket, String objectPath);
+
+    /**
+     * Determine whether an object exists in the target bucket used for uploading large files
+     * usingthe {@linkplain uk.nhs.digital.externalstorage.s3.S3SdkConnector#doesObjectExist} method.
+     * @param objectPath the location of the object that you want to check
+     * @return an indicator of whether the object exists or not
+     */
+    boolean doesObjectExist(String objectPath);
+
+    /**
      * <p>
      * Schedules a download from S3 as a task to be executed as soon as one of the pooled threads becomes available,
      * leaving the processing of the download input stream to the callback given as an argument. Blocks the calling
@@ -56,7 +73,16 @@ public interface PooledS3Connector {
      * </ul>
      * </p>
      *
+     * @param namedBucket is the name of a bucket within which the object will exist
      * @param s3FileReference  S3 file key.
+     * @param downloadConsumer Callback to execute once the download actually gets initiated
+     *                         and the download input stream becomes available.
+     */
+    void download(String namedBucket, String s3FileReference, Consumer<S3File> downloadConsumer);
+
+    /**
+     * Shortcut method to enable use of the default bucket when accessing objects
+     * @param s3FileReference S3 file key
      * @param downloadConsumer Callback to execute once the download actually gets initiated
      *                         and the download input stream becomes available.
      */

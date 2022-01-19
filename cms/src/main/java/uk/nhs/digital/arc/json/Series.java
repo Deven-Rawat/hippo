@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemExternalattachment;
 import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemReleasesubject;
-import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemResourcelink;
+import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemResourceOrExternalLink;
 import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemSeriesreplaces;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class Series extends ArcSeriesArchiveCommonDoc {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonProperty("resource_links")
-    private List<PublicationsystemResourcelink> resourceLinks = null;
+    private List<PublicationsystemResourceOrExternalLink> resourceLinks = null;
 
     @JsonProperty("statistician")
     private String statistician;
@@ -102,12 +102,12 @@ public class Series extends ArcSeriesArchiveCommonDoc {
     }
 
     @JsonProperty("resource_links")
-    public List<PublicationsystemResourcelink> getResourceLinks() {
+    public List<PublicationsystemResourceOrExternalLink> getResourceLinks() {
         return resourceLinks;
     }
 
     @JsonProperty("resource_links")
-    public void setResourceLinks(List<PublicationsystemResourcelink> resourceLinks) {
+    public void setResourceLinks(List<PublicationsystemResourceOrExternalLink> resourceLinks) {
         this.resourceLinks = resourceLinks;
     }
 

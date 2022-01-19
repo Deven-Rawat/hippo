@@ -3,6 +3,7 @@ package uk.nhs.digital.arc.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -27,4 +28,11 @@ public class PublicationPage extends ArcDoctype {
         this.body = body;
     }
 
+    @Override
+    public List<String> getAllReferencedExternalUrls() {
+        ArrayList<String> referencedExternalUrls = new ArrayList<>();
+        getBody().stream().forEach(section -> referencedExternalUrls.addAll(section.getAllReferencedExternalUrls()));
+
+        return new ArrayList<>(referencedExternalUrls);
+    }
 }

@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.arc.job.ArcRepositoryJob;
 import uk.nhs.digital.arc.plugin.dialog.JsonReviewDialog;
 import uk.nhs.digital.arc.plugin.util.DoctypeDetector;
-import uk.nhs.digital.arc.process.ManifestProcessor2;
-import uk.nhs.digital.arc.process.MessageBuilder;
+import uk.nhs.digital.arc.process.ManifestProcessor;
+import uk.nhs.digital.arc.process.ProcessingMessageSummary;
 
 import java.io.IOException;
 import java.util.Date;
@@ -35,18 +35,11 @@ public class ArcDocumentWorkflowPlugin extends RenderPlugin<WorkflowDescriptor> 
 
     public ArcDocumentWorkflowPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
-        log.info("Initialising ARC doc workflow");
 
         add(new StdWorkflow<DocumentWorkflow>("create_report",
             new StringResourceModel("create_report", this),
             this.getPluginContext(),
             (WorkflowDescriptorModel) getModel()) {
-
-            @Override
-            protected void invoke() {
-                super.invoke();
-                log.info("Invoke now");
-            }
 
             @Override
             public String getSubMenu() {
@@ -65,10 +58,7 @@ public class ArcDocumentWorkflowPlugin extends RenderPlugin<WorkflowDescriptor> 
             @Override
             protected String execute(DocumentWorkflow workflow) throws Exception {
                 if (!previewInError) {
-                    log.info("** Now creating job from menu item");
-
                     repoWork(getNodePath());
-                    log.info("** Completed creating job from menu item");
                 }
 
                 return null;
@@ -80,45 +70,55 @@ public class ArcDocumentWorkflowPlugin extends RenderPlugin<WorkflowDescriptor> 
 
             @Override
             protected IDialogService.Dialog createRequestDialog() {
-                MessageBuilder messageBuilder = runProcessorInReviewMode();
-                previewInError = messageBuilder.isInError();
-
-                return new JsonReviewDialog(this, messageBuilder.getConcatenatedMessages(), messageBuilder.isInError());
-            }
-
-            private MessageBuilder runProcessorInReviewMode() {
-                MessageBuilder response = null;
-
+                ProcessingMessageSummary processingMessageSummary = null;
                 try {
-                    ManifestProcessor2 proc2 = new ManifestProcessor2(null, "http://localhost/wrapper_localhost.json", getNodePath());
-                    response = proc2.readWrapperFromFile();
-                } catch (RepositoryException | IOException e) {
+                    String manifestLocation = DoctypeDetector.getManifestLocationValue(getModel().getNode());
+
+                    processingMessageSummary = runProcessorInReviewMode(manifestLocation, getNodePath());
+                    previewInError = processingMessageSummary.isInError();
+
+                    return new JsonReviewDialog(this, processingMessageSummary.getConcatenatedMessages(), processingMessageSummary.isInError());
+                } catch (RepositoryException e) {
                     e.printStackTrace();
                 }
 
-                return response;
+                return null;
+            }
+
+            private ProcessingMessageSummary runProcessorInReviewMode(String manifestPath, String nodePath) {
+                ProcessingMessageSummary responseMessages = null;
+
+                try {
+                    ManifestProcessor processor = new ManifestProcessor(null, manifestPath, nodePath);
+                    responseMessages = processor.readWrapperFromFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return responseMessages;
             }
 
             private void repoWork(String nodePath) {
                 final RepositoryScheduler scheduler = HippoServiceRegistry.getService(RepositoryScheduler.class);
 
-                log.error("**** Creating jobInfo from menu item");
+                final Date now = new Date();
+                final long nowMillis = now.getTime();
+                final String jobName = "automaticreportcreation_" + nowMillis;
 
-                Date now = new Date();
-                String jobName = "automaticreportcreation_" + now.getTime();
                 final RepositoryJobInfo myJobInfo = new RepositoryJobInfo(jobName, ArcRepositoryJob.class);
 
-                myJobInfo.setAttribute("manifest_file", "http://localhost/wrapper_localhost.json");
-                myJobInfo.setAttribute("node_path", nodePath);
-
-                log.info("**** Creating jobTrigger from menu item");
-                final RepositoryJobTrigger myJobTrigger =
-                    new RepositoryJobSimpleTrigger("arc_" + now.getTime(), now);
-
                 try {
-                    log.info("**** Calling scheduler from menu item");
+                    String manifestLocation = DoctypeDetector.getManifestLocationValue(getModel().getNode());
+                    myJobInfo.setAttribute("manifest_file", manifestLocation);
+                    myJobInfo.setAttribute("node_path", nodePath);
+
+                    final String triggerName = "arc_ " + nowMillis;
+
+                    log.info("jobTrigger {} for job {} now created and scheduled", jobName, triggerName);
+                    final RepositoryJobTrigger myJobTrigger =
+                        new RepositoryJobSimpleTrigger("arc_" + nowMillis, now);
+
                     scheduler.scheduleJob(myJobInfo, myJobTrigger);
-                    log.info("**** Scheduler now called from menu item");
                 } catch (RepositoryException e) {
                     e.printStackTrace();
                 }

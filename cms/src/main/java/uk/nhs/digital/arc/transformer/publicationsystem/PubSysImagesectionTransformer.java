@@ -1,14 +1,13 @@
 package uk.nhs.digital.arc.transformer.publicationsystem;
 
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import org.apache.commons.io.IOUtils;
 import org.onehippo.forge.content.pojo.model.BinaryValue;
 import org.onehippo.forge.content.pojo.model.ContentNode;
 import uk.nhs.digital.arc.json.PublicationBodyItem;
 import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemImagesection;
+import uk.nhs.digital.arc.storage.ArcFileData;
 import uk.nhs.digital.arc.transformer.abs.AbstractSectionTransformer;
-import uk.nhs.digital.arc.util.FilePathUtils;
+import uk.nhs.digital.arc.util.FilePathData;
 
 import java.io.IOException;
 
@@ -25,35 +24,31 @@ public class PubSysImagesectionTransformer extends AbstractSectionTransformer {
 
     @Override
     public ContentNode process() {
-        ContentNode sectionNode = new ContentNode(PUBLICATION_SYSTEM + "bodySections", PUBLICATION_SYSTEM + "imageSection");
+        ContentNode sectionNode = new ContentNode(PUBLICATIONSYSTEM_BODYSECTIONS, PUBLICATIONSYSTEM_IMAGESECTION);
 
-        sectionNode.setProperty(PUBLICATION_SYSTEM + "altText", imageSection.getAltTextReq());
-        sectionNode.setProperty(PUBLICATION_SYSTEM + "caption", imageSection.getCaption());
-        sectionNode.setProperty(PUBLICATION_SYSTEM + "imageSize", imageSection.getImageSizeReq());
-        sectionNode.setProperty(PUBLICATION_SYSTEM + "link", imageSection.getLink());
+        sectionNode.setProperty(PUBLICATIONSYSTEM_ALTTEXT, imageSection.getAltTextReq());
+        sectionNode.setProperty(PUBLICATIONSYSTEM_CAPTION, imageSection.getCaption());
+        sectionNode.setProperty(PUBLICATIONSYSTEM_IMAGESIZE, imageSection.getImageSizeReq());
+        sectionNode.setProperty(PUBLICATIONSYSTEM_LINK, imageSection.getLink());
         getImageDataFromS3File(sectionNode);
 
         return sectionNode;
     }
 
     private void getImageDataFromS3File(ContentNode sectionNode) {
-        FilePathUtils sourceFilePathUtils = new FilePathUtils(docbase, imageSection.getImageReq());
+        FilePathData sourceFilePathUtils = new FilePathData(docbase, imageSection.getImageReq());
+        ArcFileData metadata = storageManger.getFileMetaData(sourceFilePathUtils);
 
-        if (sourceFilePathUtils.isS3Bucket()) {
-            S3Object s3object = getS3Object(sourceFilePathUtils);
-            S3ObjectInputStream inputStream = s3object.getObjectContent();
+        try {
+            ContentNode newNode = new ContentNode(PUBLICATIONSYSTEM_IMAGE, PUBLICATIONSYSTEM_RESOURCE);
+            this.addFileRelatedProperties(newNode,
+                new BinaryValue(IOUtils.toByteArray(metadata.getDelegateStream())),
+                metadata.getContentType(),
+                sourceFilePathUtils.getFilename());
 
-            try {
-                ContentNode newNode = new ContentNode(PUBLICATION_SYSTEM + "image", PUBLICATION_SYSTEM + "resource");
-                this.addFileRelatedProperties(newNode,
-                    new BinaryValue(IOUtils.toByteArray(inputStream)),
-                    s3object.getObjectMetadata().getContentType(),
-                    sourceFilePathUtils.getFilename());
-
-                sectionNode.addNode(newNode);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            sectionNode.addNode(newNode);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -15,10 +15,8 @@ public class PublicationPageTransformer extends AbstractPageLevelTransformer {
     public ContentNode process() {
         publicationPage = (PublicationPage)doctype;
 
-        ContentNode cn = new ContentNode(publicationPage.getTitleReq(), PUBLICATION_SYSTEM + "publicationPage");
-
-        setPubSystemSingleProp(cn,"Title", publicationPage.getTitleReq());
-
+        ContentNode cn = new ContentNode(publicationPage.getTitleReq(), PUBLICATIONSYSTEM_PUBLICATIONPAGE);
+        cn.setProperty(PUBLICATIONSYSTEM_TITLE_UC, publicationPage.getTitleReq());
         processSections(cn);
 
         return cn;

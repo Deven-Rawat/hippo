@@ -3,8 +3,7 @@ package uk.nhs.digital.arc.transformer.impl.pagelevel;
 import org.onehippo.forge.content.pojo.model.ContentNode;
 import org.onehippo.forge.content.pojo.model.ContentPropertyType;
 import uk.nhs.digital.arc.json.Dataset;
-import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemRelatedlink;
-import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemResourcelink;
+import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemResourceOrExternalLink;
 import uk.nhs.digital.arc.transformer.abs.AbstractPageLevelTransformer;
 
 public class DatasetTransformer extends AbstractPageLevelTransformer {
@@ -17,14 +16,14 @@ public class DatasetTransformer extends AbstractPageLevelTransformer {
 
         ContentNode cn = new ContentNode(dataset.getTitleReq(), doctype.getDoctypeReq().toLowerCase());
 
-        setPubSystemSingleProp(cn,"Title", dataset.getTitleReq());
-        setPubSystemSingleProp(cn,"Summary", dataset.getSummaryReq());
-        setPubSystemSingleProp(cn,"NominalDate", dataset.getNominalDateReq());
+        cn.setProperty(PUBLICATIONSYSTEM_TITLE_UC, dataset.getTitleReq());
+        cn.setProperty(PUBLICATIONSYSTEM_SUMMARY, dataset.getSummaryReq());
+        cn.setProperty(PUBLICATIONSYSTEM_NOMINALDATE, dataset.getNominalDateReq());
 
-        setPubSystemMultipleProp(cn,"GeographicCoverage", dataset.getGeographicCoverage());
-        setPubSystemMultipleProp(cn,"Granularity", dataset.getGranularity());
-        cn.setProperty(PUBLICATION_SYSTEM + "CoverageStart", ContentPropertyType.DATE, dataset.getCoverageStart());
-        cn.setProperty(PUBLICATION_SYSTEM + "CoverageEnd", ContentPropertyType.DATE, dataset.getCoverageEnd());
+        setMultipleProp(cn, PUBLICATIONSYSTEM_GEOGRAPHICCOVERAGE, dataset.getGeographicCoverage());
+        setMultipleProp(cn, PUBLICATIONSYSTEM_GRANULARITY, dataset.getGranularity());
+        cn.setProperty(PUBLICATIONSYSTEM_COVERAGESTART, ContentPropertyType.DATE, dataset.getCoverageStart());
+        cn.setProperty(PUBLICATIONSYSTEM_COVERAGEEND, ContentPropertyType.DATE, dataset.getCoverageEnd());
 
         processAttachments(cn);
         processLinks(cn);
@@ -32,20 +31,23 @@ public class DatasetTransformer extends AbstractPageLevelTransformer {
     }
 
     private void processAttachments(ContentNode cn) {
-        for (PublicationsystemRelatedlink link: dataset.getFiles()) {
+        for (PublicationsystemResourceOrExternalLink link: dataset.getFiles()) {
             String nodeTypeName = "Files-v3";
             String displayName = link.getLinkTextReq();
             String resource = link.getLinkUrlReq();
 
-            populateAndCreateExternalAttachmentNode(cn, nodeTypeName, displayName, resource);
+            populateAndCreateExternalAttachmentNode(cn, nodeTypeName, displayName, resource, PUBLICATIONSYSTEM_RESOURCENODE);
         }
     }
 
     private void processLinks(ContentNode cn) {
-        for (PublicationsystemResourcelink link: dataset.getResourceLinks()) {
-            ContentNode linkNode = new ContentNode(PUBLICATION_SYSTEM + "ResourceLinks", PUBLICATION_SYSTEM + "relatedlink");
-            linkNode.setProperty(PUBLICATION_SYSTEM + "linkText", link.getLinkTextReq());
-            linkNode.setProperty(PUBLICATION_SYSTEM + "linkUrl", link.getLinkUrlReq());
+        for (PublicationsystemResourceOrExternalLink link: dataset.getResourceLinks()) {
+            //ContentNode linkNode = new ContentNode(PUBLICATION_SYSTEM + "ResourceLinks", PUBLICATION_SYSTEM + "relatedlink");
+            ContentNode linkNode = new ContentNode(PUBLICATIONSYSTEM_RESOURCELINKS, PUBLICATIONSYSTEM_RELATEDLINK);
+            //linkNode.setProperty(PUBLICATION_SYSTEM + "linkText", link.getLinkTextReq());
+            linkNode.setProperty(PUBLICATIONSYSTEM_LINKTEXT, link.getLinkTextReq());
+            //linkNode.setProperty(PUBLICATION_SYSTEM + "linkUrl", link.getLinkUrlReq());
+            linkNode.setProperty(PUBLICATIONSYSTEM_LINKURL, link.getLinkUrlReq());
 
             cn.addNode(linkNode);
         }

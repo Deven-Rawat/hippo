@@ -3,10 +3,14 @@ package uk.nhs.digital.arc.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import uk.nhs.digital.arc.json.publicationsystem.*;
+import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemChangenotice;
+import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemExternalattachment;
+import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemInteractivetool;
+import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemResourceOrExternalLink;
+import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemSurvey;
 import uk.nhs.digital.arc.json.website.WebsiteInfographic;
-import uk.nhs.digital.arc.json.website.WebsiteSurvey;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -32,8 +36,8 @@ public class Publication extends ArcDoctype {
     private List<WebsiteInfographic> keyFactsInfographics = null;
     @JsonProperty("key_facts_tail")
     private String keyFactsTail;
-    @JsonProperty("website_survey")
-    private WebsiteSurvey websiteSurvey;
+    @JsonProperty("publication_survey")
+    private PublicationsystemSurvey publicationSystemSurvey;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonProperty("interactive_tools")
@@ -49,11 +53,11 @@ public class Publication extends ArcDoctype {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonProperty("resource_links")
-    private List<PublicationsystemResourcelink> resourceLinks = null;
+    private List<PublicationsystemResourceOrExternalLink> resourceLinks = null;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonProperty("related_links")
-    private List<PublicationsystemRelatedlink> relatedLinks = null;
+    private List<PublicationsystemResourceOrExternalLink> relatedLinks = null;
 
     public Publication(@JsonProperty(value = "doctype_REQ", required = true)String doctypeReq,
                        @JsonProperty(value = "nominal_date_REQ", required = true)String nominalDateReq,
@@ -167,16 +171,16 @@ public class Publication extends ArcDoctype {
         this.keyFactsTail = keyFactsTail;
     }
 
-    @JsonProperty("website_survey")
+    @JsonProperty("publication_survey")
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
-    public WebsiteSurvey getWebsiteSurvey() {
-        return websiteSurvey;
+    public PublicationsystemSurvey getPublicationSurvey() {
+        return publicationSystemSurvey;
     }
 
-    @JsonProperty("website_survey")
+    @JsonProperty("publication_survey")
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
-    public void setWebsiteSurvey(WebsiteSurvey websiteSurvey) {
-        this.websiteSurvey = websiteSurvey;
+    public void setPublicationSurvey(PublicationsystemSurvey publicationSystemSurvey) {
+        this.publicationSystemSurvey = publicationSystemSurvey;
     }
 
     @JsonProperty("interactive_tools")
@@ -210,22 +214,33 @@ public class Publication extends ArcDoctype {
     }
 
     @JsonProperty("resource_links")
-    public List<PublicationsystemResourcelink> getResourceLinks() {
+    public List<PublicationsystemResourceOrExternalLink> getResourceLinks() {
         return resourceLinks;
     }
 
     @JsonProperty("resource_links")
-    public void setResourceLinks(List<PublicationsystemResourcelink> resourceLinks) {
+    public void setResourceLinks(List<PublicationsystemResourceOrExternalLink> resourceLinks) {
         this.resourceLinks = resourceLinks;
     }
 
     @JsonProperty("related_links")
-    public List<PublicationsystemRelatedlink> getRelatedLinks() {
+    public List<PublicationsystemResourceOrExternalLink> getRelatedLinks() {
         return relatedLinks;
     }
 
     @JsonProperty("related_links")
-    public void setRelatedLinks(List<PublicationsystemRelatedlink> relatedLinks) {
+    public void setRelatedLinks(List<PublicationsystemResourceOrExternalLink> relatedLinks) {
         this.relatedLinks = relatedLinks;
+    }
+
+
+    @Override
+    public List<String> getAllReferencedExternalUrls() {
+        ArrayList<String> referencedExternalUrls = new ArrayList<>();
+        getAttachments().stream().forEach(attachment -> referencedExternalUrls.add(attachment.getResource()));
+
+        getSections().stream().forEach(section -> referencedExternalUrls.addAll(section.getAllReferencedExternalUrls()));
+
+        return new ArrayList<>(referencedExternalUrls);
     }
 }

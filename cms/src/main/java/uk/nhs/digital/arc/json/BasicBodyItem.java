@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BasicBodyItem {
+public class BasicBodyItem extends ReferencableUrlElement {
 
     @JsonIgnore
     protected Map<String, Object> additionalProperties = new HashMap<String, Object>();

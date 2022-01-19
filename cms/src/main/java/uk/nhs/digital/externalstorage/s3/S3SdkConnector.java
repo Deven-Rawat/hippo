@@ -65,6 +65,11 @@ public class S3SdkConnector implements S3Connector {
     }
 
     @Override
+    public S3ObjectMetadata copyFile(final String sourceObjectPath, final String fileName) {
+        return copyFileFromOtherBucket(sourceObjectPath, bucketName, fileName);
+    }
+
+    @Override
     public S3ObjectMetadata copyFileFromOtherBucket(final String sourceObjectPath, final String sourceBucketName, final String fileName) {
         reportAction("Copying S3 resource {} from bucket {}", sourceObjectPath, sourceBucketName);
 
@@ -77,11 +82,6 @@ public class S3SdkConnector implements S3Connector {
         reportAction("Copied S3 resource {} to {}", sourceObjectPath, targetObjectPath);
 
         return new S3ObjectMetadataImpl(targetObjectMetadata, bucketName, targetObjectPath);
-    }
-
-    @Override
-    public S3ObjectMetadata copyFile(final String sourceObjectPath, final String fileName) {
-        return copyFileFromOtherBucket(sourceObjectPath, bucketName, fileName);
     }
 
     @Override
@@ -124,15 +124,32 @@ public class S3SdkConnector implements S3Connector {
 
     @Override
     public S3File downloadFile(String objectPath) {
-        reportAction("Downloading S3 resource {}", objectPath);
+        reportAction("Downloading S3 resource from default bucket {}", objectPath);
 
-        final S3FileProxy s3FileProxy = new S3FileProxy(s3.getObject(bucketName, objectPath));
+        return downloadFileFromNamedBucket(bucketName, objectPath);
+    }
+
+    @Override
+    public S3File downloadFileFromNamedBucket(String namedBucket, String objectPath) {
+        reportAction("Downloading S3 resource {} from bucket {}", objectPath, namedBucket);
+
+        final S3FileProxy s3FileProxy = new S3FileProxy(s3.getObject(namedBucket, objectPath));
 
         // At this point no stream processing has happened yet, as the processing is up to the
         // caller, so we can only report the metadata retrieval here.
         reportAction("Retrieved S3 resource metatada {}", objectPath);
 
         return s3FileProxy;
+    }
+
+    @Override
+    public boolean doesObjectExist(String otherBucket, String objectPath) {
+        return s3.doesObjectExist(otherBucket, objectPath);
+    }
+
+    @Override
+    public boolean doesObjectExist(String objectPath) {
+        return doesObjectExist(bucketName, objectPath);
     }
 
     private List<PartETag> uploadParts(final InputStream fileStream,
@@ -174,6 +191,11 @@ public class S3SdkConnector implements S3Connector {
         reportAction("Uploaded {} bytes in {} parts for {}", processedBytesCount, currentPartNumber, objectKey);
 
         return partETags;
+    }
+
+    @Override
+    public String getBucketName() {
+        return bucketName;
     }
 
     private void reportAction(final String messageTemplate, final Object... args) {

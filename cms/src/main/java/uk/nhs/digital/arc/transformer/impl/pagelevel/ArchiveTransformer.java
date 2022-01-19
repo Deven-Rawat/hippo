@@ -11,15 +11,15 @@ public class ArchiveTransformer extends AbstractPageLevelTransformer {
         Archive archive = (Archive)doctype;
         ContentNode cn = new ContentNode(archive.getTitleReq(), doctype.getDoctypeReq().toLowerCase());
 
-        setPubSystemSingleProp(cn, "Title", archive.getTitleReq());
-        setPubSystemSingleProp(cn, "Summary", archive.getSummaryReq());
-        setPubSystemSinglePropOptional(cn, "AdministrativeSources", archive.getAdministrativeSources());
-
-        setPubSystemMultipleProp(cn, "GeographicCoverage", archive.getGeographicCoverage());
-
-        setPubSystemMultipleProp(cn, "InformationType", archive.getInformationType());
-
-        setPubSystemMultipleProp(cn, "Granularity", archive.getGranularity());
+        cn.setProperty(PUBLICATIONSYSTEM_TITLE_UC, archive.getTitleReq());
+        cn.setProperty(PUBLICATIONSYSTEM_SUMMARY,archive.getSummaryReq());
+        cn.setProperty(PUBLICATIONSYSTEM_ADMINISTRATIVESOURCES, archive.getAdministrativeSources());
+        setMultipleProp(cn,PUBLICATIONSYSTEM_GEOGRAPHICCOVERAGE, archive.getGeographicCoverage());
+        // setPubSystemMultipleProp(cn, "GeographicCoverage", archive.getGeographicCoverage());
+        setMultipleProp(cn,PUBLICATIONSYSTEM_INFORMATIONTYPE, archive.getInformationType());
+        // setPubSystemMultipleProp(cn, "InformationType", archive.getInformationType());
+        setMultipleProp(cn, PUBLICATIONSYSTEM_GRANULARITY, archive.getGranularity());
+        // setPubSystemMultipleProp(cn, "Granularity", archive.getGranularity());
 
         return cn;
     }

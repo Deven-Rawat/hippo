@@ -1,5 +1,6 @@
 package uk.nhs.digital.arc.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.nhs.digital.common.util.json.JacksonJsonSerialiser;
 import uk.nhs.digital.common.util.json.JsonSerialiser;
@@ -16,18 +17,18 @@ import javax.jcr.RepositoryException;
 
 public class HighchartsInputConversionForArc {
 
-    public static String process(String type, String title, String yTitle, Binary fileData) throws RepositoryException {
+    public String process(String type, String title, String yTitle, Binary fileData) throws RepositoryException {
         DelegatingHighchartsInputParser parser = new DelegatingHighchartsInputParser(new HighmapsXlsxInputParser(),
             new SeriesHighchartsXlsxInputParser(),
             new ScatterHighchartsXlsxInputParser());
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
         JsonSerialiser jsonSerialiser = new JacksonJsonSerialiser(objectMapper);
 
-        final AbstractHighchartsParameters chartConfig = new HighchartsParameters(type, title, yTitle, fileData);
-
-        final AbstractHighchartsModel chart = parser.parse(chartConfig);
-
+        final AbstractHighchartsParameters parameters = new HighchartsParameters(type, title, yTitle, fileData);
+        final AbstractHighchartsModel chart = parser.parse(parameters);
         final String chartConfigJson = jsonSerialiser.toJson(chart);
 
         return chartConfigJson;

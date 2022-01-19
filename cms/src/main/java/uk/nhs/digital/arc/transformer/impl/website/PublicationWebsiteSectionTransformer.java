@@ -15,7 +15,7 @@ public class PublicationWebsiteSectionTransformer extends AbstractSectionTransfo
     public PublicationWebsiteSectionTransformer(Session session, PublicationBodyItem section) {
         super(session);
         this.section = (WebsiteSection)section;
-        this.setContentNodeName("website:sections");
+        this.setContentNodeName(WEBSITE_SECTIONS);
     }
 
     /**
@@ -30,15 +30,15 @@ public class PublicationWebsiteSectionTransformer extends AbstractSectionTransfo
 
     @Override
     public ContentNode process() {
-        ContentNode sn = new ContentNode(contentNodeName, "website:section");
+        ContentNode sectionNode = new ContentNode(contentNodeName, WEBSITE_SECTION);
 
-        sn.setProperty("website:headinglevel", section.getHeadingLevel());
-        sn.setProperty("website:title", section.getTitle());
+        sectionNode.setProperty(WEBSITE_HEADINGLEVEL, section.getHeadingLevel());
+        sectionNode.setProperty(WEBSITE_TITLE, section.getTitle());
 
-        ContentNode htmlNode = new ContentNode("website:html", "hippostd:html");
-        htmlNode.setProperty("hippostd:content", section.getHtml());
-        sn.addNode(htmlNode);
+        ContentNode htmlNode = new ContentNode(WEBSITE_HTML, HIPPOSTD_HTML);
+        htmlNode.setProperty(HIPPOSTD_CONTENT, section.getHtml());
+        sectionNode.addNode(htmlNode);
 
-        return sn;
+        return sectionNode;
     }
 }

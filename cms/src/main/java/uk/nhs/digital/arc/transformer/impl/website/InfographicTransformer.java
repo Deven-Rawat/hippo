@@ -11,6 +11,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 public class InfographicTransformer extends AbstractSectionTransformer {
+
     private final WebsiteInfographic section;
 
     public InfographicTransformer(Session session, PublicationBodyItem section) {
@@ -20,13 +21,17 @@ public class InfographicTransformer extends AbstractSectionTransformer {
 
     @Override
     public ContentNode process() {
-        //* Process section
-        ContentNode sectionNode = new ContentNode("website:sections", "website:infographic");
+        return this.process(WEBSITE_SECTIONS);
+    }
 
-        sectionNode.setProperty("website:colour", section.getColourReq());
-        sectionNode.setProperty("website:headline", section.getHeadlineReq());
-        setSingleNodeLevelProperty(sectionNode, "website:explanatoryLine", "hippostd:html", "hippostd:content", section.getExplanatoryLine());
-        setSingleNodeLevelProperty(sectionNode, "website:qualifyingInformation", "hippostd:html", "hippostd:content", section.getQualifyingInformation());
+    public ContentNode process(String nodeName) {
+        //* Process section
+        ContentNode sectionNode = new ContentNode(nodeName, WEBSITE_INFOGRAPHIC);
+
+        sectionNode.setProperty(WEBSITE_COLOUR, section.getColourReq());
+        sectionNode.setProperty(WEBSITE_HEADLINE, section.getHeadlineReq());
+        setSingleNodeLevelProperty(sectionNode, WEBSITE_EXPLANATORYLINE, HIPPOSTD_HTML, HIPPOSTD_CONTENT, section.getExplanatoryLine());
+        setSingleNodeLevelProperty(sectionNode, WEBSITE_QUALIFYINGINFORMATION, HIPPOSTD_HTML, HIPPOSTD_CONTENT, section.getQualifyingInformation());
 
         processIcon(sectionNode);
 
@@ -37,11 +42,11 @@ public class InfographicTransformer extends AbstractSectionTransformer {
         if (!StringUtils.isEmpty(section.getIcon())) {
             try {
                 Node iconNode = session.getNode(section.getIcon());
-                ContentNode iconContent = setSingleNodeLevelProperty(currentSectionNode, "website:icon", "hippogallerypicker:imagelink", "hippo:docbase", iconNode.getIdentifier());
+                ContentNode iconContent = setSingleNodeLevelProperty(currentSectionNode, WEBSITE_ICON, "hippogallerypicker:imagelink", "hippo:docbase", iconNode.getIdentifier());
                 String[] categories = new String[]{"life", "cms"};
-                iconContent.setProperty("hippo:values", categories);
-                iconContent.setProperty("hippo:facets", new String[]{});
-                iconContent.setProperty("hippo:modes", new String[]{"single"});
+                iconContent.setProperty(HIPPO_VALUES, categories);
+                iconContent.setProperty(HIPPO_FACETS, new String[]{});
+                iconContent.setProperty(HIPPO_MODES, new String[]{"single"});
             } catch (RepositoryException e) {
                 e.printStackTrace();
             }

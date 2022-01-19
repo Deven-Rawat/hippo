@@ -1,8 +1,20 @@
 package uk.nhs.digital.arc.process;
 
 public class ProcessMessage {
+    public static final boolean ERROR = true;
+
     private StringBuilder message = new StringBuilder();
     private boolean inError = false;
+
+    public ProcessMessage(String messageString) {
+        this.addErrorMessageLine(messageString);
+        this.inError = false;
+    }
+
+    public ProcessMessage(String messageString, boolean isInError) {
+        this.addErrorMessageLine(messageString);
+        this.inError = isInError;
+    }
 
     public void addMessageLine(String messageString) {
         message.append(messageString);
@@ -19,5 +31,13 @@ public class ProcessMessage {
 
     public boolean isInError() {
         return inError;
+    }
+
+    public void addIndentedMessageLine(String messageString) {
+        addMessageLine("\t" + messageString);
+    }
+
+    public void addIndentedErrorMessageLine(String messageString) {
+        addErrorMessageLine("\t" + messageString);
     }
 }

@@ -1,18 +1,18 @@
 package uk.nhs.digital.arc.transformer.publicationsystem;
 
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.value.BinaryImpl;
 import org.onehippo.forge.content.pojo.model.BinaryValue;
 import org.onehippo.forge.content.pojo.model.ContentNode;
 import uk.nhs.digital.arc.json.PublicationBodyItem;
 import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemChartsection;
+import uk.nhs.digital.arc.storage.ArcFileData;
 import uk.nhs.digital.arc.transformer.abs.AbstractSectionTransformer;
-import uk.nhs.digital.arc.util.FilePathUtils;
+import uk.nhs.digital.arc.util.FilePathData;
 import uk.nhs.digital.arc.util.HighchartsInputConversionForArc;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.jcr.Binary;
 import javax.jcr.RepositoryException;
@@ -24,73 +24,58 @@ public class PubSysChartsectionTransformer extends AbstractSectionTransformer {
 
     public PubSysChartsectionTransformer(Session session, PublicationBodyItem section) {
         super(session);
-        chartSection = (PublicationsystemChartsection)section;
+        chartSection = (PublicationsystemChartsection) section;
     }
 
     @Override
     public ContentNode process() {
-        ContentNode sectionNode = new ContentNode(PUBLICATION_SYSTEM + "bodySections", PUBLICATION_SYSTEM + "chartSection");
+        ContentNode sectionNode = new ContentNode(PUBLICATIONSYSTEM_BODYSECTIONS, PUBLICATIONSYSTEM_CHARTSECTION);
 
-        sectionNode.setProperty(PUBLICATION_SYSTEM + "title", chartSection.getTitleReq());
-        sectionNode.setProperty(PUBLICATION_SYSTEM + "type", chartSection.getTypeReq());
-        sectionNode.setProperty(PUBLICATION_SYSTEM + "yTitle", chartSection.getyTitleReq());
-        getAndChartDataInJsonFromS3File(sectionNode);
+        sectionNode.setProperty(PUBLICATIONSYSTEM_TITLE, chartSection.getTitleReq());
+        sectionNode.setProperty(PUBLICATIONSYSTEM_TYPE, chartSection.getTypeReq());
+        sectionNode.setProperty(PUBLICATIONSYSTEM_YTITLE, chartSection.getyTitleReq());
+        getChartDataAsJsonFromContentOfResource(sectionNode);
 
         return sectionNode;
     }
 
-    private void getAndChartDataInJsonFromS3File(ContentNode sectionNode) {
-        FilePathUtils sourceFilePathUtils = new FilePathUtils(docbase, chartSection.getDataFileReq());
+    /**
+     * Since we only have one concrete implementation of {@link uk.nhs.digital.arc.storage.ArcStorageManager}, which is {@link uk.nhs.digital.arc.storage.S3StorageManager}
+     * then we are really only considering S3 based data this point in time, although it could be implemented easily enough to locate its data
+     * from an alternate source using a descendent of the {@link uk.nhs.digital.arc.storage.ArcStorageManager} interface
+     *
+     * @param sectionNode is the node to which we attach the storage meta data once loaded
+     */
+    private void getChartDataAsJsonFromContentOfResource(ContentNode sectionNode) {
+        FilePathData sourceFilePathData = new FilePathData(docbase, chartSection.getDataFileReq());
+        ArcFileData metaData = storageManger.getFileMetaData(sourceFilePathData);
 
-        if (sourceFilePathUtils.isS3Bucket()) {
-            S3Object s3object = getS3Object(sourceFilePathUtils);
-            S3ObjectInputStream inputStream = s3object.getObjectContent();
+        try {
+            Binary binaryData = getJsonDataAndCreateBinaryObjectFromProvidedFile(sectionNode, metaData.getDelegateStream());
 
-            try {
-                Binary binaryData = getJsonDataFromS3File(sectionNode, inputStream);
+            ContentNode newNode = new ContentNode(PUBLICATIONSYSTEM_DATAFILE, PUBLICATIONSYSTEM_RESOURCE);
 
-                ContentNode newNode = new ContentNode(PUBLICATION_SYSTEM + "dataFile", PUBLICATION_SYSTEM + "resource");
-                //                newNode.setProperty(HIPPO_FILENAME, sourceFilePathUtils.getFilename());
-                //                newNode.setProperty(HIPPO_TEXT, new BinaryValue(new byte[0], mimeType, StandardCharsets.UTF_8.displayName()));
-                //                newNode.setProperty(JCR_DATA, new BinaryValue(IOUtils.toByteArray(b.getStream()),
-                //                    s3object.getObjectMetadata().getContentType(),
-                //                    StandardCharsets.UTF_8.displayName()));
-                //                newNode.setProperty(JCR_ENCODING, StandardCharsets.UTF_8.displayName());
-                //                newNode.setProperty(JCR_LAST_MODIFIED, ContentPropertyType.DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(new Date()));
-                //                newNode.setProperty(JCR_MIME_TYPE, mimeType);
+            this.addFileRelatedProperties(newNode,
+                new BinaryValue(IOUtils.toByteArray(binaryData.getStream())),
+                metaData.getContentType(),
+                sourceFilePathData.getFilename());
 
-                this.addFileRelatedProperties(newNode,
-                    new BinaryValue(IOUtils.toByteArray(binaryData.getStream())),
-                    s3object.getObjectMetadata().getContentType(),
-                    sourceFilePathUtils.getFilename());
-
-                //                newNode.setProperty(HIPPO_FILENAME, sourceFilePathUtils.getFilename());
-                //                newNode.setProperty(HIPPO_TEXT, new BinaryValue(new byte[0], mimeType, StandardCharsets.UTF_8.displayName()));
-                //                newNode.setProperty(JCR_DATA, new BinaryValue(IOUtils.toByteArray(b.getStream()),
-                //                    mimeType,
-                //                    StandardCharsets.UTF_8.displayName()));
-                //                newNode.setProperty(JCR_ENCODING, StandardCharsets.UTF_8.displayName());
-                //                newNode.setProperty(JCR_LAST_MODIFIED, ContentPropertyType.DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(new Date()));
-                //                newNode.setProperty(JCR_MIME_TYPE, mimeType);
-
-                sectionNode.addNode(newNode);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (RepositoryException e) {
-                e.printStackTrace();
-            }
+            sectionNode.addNode(newNode);
+        } catch (IOException | RepositoryException exception) {
+            exception.printStackTrace();
         }
     }
 
-    private Binary getJsonDataFromS3File(ContentNode sectionNode, S3ObjectInputStream inputStream) throws IOException, RepositoryException {
-        Binary b = new BinaryImpl(inputStream);
-        String json = HighchartsInputConversionForArc.process(chartSection.getTypeReq(),
+    private Binary getJsonDataAndCreateBinaryObjectFromProvidedFile(ContentNode sectionNode, InputStream inputStream) throws IOException, RepositoryException {
+        Binary binary = new BinaryImpl(inputStream);
+        HighchartsInputConversionForArc conversion = new HighchartsInputConversionForArc();
+
+        String json = conversion.process(chartSection.getTypeReq(),
             chartSection.getTitleReq(),
             chartSection.getyTitleReq(),
-            b);
+            binary);
 
-        // String mimeType = s3object.getObjectMetadata().getContentType();
-        sectionNode.setProperty(PUBLICATION_SYSTEM + "chartConfig", json);
-        return b;
+        sectionNode.setProperty(PUBLICATIONSYSTEM_CHARTCONFIG, json);
+        return binary;
     }
 }

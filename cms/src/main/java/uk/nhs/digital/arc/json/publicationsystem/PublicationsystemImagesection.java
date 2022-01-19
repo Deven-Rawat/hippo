@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.nhs.digital.arc.json.PublicationBodyItem;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PublicationsystemImagesection extends PublicationBodyItem {
 
@@ -84,4 +88,10 @@ public class PublicationsystemImagesection extends PublicationBodyItem {
     public void setCaption(String caption) {
         this.caption = caption;
     }
+
+    @Override
+    public List<String> getAllReferencedExternalUrls() {
+        return new ArrayList<>(Arrays.asList(new String[]{getImageReq()}));
+    }
+
 }

@@ -158,12 +158,36 @@ public class BlockingPooledS3Connector implements PooledS3Connector {
     }
 
     /**
+     * See {@linkplain PooledS3Connector#doesObjectExist(String, String)}
+     */
+    @Override
+    public boolean doesObjectExist(String otherBucket, String objectPath) {
+        return s3Connector.doesObjectExist(otherBucket, objectPath);
+    }
+
+    /**
+     * See {@linkplain PooledS3Connector#doesObjectExist(String)}
+     */
+    @Override
+    public boolean doesObjectExist(String objectPath) {
+        return s3Connector.doesObjectExist(objectPath);
+    }
+
+    /**
      * See {@linkplain PooledS3Connector#download}.
      */
     @Override
     public void download(final String s3FileReference,
-                         final Consumer<S3File> downloadConsumer
-    ) {
+                         final Consumer<S3File> downloadConsumer) {
+        download(s3Connector.getBucketName(), s3FileReference, downloadConsumer);
+    }
+
+    /**
+     * See {@linkplain PooledS3Connector#download}.
+     */
+    @Override
+    public void download(final String namedBucket, final String s3FileReference,
+                         final Consumer<S3File> downloadConsumer) {
         final StopWatch stopWatch = logger.reportDownloadScheduling(s3FileReference);
 
         final S3File downloadedFileMetadata;
@@ -171,7 +195,7 @@ public class BlockingPooledS3Connector implements PooledS3Connector {
             downloadedFileMetadata = waitFor(downloadExecutorService, () -> {
                 logger.reportDownloadStarting(s3FileReference);
 
-                final S3File s3File = s3Connector.downloadFile(s3FileReference);
+                final S3File s3File = s3Connector.downloadFileFromNamedBucket(namedBucket, s3FileReference);
 
                 downloadConsumer.accept(s3File);
 

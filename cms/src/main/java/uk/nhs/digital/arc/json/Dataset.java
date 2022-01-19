@@ -3,9 +3,9 @@ package uk.nhs.digital.arc.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemRelatedlink;
-import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemResourcelink;
+import uk.nhs.digital.arc.json.publicationsystem.PublicationsystemResourceOrExternalLink;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -16,11 +16,11 @@ public class Dataset extends ArcDoctype {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonProperty("related_links")
-    private List<PublicationsystemRelatedlink> files = null;
+    private List<PublicationsystemResourceOrExternalLink> files = null;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonProperty("resource_links")
-    private List<PublicationsystemResourcelink> resourceLinks = null;
+    private List<PublicationsystemResourceOrExternalLink> resourceLinks = null;
 
     @JsonProperty("nominal_date_REQ")
     private String nominalDateReq;
@@ -54,22 +54,22 @@ public class Dataset extends ArcDoctype {
     }
 
     @JsonProperty("related_links")
-    public List<PublicationsystemRelatedlink> getFiles() {
+    public List<PublicationsystemResourceOrExternalLink> getFiles() {
         return files;
     }
 
     @JsonProperty("related_links")
-    public void setFiles(List<PublicationsystemRelatedlink> files) {
+    public void setFiles(List<PublicationsystemResourceOrExternalLink> files) {
         this.files = files;
     }
 
     @JsonProperty("resource_links")
-    public List<PublicationsystemResourcelink> getResourceLinks() {
+    public List<PublicationsystemResourceOrExternalLink> getResourceLinks() {
         return resourceLinks;
     }
 
     @JsonProperty("resource_links")
-    public void setResourceLinks(List<PublicationsystemResourcelink> resourceLinks) {
+    public void setResourceLinks(List<PublicationsystemResourceOrExternalLink> resourceLinks) {
         this.resourceLinks = resourceLinks;
     }
 
@@ -133,4 +133,10 @@ public class Dataset extends ArcDoctype {
         this.granularity = granularity;
     }
 
+    @Override
+    public List<String> getAllReferencedExternalUrls() {
+        ArrayList<String> referencedExternalUrls = new ArrayList<>();
+        getFiles().stream().forEach(f -> referencedExternalUrls.add(f.getLinkUrlReq()));
+        return new ArrayList<>(referencedExternalUrls);
+    }
 }

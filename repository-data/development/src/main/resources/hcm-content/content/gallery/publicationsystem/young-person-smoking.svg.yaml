@@ -1,0 +1,301 @@
+---
+/content/gallery/publicationsystem/young-person-smoking.svg:
+  .meta:order-before: cigarette.svg
+  /young-person-smoking.svg:
+    /hippogallery:original:
+      hippogallery:height: 0
+      hippogallery:width: 0
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/original/original.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /hippogallery:thumbnail:
+      hippo:filename: young-person-smoking.svg
+      hippogallery:height: 60
+      hippogallery:width: 60
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/thumbnail/thumbnail.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:authorPhoto:
+      hippogallery:height: 50
+      hippogallery:width: 50
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/authorPhoto/authorPhoto.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:authorPhoto2x:
+      hippogallery:height: 100
+      hippogallery:width: 100
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/authorPhoto2x/authorPhoto2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:authorPhotoLarge:
+      hippogallery:height: 200
+      hippogallery:width: 200
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/authorPhotoLarge/authorPhotoLarge.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:authorPhotoLarge2x:
+      hippogallery:height: 400
+      hippogallery:width: 400
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/authorPhotoLarge2x/authorPhotoLarge2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:blogIndexThumb:
+      hippogallery:height: 240
+      hippogallery:width: 468
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/blogIndexThumb/blogIndexThumb.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:blogIndexThumb2x:
+      hippogallery:height: 480
+      hippogallery:width: 936
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/blogIndexThumb2x/blogIndexThumb2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:homeBlogThumb:
+      hippogallery:height: 184
+      hippogallery:width: 468
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/homeBlogThumb/homeBlogThumb.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:homeBlogThumb2x:
+      hippogallery:height: 368
+      hippogallery:width: 936
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/homeBlogThumb2x/homeBlogThumb2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:homeBlogThumbSmall:
+      hippogallery:height: 184
+      hippogallery:width: 341
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/homeBlogThumbSmall/homeBlogThumbSmall.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:homeBlogThumbSmall2x:
+      hippogallery:height: 368
+      hippogallery:width: 682
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/homeBlogThumbSmall2x/homeBlogThumbSmall2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:newsFeaturedPost:
+      hippogallery:height: 464
+      hippogallery:width: 696
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/newsFeaturedPost/newsFeaturedPost.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:newsFeaturedPost2x:
+      hippogallery:height: 928
+      hippogallery:width: 1392
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/newsFeaturedPost2x/newsFeaturedPost2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:newsPostImage:
+      hippogallery:height: 640
+      hippogallery:width: 640
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/newsPostImage/newsPostImage.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:newsPostImage2x:
+      hippogallery:height: 1280
+      hippogallery:width: 1280
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/newsPostImage2x/newsPostImage2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:newsPostImageLarge:
+      hippogallery:height: 992
+      hippogallery:width: 992
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/newsPostImageLarge/newsPostImageLarge.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:newsPostImageLarge2x:
+      hippogallery:height: 1984
+      hippogallery:width: 1984
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/newsPostImageLarge2x/newsPostImageLarge2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:newsThumbnail:
+      hippogallery:height: 0
+      hippogallery:width: 154
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/newsThumbnail/newsThumbnail.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:newsThumbnail2x:
+      hippogallery:height: 0
+      hippogallery:width: 308
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/newsThumbnail2x/newsThumbnail2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:oldArticleThumbnail:
+      hippogallery:height: 0
+      hippogallery:width: 616
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/oldArticleThumbnail/oldArticleThumbnail.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:oldArticleThumbnail2x:
+      hippogallery:height: 0
+      hippogallery:width: 1232
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/oldArticleThumbnail2x/oldArticleThumbnail2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:pageHeaderHeroModule:
+      hippogallery:height: 825
+      hippogallery:width: 1270
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/pageHeaderHeroModule/pageHeaderHeroModule.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:pageHeaderHeroModule2x:
+      hippogallery:height: 1650
+      hippogallery:width: 2540
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/pageHeaderHeroModule2x/pageHeaderHeroModule2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:pageHeaderHeroModuleSmall:
+      hippogallery:height: 375
+      hippogallery:width: 375
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/pageHeaderHeroModuleSmall/pageHeaderHeroModuleSmall.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:pageHeaderHeroModuleSmall2x:
+      hippogallery:height: 750
+      hippogallery:width: 750
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/pageHeaderHeroModuleSmall2x/pageHeaderHeroModuleSmall2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:pageHeaderSlimBanner:
+      hippogallery:height: 500
+      hippogallery:width: 1270
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/pageHeaderSlimBanner/pageHeaderSlimBanner.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:pageHeaderSlimBanner2x:
+      hippogallery:height: 1000
+      hippogallery:width: 2540
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/pageHeaderSlimBanner2x/pageHeaderSlimBanner2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:pageHeaderSlimBannerSmall:
+      hippogallery:height: 500
+      hippogallery:width: 375
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/pageHeaderSlimBannerSmall/pageHeaderSlimBannerSmall.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:pageHeaderSlimBannerSmall2x:
+      hippogallery:height: 1000
+      hippogallery:width: 750
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/pageHeaderSlimBannerSmall2x/pageHeaderSlimBannerSmall2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:postImageSmall:
+      hippogallery:height: 0
+      hippogallery:width: 343
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/postImageSmall/postImageSmall.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    /website:postImageSmall2x:
+      hippogallery:height: 0
+      hippogallery:width: 686
+      jcr:data:
+        resource: /content/gallery/publicationsystem/young-person-smoking.svg/young-person-smoking.svg/postImageSmall2x/postImageSmall2x.bin
+        type: binary
+      jcr:lastModified: 2021-12-21T15:19:54.548Z
+      jcr:mimeType: image/svg+xml
+      jcr:primaryType: hippogallery:image
+    hippo:availability:
+    - live
+    - preview
+    hippogallery:filename: young-person-smoking.svg
+    jcr:primaryType: website:corporateWebsiteImageset
+  jcr:mixinTypes:
+  - mix:referenceable
+  jcr:primaryType: hippo:handle
