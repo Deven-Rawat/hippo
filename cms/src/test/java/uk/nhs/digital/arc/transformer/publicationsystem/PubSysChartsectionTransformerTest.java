@@ -60,7 +60,6 @@ public class PubSysChartsectionTransformerTest {
 
     @Test
     public void processNodeWithAS3DataFileProvided() {
-        // given(mockStorageManager.getAmazonS3Client()).willReturn(mockS3);
         given(mockS3.getObject(any(GetObjectRequest.class))).willReturn(mockS3Object);
         given(mockS3Object.getObjectContent()).willReturn(mockS3ObjectInputStream);
         given(mockS3ObjectInputStream.getDelegateStream()).willReturn(getInputStreamFromDataFile("test-data/arc-data/quit_date_by_gender.xlsx"));

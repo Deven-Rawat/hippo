@@ -45,7 +45,7 @@ public class PublicationTransformer extends AbstractPageLevelTransformer {
 
         cn.setProperty(PUBLICATIONSYSTEM_TITLE_UC, publication.getTitleReq());
         cn.setProperty(PUBLICATIONSYSTEM_SUMMARY, publication.getSummaryReq());
-        cn.setProperty(PUBLICATIONSYSTEM_NOMINALDATE, publication.getNominalDateReq());
+        cn.setProperty(PUBLICATIONSYSTEM_NOMINALDATE, ContentPropertyType.DATE, DateHelper.massageDate(publication.getNominalDateReq()));
         cn.setProperty(PUBLICATIONSYSTEM_PUBLICALLYACCESSIBLE, publication.getPublicallyAccessibleReq());
         cn.setProperty(PUBLICATIONSYSTEM_COVERAGESTART, ContentPropertyType.DATE, DateHelper.massageDate(publication.getCoverageStart()));
         cn.setProperty(PUBLICATIONSYSTEM_COVERAGEEND, ContentPropertyType.DATE, DateHelper.massageDate(publication.getCoverageEnd()));
@@ -127,23 +127,28 @@ public class PublicationTransformer extends AbstractPageLevelTransformer {
     }
 
     private void processSections(ContentNode cn) {
-        for (PublicationBodyItem section : publication.getSections()) {
-            AbstractSectionTransformer sectionTransformer =
-                InnerSectionTransformerFactory.getWebsiteTransformerFromPublicationSectionType(section, session);
-            sectionTransformer.setStorageManager(storageManger);
+        if (listExists(publication.getSections())) {
+            for (PublicationBodyItem section : publication.getSections()) {
+                AbstractSectionTransformer sectionTransformer =
+                    InnerSectionTransformerFactory.getWebsiteTransformerFromPublicationSectionType(section, session);
+                sectionTransformer.setStorageManager(storageManger);
 
-            ContentNode sectionNode = sectionTransformer.process();
-            cn.addNode(sectionNode);
+                ContentNode sectionNode = sectionTransformer.process();
+                cn.addNode(sectionNode);
+            }
         }
     }
 
     private void processAttachments(ContentNode cn) {
-        for (PublicationsystemExternalattachment attachment : publication.getAttachments()) {
-            String nodeTypeName = "Attachments-v3";
-            String displayName = attachment.getDisplayName();
-            String resource = attachment.getResource();
+        if (listExists(publication.getAttachments())) {
+            for (PublicationsystemExternalattachment attachment : publication.getAttachments()) {
+                String nodeTypeName = "Attachments-v3";
+                String displayName = attachment.getDisplayName();
+                String resource = attachment.getResource();
 
-            populateAndCreateExternalAttachmentNode(cn, nodeTypeName, displayName, resource, PUBLICATIONSYSTEM_ATTACHMENTRESOURCE);
+                populateAndCreateExternalAttachmentNode(cn,
+                    nodeTypeName, displayName, resource, PUBLICATIONSYSTEM_ATTACHMENTRESOURCE);
+            }
         }
     }
 }

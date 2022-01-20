@@ -30,8 +30,12 @@ public class InfographicTransformer extends AbstractSectionTransformer {
 
         sectionNode.setProperty(WEBSITE_COLOUR, section.getColourReq());
         sectionNode.setProperty(WEBSITE_HEADLINE, section.getHeadlineReq());
-        setSingleNodeLevelProperty(sectionNode, WEBSITE_EXPLANATORYLINE, HIPPOSTD_HTML, HIPPOSTD_CONTENT, section.getExplanatoryLine());
-        setSingleNodeLevelProperty(sectionNode, WEBSITE_QUALIFYINGINFORMATION, HIPPOSTD_HTML, HIPPOSTD_CONTENT, section.getQualifyingInformation());
+        if (section.getExplanatoryLine() != null) {
+            setSingleNodeLevelProperty(sectionNode, WEBSITE_EXPLANATORYLINE, HIPPOSTD_HTML, HIPPOSTD_CONTENT, section.getExplanatoryLine());
+        }
+        if (section.getQualifyingInformation() != null) {
+            setSingleNodeLevelProperty(sectionNode, WEBSITE_QUALIFYINGINFORMATION, HIPPOSTD_HTML, HIPPOSTD_CONTENT, section.getQualifyingInformation());
+        }
 
         processIcon(sectionNode);
 

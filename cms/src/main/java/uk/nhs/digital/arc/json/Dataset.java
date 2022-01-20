@@ -16,7 +16,7 @@ public class Dataset extends ArcDoctype {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonProperty("related_links")
-    private List<PublicationsystemResourceOrExternalLink> files = null;
+    private List<PublicationsystemResourceOrExternalLink> relatedLinks = null;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonProperty("resource_links")
@@ -24,8 +24,8 @@ public class Dataset extends ArcDoctype {
 
     @JsonProperty("nominal_date_REQ")
     private String nominalDateReq;
-    @JsonProperty("next_publicaton_date")
-    private String nextPublicatonDate;
+    @JsonProperty("next_publication_date")
+    private String nextPublicationDate;
     @JsonProperty("coverage_start")
     private String coverageStart;
     @JsonProperty("coverage_end")
@@ -37,10 +37,12 @@ public class Dataset extends ArcDoctype {
 
     public Dataset(@JsonProperty(value = "doctype_REQ", required = true)String doctypeReq,
                    @JsonProperty(value = "title_REQ", required = true)String titleReq,
-                   @JsonProperty(value = "summary_REQ", required = true)String summaryReq) {
+                   @JsonProperty(value = "summary_REQ", required = true)String summaryReq,
+                   @JsonProperty(value = "nominam_date_REQ", required = true)String nominalDateReq) {
         this.doctypeReq = doctypeReq;
         this.titleReq = titleReq;
         this.summaryReq = summaryReq;
+        this.nominalDateReq = nominalDateReq;
     }
 
     @JsonProperty("summary_REQ")
@@ -54,13 +56,13 @@ public class Dataset extends ArcDoctype {
     }
 
     @JsonProperty("related_links")
-    public List<PublicationsystemResourceOrExternalLink> getFiles() {
-        return files;
+    public List<PublicationsystemResourceOrExternalLink> getRelatedlinks() {
+        return relatedLinks;
     }
 
     @JsonProperty("related_links")
     public void setFiles(List<PublicationsystemResourceOrExternalLink> files) {
-        this.files = files;
+        this.relatedLinks = files;
     }
 
     @JsonProperty("resource_links")
@@ -83,14 +85,14 @@ public class Dataset extends ArcDoctype {
         this.nominalDateReq = nominalDateReq;
     }
 
-    @JsonProperty("next_publicaton_date")
-    public String getNextPublicatonDate() {
-        return nextPublicatonDate;
+    @JsonProperty("next_publication_date")
+    public String getNextPublicationDate() {
+        return nextPublicationDate;
     }
 
-    @JsonProperty("next_publicaton_date")
-    public void setNextPublicatonDate(String nextPublicatonDate) {
-        this.nextPublicatonDate = nextPublicatonDate;
+    @JsonProperty("next_publication_date")
+    public void setNextPublicationDate(String nextPublicationDate) {
+        this.nextPublicationDate = nextPublicationDate;
     }
 
     @JsonProperty("coverage_start")
@@ -136,7 +138,7 @@ public class Dataset extends ArcDoctype {
     @Override
     public List<String> getAllReferencedExternalUrls() {
         ArrayList<String> referencedExternalUrls = new ArrayList<>();
-        getFiles().stream().forEach(f -> referencedExternalUrls.add(f.getLinkUrlReq()));
+        getRelatedlinks().stream().forEach(f -> referencedExternalUrls.add(f.getLinkUrlReq()));
         return new ArrayList<>(referencedExternalUrls);
     }
 }

@@ -35,9 +35,11 @@ public class PublicationWebsiteSectionTransformer extends AbstractSectionTransfo
         sectionNode.setProperty(WEBSITE_HEADINGLEVEL, section.getHeadingLevel());
         sectionNode.setProperty(WEBSITE_TITLE, section.getTitle());
 
-        ContentNode htmlNode = new ContentNode(WEBSITE_HTML, HIPPOSTD_HTML);
-        htmlNode.setProperty(HIPPOSTD_CONTENT, section.getHtml());
-        sectionNode.addNode(htmlNode);
+        if (section.getHtml() != null) {
+            ContentNode htmlNode = new ContentNode(WEBSITE_HTML, HIPPOSTD_HTML);
+            htmlNode.setProperty(HIPPOSTD_CONTENT, section.getHtml());
+            sectionNode.addNode(htmlNode);
+        }
 
         return sectionNode;
     }

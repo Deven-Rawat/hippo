@@ -237,9 +237,13 @@ public class Publication extends ArcDoctype {
     @Override
     public List<String> getAllReferencedExternalUrls() {
         ArrayList<String> referencedExternalUrls = new ArrayList<>();
-        getAttachments().stream().forEach(attachment -> referencedExternalUrls.add(attachment.getResource()));
+        if (getAttachments() != null) {
+            getAttachments().stream().forEach(attachment -> referencedExternalUrls.add(attachment.getResource()));
+        }
 
-        getSections().stream().forEach(section -> referencedExternalUrls.addAll(section.getAllReferencedExternalUrls()));
+        if (getSections() != null) {
+            getSections().stream().forEach(section -> referencedExternalUrls.addAll(section.getAllReferencedExternalUrls()));
+        }
 
         return new ArrayList<>(referencedExternalUrls);
     }

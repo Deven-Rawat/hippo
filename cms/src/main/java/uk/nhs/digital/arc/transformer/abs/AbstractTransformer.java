@@ -61,6 +61,7 @@ public abstract class AbstractTransformer {
     public static final String PUBLICATIONSYSTEM_COVERAGESTART = PUBLICATION_SYSTEM + "CoverageStart";
     public static final String PUBLICATIONSYSTEM_COVERAGEEND = PUBLICATION_SYSTEM + "CoverageEnd";
     public static final String PUBLICATIONSYSTEM_DATAFILE = PUBLICATION_SYSTEM + "dataFile";
+    public static final String PUBLICATIONSYSTEM_DISPLAYNAME = PUBLICATION_SYSTEM + "displayName";
     public static final String PUBLICATIONSYSTEM_DATE = PUBLICATION_SYSTEM + "date";
     public static final String PUBLICATIONSYSTEM_EXTATTACHMENT = PUBLICATION_SYSTEM + "extattachment";
     public static final String PUBLICATIONSYSTEM_GEOGRAPHICCOVERAGE = "GeographicCoverage";
@@ -77,6 +78,7 @@ public abstract class AbstractTransformer {
     public static final String PUBLICATIONSYSTEM_LINK = PUBLICATION_SYSTEM + "link";
     public static final String PUBLICATIONSYSTEM_LINKTEXT = PUBLICATION_SYSTEM + "linkText";
     public static final String PUBLICATIONSYSTEM_LINKURL = PUBLICATION_SYSTEM + "linkUrl";
+    public static final String PUBLICATIONSYSTEM_NEXTPUBLICATIONDATE = PUBLICATION_SYSTEM + "NextPublicationDate";
     public static final String PUBLICATIONSYSTEM_PUBLICALLYACCESSIBLE = PUBLICATION_SYSTEM + "PublicallyAccessible";
     public static final String PUBLICATIONSYSTEM_PUBLICATIONPAGE = PUBLICATION_SYSTEM + "publicationPage";
     public static final String PUBLICATIONSYSTEM_NOMINALDATE = PUBLICATION_SYSTEM + "NominalDate";
@@ -125,10 +127,13 @@ public abstract class AbstractTransformer {
                                                      String primaryType,
                                                      String propertyName,
                                                      String propertyValue) {
-        ContentNode newNode = new ContentNode(nodeName, primaryType);
-        newNode.setProperty(propertyName, propertyValue);
-        contentNode.addNode(newNode);
-        return newNode;
+        if (propertyValue != null) {
+            ContentNode newNode = new ContentNode(nodeName, primaryType);
+            newNode.setProperty(propertyName, propertyValue);
+            contentNode.addNode(newNode);
+            return newNode;
+        }
+        return null;
     }
 
     public void setDocbase(String docbase) {
@@ -149,7 +154,7 @@ public abstract class AbstractTransformer {
                                                            String resource,
                                                            String childNodeName) {
         ContentNode attachmentNode = new ContentNode(PUBLICATION_SYSTEM + nodeTypeName, PUBLICATIONSYSTEM_EXTATTACHMENT);
-        attachmentNode.setProperty(EXTERNALSTORAGE_DISPLAYNAME, displayName);
+        attachmentNode.setProperty(PUBLICATIONSYSTEM_DISPLAYNAME, displayName);
         contentNode.addNode(attachmentNode);
 
         S3ObjectMetadata s3meta = storageManger.uploadFileToS3(docbase, resource);
