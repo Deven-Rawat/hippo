@@ -15,7 +15,6 @@ public class ArcRepositoryJob implements RepositoryJob {
     private static final Logger log = LoggerFactory.getLogger(ArcRepositoryJob.class);
 
     public ArcRepositoryJob() {
-        log.error("TestRepositoryJob ctor called()");
     }
 
     @Override
@@ -27,7 +26,7 @@ public class ArcRepositoryJob implements RepositoryJob {
             String manifestFile = repositoryJobExecutionContext.getAttribute("manifest_file");
             String nodePath = repositoryJobExecutionContext.getAttribute("node_path");
 
-            log.info("TestRepositoryJob executing repo job now with manifest_file value of '" + manifestFile + "'");
+            log.info("ArcRepositoryJob executing repo job now with manifest_file value of '" + manifestFile + "'");
 
             ManifestProcessor manifestProcessor = new ManifestProcessor(session, manifestFile, nodePath);
             try {

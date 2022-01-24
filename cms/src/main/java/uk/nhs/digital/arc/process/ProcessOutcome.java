@@ -1,17 +1,17 @@
 package uk.nhs.digital.arc.process;
 
-public class ProcessMessage {
+public class ProcessOutcome {
     public static final boolean ERROR = true;
 
     private StringBuilder message = new StringBuilder();
     private boolean inError = false;
 
-    public ProcessMessage(String messageString) {
+    public ProcessOutcome(String messageString) {
         this.addErrorMessageLine(messageString);
         this.inError = false;
     }
 
-    public ProcessMessage(String messageString, boolean isInError) {
+    public ProcessOutcome(String messageString, boolean isInError) {
         this.addErrorMessageLine(messageString);
         this.inError = isInError;
     }

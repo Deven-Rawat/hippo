@@ -3,12 +3,13 @@ package uk.nhs.digital.arc.process;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProcessingMessageSummary {
-    private List<ProcessMessage> messages = new ArrayList<ProcessMessage>();
+public class ManifestProcessingSummary {
+    private List<ProcessOutcome> outcomes = new ArrayList<ProcessOutcome>();
+
     private boolean inError = false;
 
-    public void addProcessMessage(ProcessMessage pm) {
-        messages.add(pm);
+    public void addIndividualProcessOutcome(ProcessOutcome pm) {
+        outcomes.add(pm);
         if (pm.isInError()) {
             inError = true;
         }
@@ -20,7 +21,7 @@ public class ProcessingMessageSummary {
 
     public String getConcatenatedMessages() {
         StringBuilder sb = new StringBuilder();
-        for (ProcessMessage pm : messages) {
+        for (ProcessOutcome pm : outcomes) {
             sb.append(pm.getMessageLine());
         }
 

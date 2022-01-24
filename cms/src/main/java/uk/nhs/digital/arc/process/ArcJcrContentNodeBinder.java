@@ -6,8 +6,12 @@ import org.onehippo.forge.content.pojo.common.ContentValueConverter;
 import org.onehippo.forge.content.pojo.model.ContentItem;
 import org.onehippo.forge.content.pojo.model.ContentNode;
 import org.onehippo.forge.content.pojo.model.ContentProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.nhs.digital.arc.transformer.abs.AbstractTransformer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +23,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 public class ArcJcrContentNodeBinder extends DefaultJcrContentNodeBinder {
+
+    private static final Logger log = LoggerFactory.getLogger(ArcJcrContentNodeBinder.class);
 
     private List<ExternalStorageReference> references;
 
@@ -35,20 +41,20 @@ public class ArcJcrContentNodeBinder extends DefaultJcrContentNodeBinder {
     }
 
     private void findExternalStorageReferenceNodes(Node jcrDataNode) throws RepositoryException {
-        Set<String> subNodeNames = this.getCompoundNodeNames(jcrDataNode);
+        Set<String> subNodeNames = this.getChildExtAttachmentNodes(jcrDataNode);
         String[] nameGlobs = (String[]) subNodeNames.toArray(new String[subNodeNames.size()]);
         NodeIterator nodeIt = jcrDataNode.getNodes(nameGlobs);
 
         while (nodeIt.hasNext()) {
             Node nextNode = nodeIt.nextNode();
 
-            NodeIterator resourceNodeIterator = nextNode.getNodes("publicationsystem:resourceNode");
+            NodeIterator resourceNodeIterator = nextNode.getNodes(AbstractTransformer.PUBLICATIONSYSTEM_ATTACHMENTRESOURCE);
 
             if (resourceNodeIterator.hasNext()) {
                 //* Check for possible resourceNode and it's dependent children
                 while (resourceNodeIterator.hasNext()) {
                     Node next = resourceNodeIterator.nextNode();
-                    PropertyIterator props = next.getProperties("externalstorage:reference");
+                    PropertyIterator props = next.getProperties(AbstractTransformer.EXTERNALSTROAGE_REFERENCE);
 
                     while (props.hasNext()) {
                         Property innerProp = props.nextProperty();
@@ -56,7 +62,7 @@ public class ArcJcrContentNodeBinder extends DefaultJcrContentNodeBinder {
                         String propValue = innerProp.getValue().getString();
                         String nodePath = next.getPath();
 
-                        System.out.println("propName: " + propName + " propValue: " + propValue + " Path: " + nodePath);
+                        log.debug("The property: {} has a value of: {} and is found here: {}", propName, propValue, nodePath);
                         ExternalStorageReference externalStorageReference = new ExternalStorageReference(nodePath, propValue);
 
                         getExternalStorageReferences().add(externalStorageReference);
@@ -66,6 +72,24 @@ public class ArcJcrContentNodeBinder extends DefaultJcrContentNodeBinder {
                 findExternalStorageReferenceNodes(nextNode);
             }
         }
+    }
+
+    private Set<String> getChildExtAttachmentNodes(Node jcrDataNode) throws RepositoryException {
+        Set<String> compoundNodeNames = new HashSet();
+        NodeIterator nodeIter = jcrDataNode.getNodes();
+
+        while (nodeIter.hasNext()) {
+            Node subNode = nodeIter.nextNode();
+            if (this.isExtAttachmentType(subNode)) {
+                compoundNodeNames.add(subNode.getName());
+            }
+        }
+
+        return compoundNodeNames;
+    }
+
+    protected boolean isExtAttachmentType(Node node) throws RepositoryException {
+        return node.isNodeType(AbstractTransformer.PUBLICATIONSYSTEM_EXTATTACHMENT);
     }
 
     public List<ExternalStorageReference> getExternalStorageReferences() {

@@ -38,7 +38,7 @@ public class Dataset extends ArcDoctype {
     public Dataset(@JsonProperty(value = "doctype_REQ", required = true)String doctypeReq,
                    @JsonProperty(value = "title_REQ", required = true)String titleReq,
                    @JsonProperty(value = "summary_REQ", required = true)String summaryReq,
-                   @JsonProperty(value = "nominam_date_REQ", required = true)String nominalDateReq) {
+                   @JsonProperty(value = "nominal_date_REQ", required = true)String nominalDateReq) {
         this.doctypeReq = doctypeReq;
         this.titleReq = titleReq;
         this.summaryReq = summaryReq;

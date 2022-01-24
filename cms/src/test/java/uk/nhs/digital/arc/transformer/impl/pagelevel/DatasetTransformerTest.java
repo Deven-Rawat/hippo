@@ -4,9 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.openMocks;
-import org.jetbrains.annotations.NotNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -39,9 +38,8 @@ public class DatasetTransformerTest {
         openMocks(this);
     }
 
-
     @Test
-    public void createsContentNodeForABareBonesDataset () {
+    public void createsContentNodeForABareBonesDataset() {
         //* given
         DatasetTransformer transformer = buildASimpleDatasetTransformer(null, null);
 
@@ -57,7 +55,7 @@ public class DatasetTransformerTest {
     }
 
     @Test
-    public void createsContentNodeForABareBonesDatasetWithLinks () {
+    public void createsContentNodeForABareBonesDatasetWithLinks() {
         //* given
         DatasetTransformer transformer = buildASimpleDatasetTransformer(listOfThings("resource"), null);
 
@@ -75,7 +73,7 @@ public class DatasetTransformerTest {
     }
 
     @Test
-    public void createsContentNodeForADatasetWithAttachmentsAndLinks () {
+    public void createsContentNodeForADatasetWithAttachmentsAndLinks() {
         //* given
         DatasetTransformer transformer = buildASimpleDatasetTransformer(listOfThings("resource"), listOfThings("file"));
         given(mockStorageManager.uploadFileToS3(any(), any())).willReturn(mockS3ObjectMetaData);
@@ -94,7 +92,7 @@ public class DatasetTransformerTest {
     }
 
     private DatasetTransformer buildASimpleDatasetTransformer(List<PublicationsystemResourceOrExternalLink> resources,
-                                                   List<PublicationsystemResourceOrExternalLink> files) {
+                                                              List<PublicationsystemResourceOrExternalLink> files) {
         Dataset dataset = new Dataset(DATASET, TITLE, SUMMARY, SHORT_DATE);
         dataset.setResourceLinks(resources);
         dataset.setFiles(files);

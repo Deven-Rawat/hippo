@@ -11,6 +11,7 @@ import uk.nhs.digital.externalstorage.s3.S3ObjectMetadata;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +28,6 @@ public abstract class AbstractTransformer {
 
     public static final String EXTERNAL_STORAGE = "externalstorage:";
 
-    public static final String EXTERNALSTORAGE_DISPLAYNAME = EXTERNAL_STORAGE + "displayName";
     public static final String EXTERNALSTROAGE_REFERENCE = EXTERNAL_STORAGE + "reference";
     public static final String EXTERNALSTORAGE_RESOURCE = EXTERNAL_STORAGE + "resource";
     public static final String EXTERNALSTORAGE_SIZE = EXTERNAL_STORAGE + "size";
@@ -86,7 +86,6 @@ public abstract class AbstractTransformer {
     public static final String PUBLICATIONSYSTEM_RESOURCE = PUBLICATION_SYSTEM + "resource";
     public static final String PUBLICATIONSYSTEM_RESOURCELINKS = PUBLICATION_SYSTEM + "ResourceLinks";
     public static final String PUBLICATIONSYSTEM_RELATEDLINKS = PUBLICATION_SYSTEM + "RelatedLinks";
-    public static final String PUBLICATIONSYSTEM_RESOURCENODE = PUBLICATION_SYSTEM + "resourceNode";
     public static final String PUBLICATIONSYSTEM_SEOSUMMARY = PUBLICATION_SYSTEM + "seosummary";
     public static final String PUBLICATIONSYSTEM_SUMMARY = PUBLICATION_SYSTEM + "Summary";
     public static final String PUBLICATIONSYSTEM_SURVEY = PUBLICATION_SYSTEM + "survey";
@@ -102,6 +101,7 @@ public abstract class AbstractTransformer {
     protected ArcStorageManager storageManger;
     protected String docbase;
     protected Session session;
+    protected List<String> filesToAdd = new ArrayList<>();
 
     public AbstractTransformer() {
     }
@@ -122,6 +122,15 @@ public abstract class AbstractTransformer {
         }
     }
 
+    /**
+     * Some properties exist beneath their own node (attachments etc) so we create that node and set the property
+     * @param contentNode is the parent node to which we will attach or new node
+     * @param nodeName is the name of the new node
+     * @param primaryType is the type of the new node
+     * @param propertyName is teh property we are setting
+     * @param propertyValue is that value
+     * @return is the reference to the node that is created (although it is already going to be attached)
+     */
     protected ContentNode setSingleNodeLevelProperty(ContentNode contentNode,
                                                      String nodeName,
                                                      String primaryType,
@@ -195,7 +204,8 @@ public abstract class AbstractTransformer {
      * @param list is what we are checking
      * @return is a boolean to indicate the outcome
      */
-    protected boolean listExists(List list) {
+    protected boolean listExists(List<?> list) {
         return list != null && list.size() > 0;
     }
+
 }

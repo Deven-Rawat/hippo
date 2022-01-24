@@ -7,23 +7,21 @@ import org.hippoecm.frontend.dialog.IDialogService;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.service.render.RenderPlugin;
+import org.hippoecm.frontend.session.UserSession;
 import org.hippoecm.repository.api.WorkflowDescriptor;
 import org.onehippo.cms7.services.HippoServiceRegistry;
+import org.onehippo.cms7.services.eventbus.HippoEventBus;
 import org.onehippo.repository.documentworkflow.DocumentWorkflow;
-import org.onehippo.repository.scheduling.RepositoryJobInfo;
-import org.onehippo.repository.scheduling.RepositoryJobSimpleTrigger;
-import org.onehippo.repository.scheduling.RepositoryJobTrigger;
-import org.onehippo.repository.scheduling.RepositoryScheduler;
+import org.onehippo.repository.events.HippoWorkflowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.arc.job.ArcRepositoryJob;
 import uk.nhs.digital.arc.plugin.dialog.JsonReviewDialog;
 import uk.nhs.digital.arc.plugin.util.DoctypeDetector;
+import uk.nhs.digital.arc.process.ManifestProcessingSummary;
 import uk.nhs.digital.arc.process.ManifestProcessor;
-import uk.nhs.digital.arc.process.ProcessingMessageSummary;
+import uk.nhs.digital.externalstorage.workflow.AbstractExternalFileTask;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.jcr.RepositoryException;
 
@@ -58,7 +56,8 @@ public class ArcDocumentWorkflowPlugin extends RenderPlugin<WorkflowDescriptor> 
             @Override
             protected String execute(DocumentWorkflow workflow) throws Exception {
                 if (!previewInError) {
-                    repoWork(getNodePath());
+                    //repoWork(getNodePath());
+                    publishEvent();
                 }
 
                 return null;
@@ -70,14 +69,14 @@ public class ArcDocumentWorkflowPlugin extends RenderPlugin<WorkflowDescriptor> 
 
             @Override
             protected IDialogService.Dialog createRequestDialog() {
-                ProcessingMessageSummary processingMessageSummary = null;
+                ManifestProcessingSummary manifestProcessingSummary = null;
                 try {
                     String manifestLocation = DoctypeDetector.getManifestLocationValue(getModel().getNode());
 
-                    processingMessageSummary = runProcessorInReviewMode(manifestLocation, getNodePath());
-                    previewInError = processingMessageSummary.isInError();
+                    manifestProcessingSummary = runProcessorInReviewMode(manifestLocation, getNodePath());
+                    previewInError = manifestProcessingSummary.isInError();
 
-                    return new JsonReviewDialog(this, processingMessageSummary.getConcatenatedMessages(), processingMessageSummary.isInError());
+                    return new JsonReviewDialog(this, manifestProcessingSummary.getConcatenatedMessages(), manifestProcessingSummary.isInError());
                 } catch (RepositoryException e) {
                     e.printStackTrace();
                 }
@@ -85,8 +84,38 @@ public class ArcDocumentWorkflowPlugin extends RenderPlugin<WorkflowDescriptor> 
                 return null;
             }
 
-            private ProcessingMessageSummary runProcessorInReviewMode(String manifestPath, String nodePath) {
-                ProcessingMessageSummary responseMessages = null;
+            /**
+             * Initiate the event that will service this request
+             */
+            private void publishEvent() {
+                final HippoEventBus eventBus = HippoServiceRegistry.getService(HippoEventBus.class);
+                final String currentUser = UserSession.get().getJcrSession().getUserID();
+
+                try {
+                    if (eventBus != null) {
+                        final String manifestLocation = DoctypeDetector.getManifestLocationValue(getModel().getNode());
+
+                        log.debug("Now posting event for ARC create for manifest {}", manifestLocation);
+                        eventBus.post(new HippoWorkflowEvent()
+                            .className(AbstractExternalFileTask.class.getName())
+                            .application("arc")
+                            .timestamp(System.currentTimeMillis())
+                            .user(currentUser)
+                            .set("manifest_file", manifestLocation)
+                            .set("node_path", getNodePath())
+                            .set("session_user", currentUser)
+                            .set("methodName", "arc_create")
+                        );
+
+                        log.debug("Event now posted for manifest {}", manifestLocation);
+                    }
+                } catch (RepositoryException rex) {
+                    rex.printStackTrace();
+                }
+            }
+
+            private ManifestProcessingSummary runProcessorInReviewMode(String manifestPath, String nodePath) {
+                ManifestProcessingSummary responseMessages = null;
 
                 try {
                     ManifestProcessor processor = new ManifestProcessor(null, manifestPath, nodePath);
@@ -98,31 +127,31 @@ public class ArcDocumentWorkflowPlugin extends RenderPlugin<WorkflowDescriptor> 
                 return responseMessages;
             }
 
-            private void repoWork(String nodePath) {
-                final RepositoryScheduler scheduler = HippoServiceRegistry.getService(RepositoryScheduler.class);
-
-                final Date now = new Date();
-                final long nowMillis = now.getTime();
-                final String jobName = "automaticreportcreation_" + nowMillis;
-
-                final RepositoryJobInfo myJobInfo = new RepositoryJobInfo(jobName, ArcRepositoryJob.class);
-
-                try {
-                    String manifestLocation = DoctypeDetector.getManifestLocationValue(getModel().getNode());
-                    myJobInfo.setAttribute("manifest_file", manifestLocation);
-                    myJobInfo.setAttribute("node_path", nodePath);
-
-                    final String triggerName = "arc_ " + nowMillis;
-
-                    log.info("jobTrigger {} for job {} now created and scheduled", jobName, triggerName);
-                    final RepositoryJobTrigger myJobTrigger =
-                        new RepositoryJobSimpleTrigger("arc_" + nowMillis, now);
-
-                    scheduler.scheduleJob(myJobInfo, myJobTrigger);
-                } catch (RepositoryException e) {
-                    e.printStackTrace();
-                }
-            }
+            //            private void repoWork(String nodePath) {
+            //                final RepositoryScheduler scheduler = HippoServiceRegistry.getService(RepositoryScheduler.class);
+            //
+            //                final Date now = new Date();
+            //                final long nowMillis = now.getTime();
+            //                final String jobName = "automaticreportcreation_" + nowMillis;
+            //
+            //                final RepositoryJobInfo myJobInfo = new RepositoryJobInfo(jobName, ArcRepositoryJob.class);
+            //
+            //                try {
+            //                    String manifestLocation = DoctypeDetector.getManifestLocationValue(getModel().getNode());
+            //                    myJobInfo.setAttribute("manifest_file", manifestLocation);
+            //                    myJobInfo.setAttribute("node_path", nodePath);
+            //
+            //                    final String triggerName = "arc_ " + nowMillis;
+            //
+            //                    log.info("jobTrigger {} for job {} now created and scheduled", jobName, triggerName);
+            //                    final RepositoryJobTrigger myJobTrigger =
+            //                        new RepositoryJobSimpleTrigger("arc_" + nowMillis, now);
+            //
+            //                    scheduler.scheduleJob(myJobInfo, myJobTrigger);
+            //                } catch (RepositoryException e) {
+            //                    e.printStackTrace();
+            //                }
+            //            }
         });
     }
 }
