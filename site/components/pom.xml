@@ -112,11 +112,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>com.splunk.logging</groupId>
-            <artifactId>splunk-library-javalogging</artifactId>
-        </dependency>-->
-
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
@@ -225,6 +220,10 @@
             <artifactId>test-resources</artifactId>
             <version>${revision}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.nhs.digital</groupId>
+            <artifactId>website-toolbox</artifactId>
         </dependency>
 
     </dependencies>
