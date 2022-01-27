@@ -78,23 +78,6 @@ definitions:
         jcr:mixinTypes:
         - mix:referenceable
         jcr:primaryType: hippo:handle
-      /hipposysedit:prototypes:
-        /hipposysedit:prototype:
-          /hippogallery:asset:
-            hippo:filename: hippo:resource
-            jcr:data:
-              resource: /namespaces/website/customizedAssetSet/prototypes/prototype/asset/hippo-resource
-              type: binary
-            jcr:encoding: UTF-8
-            jcr:lastModified: 2008-03-26T11:03:00Z
-            jcr:mimeType: application/vnd.hippo.blank
-            jcr:primaryType: hippo:resource
-          jcr:mixinTypes:
-          - mix:referenceable
-          jcr:primaryType: website:customizedAssetSet
-          website:archiveMaterial: false
-          website:meetpdfa: false
-        jcr:primaryType: hipposysedit:prototypeset
       jcr:mixinTypes:
       - editor:editable
       - mix:referenceable
