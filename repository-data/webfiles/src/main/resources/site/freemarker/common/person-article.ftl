@@ -3,26 +3,32 @@
 <#-- @ftlvariable name="document" type="uk.nhs.digital.website.beans.Person" -->
 
 <#include "../include/imports.ftl">
-<#include "macro/postnominal.ftl">
-<#include "macro/qualification.ftl">
-<#include "macro/award.ftl">
-<#include "macro/contactdetail.ftl">
+<#include "macro/personimage.ftl">
+<#include "macro/personalinfo.ftl">
+<#include "macro/role.ftl">
 <#include "macro/socialmedia.ftl">
 <#include "macro/biography.ftl">
-<#include "macro/responsibility.ftl">
-<#include "macro/personalinfo.ftl">
-<#include "macro/lawfulbasis.ftl">
-<#include "macro/personimage.ftl">
-<#include "macro/role.ftl">
-<#include "macro/stickyNavSections.ftl">
+<#include "macro/sections/sections.ftl">
+<#include "macro/award.ftl">
+<#-- BLOGS -->
 <#include "macro/relatedarticles.ftl">
+<#-- NEWS -->
 <#include "macro/latestblogs.ftl">
+<#include "macro/responsibility.ftl">
+<#--  MANAGES -->
+<#--  MANAGED BY -->
+
+<#-- 
+<#include "macro/postnominal.ftl">
+<#include "macro/qualification.ftl">
+<#include "macro/contactdetail.ftl">
+<#include "macro/lawfulbasis.ftl">
+
+-->
+
 <#include "macro/component/downloadBlock.ftl">
 <#include "macro/contentPixel.ftl">
-
-<#-- Add meta tags -->
-<#include "../common/macro/metaTags.ftl">
-<@metaTags></@metaTags>
+<#import "../include/debugger.ftl" as debug>
 
 <#-- Add meta tags -->
 <#include "../common/macro/metaTags.ftl">
@@ -42,196 +48,64 @@
 <@contentPixel document.getCanonicalUUID() document.title></@contentPixel>
 
 <article class="article article--person" itemscope itemtype="http://schema.org/Person">
-
-    <div class="grid-wrapper grid-wrapper--full-width grid-wrapper--wide">
-
-        <#if notSuppress>
-          <#if document.postnominals?? && document.postnominals?has_content>
-              <#list document.postnominals as postnominal>
-                <#if postnominal.letters == "PhD">
-                  <#assign personMainName = "Dr " + personMainName />
-                </#if>
-                <#assign postnominals += postnominal.letters />
-                <#if postnominal?has_next>
-                  <#assign postnominals += ", " />
-                </#if>
-                <#assign personMainNameAndPostnominals = personMainName + " (" + postnominals + ")"/>
-              </#list>
-          </#if>
-        </#if>
-
-        <div class="grid-row">
-            <div class="column column--reset">
-                <div class="local-header article-header article-header--detailed">
-                <div class="grid-wrapper">
-                <div class="article-wrapper__inner">
-                  <h1 id="top" class="local-header__title" data-uipath="document.personalinfos.name"><span itemprop="name">${personMainName}</span></h1>
-
-                  <#if document.roles?has_content>
-                      <@personrole document.roles idsuffix></@personrole>
-                  </#if>
-
-                  <#if notSuppress>
-                    <#if postnominals?has_content>
-                        <div class="article-header__label">
-                          ${postnominals}
-                        </div>
-                    </#if>
-
-                  <div class="detail-list-grid">
-                      <#if document.socialmedias?? && document.socialmedias.linkedinlink?has_content>
-                        <div class="grid-row">
-                            <div class="column column--reset">
-                                <dl class="detail-list">
-                                    <dt class="detail-list__key" id="linkedin-${slugify(idsuffix)}">Linkedin: </dt>
-                                    <dd class="detail-list__value" data-uipath="person.socialmedia.linkedinlink">
-                                      <a itemprop="sameAs" href="${document.socialmedias.linkedinlink}" onClick="logGoogleAnalyticsEvent('Link click','Person','${document.socialmedias.linkedinlink}');" onKeyUp="return vjsu.onKeyUp(event)"  title="${document.socialmedias.linkedinlink}">LinkedIn profile</a>
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                      </#if>
-
-                      <#if document.socialmedias?? && document.socialmedias.twitteruser?has_content>
-                        <div class="grid-row">
-                            <div class="column column--reset">
-                                <dl class="detail-list">
-                                    <dt class="detail-list__key" id="twitter-${slugify(idsuffix)}">Twitter: </dt>
-                                    <dd class="detail-list__value" data-uipath="person.socialmedia.twitteruser">
-
-                                      <#assign twitteruser = document.socialmedias.twitteruser />
-                                      <#if twitteruser?substring(0, 1) == "@">
-                                        <#assign twitteruser = document.socialmedias.twitteruser?substring(1) />
-                                      </#if>
-                                      <#assign twitterlink = "https://twitter.com/" + twitteruser />
-
-                                      <a itemprop="sameAs" href="${twitterlink}" onClick="logGoogleAnalyticsEvent('Link click','Person','${twitterlink}');" onKeyUp="return vjsu.onKeyUp(event)"  title="${document.socialmedias.twitteruser}" target="_blank">@${twitteruser}</a>
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                      </#if>
-                      <#if document.socialmedias?? && document.socialmedias.othersocialmedias?has_content>
-                        <#list document.socialmedias.othersocialmedias as medium>
-                          <div class="grid-row">
-                              <div class="column column--reset">
-                                  <dl class="detail-list">
-                                    <dt class="detail-list__key" >${medium.title}: </dt>
-                                    <dd class="detail-list__value" data-uipath="person.socialmedia.${slugify(medium.title)}">
-                                        <a itemprop="sameAs" href="${medium.link}" onClick="logGoogleAnalyticsEvent('Link click','Person','${medium.link}');" onKeyUp="return vjsu.onKeyUp(event)"  title="${medium.title}">${medium.link}</a>
-                                      </dd>
-                                  </dl>
-                              </div>
-                          </div>
-                        </#list>
-                      </#if>
-
-                    </div>
-                    </#if>
-                  </div>
-                  </div>
-                </div>
-            </div>
-        </div>
-        </div>
-
-        <div class="grid-wrapper grid-wrapper--article">
-        <div class="grid-row">
-            <#if renderNav>
-              <div class="column column--one-third page-block--sticky-nav page-block--sidebar article-section-nav-outer-wrapper">
-                  <!-- start sticky-nav -->
-                  <div id="sticky-nav">
-                      <#assign links = [{ "url": "#top", "title": 'Top of page' }] />
-
-                      <#if notSuppress>
-                          <#if document.biographies?has_content && document.biographies.profbiography.content?has_content >
-                            <#assign links += [{ "url": "#biography-${idsuffix}", "title": 'Biography' }] />
-                          </#if>
-                          <#if hasBusinessUnits>
-                            <#assign links += [{ "url": "#businessunits-${idsuffix}", "title": 'Responsible for' }] />
-                          </#if>
-                      </#if>
-
-                      <#if
-                       document.responsibilities?has_content && (document.responsibilities.responsible?has_content || document.responsibilities.responsibleforservice?has_content) ||
-                       document.manages?has_content ||
-                       document.managedby?has_content
-                      >
-                        <#assign links += [{ "url": "#responsibility-${idsuffix}", "title": 'Responsibilities' }] />
-                      </#if>
-
-                      <#if notSuppress>
-                          <#if document.awards?has_content>
-                            <#assign links += [{ "url": "#award-${idsuffix}", "title": 'Awards' }] />
-                          </#if>
-
-                          <#if document.qualifications?has_content>
-                            <#assign links += [{ "url": "#qualification-${idsuffix}", "title": 'Qualifications' }] />
-                          </#if>
-
-                          <#if document.roles?has_content && document.roles.contactdetails?has_content && (document.roles.contactdetails.emailaddress?has_content || document.roles.contactdetails.phonenumber?has_content) >
-                            <#assign links += [{ "url": "#contactdetail-${idsuffix}", "title": 'Contact details' }] />
-                          </#if>
-                      </#if>
-
-                      <#if document.relatedBlogs?has_content >
-                            <#assign links += [{ "url": "#related-articles-blogs-${idsuffix}", "title": 'Blogs' }] />
-                      </#if>
-                      <#if document.relatedNews?has_content >
-                            <#assign links += [{ "url": "#related-articles-news-${idsuffix}", "title": 'News articles' }] />
-                      </#if>
-                      <#if document.relatedEvents?has_content >
-                            <#assign links += [{ "url": "#related-articles-events-${idsuffix}", "title": 'Forthcoming events' }] />
-                      </#if>
-
-
-                      <@stickyNavSections links=links></@stickyNavSections>
-                  </div>
-                  <!-- end sticky-nav -->
-              </div>
+	<link rel="stylesheet" href="https://dbs1dgg3cdf4v.cloudfront.net/cdn/v0.120.0/stylesheets/nhsd-frontend.css" type="text/css">
+	<@debug.debug debugObject=document depth=1/>
+    <#if notSuppress>
+      <#if document.postnominals?? && document.postnominals?has_content>
+          <#list document.postnominals as postnominal>
+            <#if postnominal.letters == "PhD">
+              <#assign personMainName = "Dr " + personMainName />
             </#if>
+            <#assign postnominals += postnominal.letters />
+            <#if postnominal?has_next>
+              <#assign postnominals += ", " />
+            </#if>
+            <#assign personMainNameAndPostnominals = personMainName + " (" + postnominals + ")"/>
+          </#list>
+      </#if>
+    </#if>
 
-            <div class="column column--two-thirds page-block page-block--main">
+    <div class="nhsd-t-grid">
+       <div class="nhsd-t-row">
+        	<div class="nhsd-t-col-xs-12 nhsd-t-col-s-8 nhsd-t-off-s-2 nhsd-t-coll-m-8 nhs-t-off-m-2 nhsd-t-col-l-8 nhsd-t-off-l-2 nhsd-t-col-xl-6 nhsd-t-off-xl-3">
+         		<#if notSuppress>
+              		<#if document.personimages?has_content>
+                		<@personimage document.personimages idsuffix></@personimage>
+                  	</#if>
+                  	
+					<h1>${personMainNameAndPostnominals}</h1>
+					
+					<#if document.roles?has_content && document.roles.primaryroles?has_content>
+						<#list document.roles.primaryroles as role>
+							${role}<br/>
+						</#list>
+					</#if>
+					
+					<#if document.socialmedias?has_content>
+						<@socialmedia document.socialmedias/>
+					</#if>
+					
+                  	<#if document.biographies?has_content>
+                    	<@biography document.biographies idsuffix/>
+                  	</#if>
 
-              <#if notSuppress>
-                  <#if document.personimages?has_content>
-                    <@personimage document.personimages idsuffix></@personimage>
-                  </#if>
-                  <#if document.biographies?has_content>
-                    <@biography document.biographies idsuffix></@biography>
-                  </#if>
+                  	<#if document.sections?has_content>
+                  		<@sections document.sections/>
+                  	</#if>
+                  	
+                  	<#if document.awards?has_content>
+                  		<@award document.awards "dd" document.personalinfos.firstname/>
+                  	</#if>
+         		</#if>
 
-                  <#if document.businessUnits?has_content>
-                    <div id="businessunits-${idsuffix}" class="article-section">
-                        <h2>Responsible for</h2>
-                        <#list document.businessUnits as businessunit>
-                          <div>
-                            <@downloadBlock businessunit />
-                          </div>
-                        </#list>
-                    </div>
-                  </#if>
-              </#if>
+	            <#if document.responsibilities?has_content >
+	            	<@responsibility document.responsibilities idsuffix personName document.manages document.managedby ></@responsibility>
+	            </#if>
 
-              <#if document.responsibilities?has_content >
-                  <@responsibility document.responsibilities idsuffix personName document.manages document.managedby ></@responsibility>
-              </#if>
-
-              <#if notSuppress>
-                    <@award document.awards idsuffix personName></@award>
-                    <@qualification document.qualifications idsuffix personName></@qualification>
-                    <#if document.roles?has_content && document.roles.contactdetails?has_content>
-                      <@contactdetail document.roles.contactdetails idsuffix personMainNameAndPostnominals></@contactdetail>
-                    </#if>
-              </#if>
-
-              <@latestblogs document.relatedBlogs 'Person' 'blogs-' + idsuffix 'Blogs' />
-              <@latestblogs document.relatedNews 'Person' 'news-' + idsuffix 'News articles' />
-              <@latestblogs document.relatedEvents 'Person' 'events-' + idsuffix 'Forthcoming events' />
-
-            </div>
-        </div>
-
-    </div>
+	            <@latestblogs document.relatedBlogs 'Person' 'blogs-' + idsuffix 'Blogs' />
+	            <@latestblogs document.relatedNews 'Person' 'news-' + idsuffix 'News articles' />
+        	</div>
+    	</div>
+	</div>
 
 </article>
