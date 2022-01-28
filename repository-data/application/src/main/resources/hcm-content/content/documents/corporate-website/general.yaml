@@ -1,5 +1,6 @@
 ---
 /content/documents/corporate-website/general:
+  .meta:order-before: features
   hippo:name: General
   hippostd:foldertype:
   - new-digital-website-folder

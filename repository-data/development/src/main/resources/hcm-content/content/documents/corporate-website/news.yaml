@@ -1,5 +1,6 @@
 ---
 /content/documents/corporate-website/news:
+  .meta:order-before: features
   /content2:
     /content2[1]:
       /website:bannercontrols:

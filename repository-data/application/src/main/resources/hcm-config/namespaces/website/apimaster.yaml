@@ -152,6 +152,17 @@ definitions:
             plugin.class: org.onehippo.forge.contentblocks.ContentBlocksFieldPlugin
             wicket.id: ${cluster.id}.field
             wicket.skin: skin/content-blocks.css
+          /sections:
+            /cluster.options:
+              jcr:primaryType: frontend:pluginconfig
+            caption: Sections
+            compoundList: website:section,website:imageModule
+            contentPickerType: links
+            field: sections
+            hint: ''
+            jcr:primaryType: frontend:plugin
+            plugin.class: org.onehippo.forge.contentblocks.ContentBlocksFieldPlugin
+            wicket.id: ${cluster.id}.left.item
         jcr:primaryType: editor:templateset
       /hipposysedit:nodetype:
         /hipposysedit:nodetype:
@@ -282,6 +293,132 @@ definitions:
           - mix:referenceable
           - hipposysedit:remodel
           jcr:primaryType: hipposysedit:nodetype
+        /hipposysedit:nodetype[2]:
+          /aboutapis:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: true
+            hipposysedit:ordered: true
+            hipposysedit:path: website:aboutapis
+            hipposysedit:type: hippo:compound
+            hipposysedit:validators:
+            - contentblocks-validator
+            jcr:primaryType: hipposysedit:field
+          /apiendpointgroups:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: true
+            hipposysedit:ordered: false
+            hipposysedit:path: website:apiendpointgroups
+            hipposysedit:type: hippo:compound
+            hipposysedit:validators:
+            - contentblocks-validator
+            jcr:primaryType: hipposysedit:field
+          /apiinfobuilders:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: true
+            hipposysedit:ordered: true
+            hipposysedit:path: website:apiinfobuilders
+            hipposysedit:type: hippo:compound
+            hipposysedit:validators:
+            - contentblocks-validator
+            jcr:primaryType: hipposysedit:field
+          /apiservice:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: true
+            hipposysedit:ordered: false
+            hipposysedit:path: website:apiservice
+            hipposysedit:primary: false
+            hipposysedit:type: hippo:mirror
+            hipposysedit:validators:
+            - optional
+            jcr:primaryType: hipposysedit:field
+          /introduction:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:introduction
+            hipposysedit:primary: false
+            hipposysedit:type: hippostd:html
+            jcr:primaryType: hipposysedit:field
+          /releaseinfos:
+            hipposysedit:mandatory: true
+            hipposysedit:multiple: false
+            hipposysedit:ordered: true
+            hipposysedit:path: website:releaseinfos
+            hipposysedit:type: hippo:compound
+            hipposysedit:validators:
+            - contentblocks-validator
+            - required
+            jcr:primaryType: hipposysedit:field
+          /searchTab:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:searchTab
+            hipposysedit:primary: false
+            hipposysedit:type: String
+            jcr:primaryType: hipposysedit:field
+          /seosummary:
+            hipposysedit:mandatory: true
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:seosummary
+            hipposysedit:primary: false
+            hipposysedit:type: hippostd:seoSummary
+            hipposysedit:validators:
+            - required
+            jcr:primaryType: hipposysedit:field
+          /seosummarytext:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:seosummarytext
+            hipposysedit:primary: false
+            hipposysedit:type: String
+            jcr:primaryType: hipposysedit:field
+          /shortsummary:
+            hipposysedit:mandatory: true
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:shortsummary
+            hipposysedit:primary: false
+            hipposysedit:type: String
+            hipposysedit:validators:
+            - required
+            jcr:primaryType: hipposysedit:field
+          /summary:
+            hipposysedit:mandatory: true
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:summary
+            hipposysedit:primary: false
+            hipposysedit:type: hippostd:html
+            hipposysedit:validators:
+            - required
+            jcr:primaryType: hipposysedit:field
+          /taxonomyClassificationField:
+            hipposysedit:multiple: true
+            hipposysedit:path: website:taxonomyClassificationField
+            hipposysedit:type: TaxonomyClassification
+            jcr:primaryType: hipposysedit:field
+          /title:
+            hipposysedit:mandatory: true
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:title
+            hipposysedit:primary: false
+            hipposysedit:type: String
+            hipposysedit:validators:
+            - required
+            jcr:primaryType: hipposysedit:field
+          hipposysedit:node: true
+          hipposysedit:supertype:
+          - website:basedocument
+          - hippostd:relaxed
+          - hippotranslation:translated
+          - hippotaxonomy:classifiable
+          jcr:mixinTypes:
+          - mix:referenceable
+          jcr:primaryType: hipposysedit:nodetype
         jcr:mixinTypes:
         - mix:referenceable
         jcr:primaryType: hippo:handle
@@ -315,6 +452,45 @@ definitions:
           - mix:referenceable
           - hippotaxonomy:classifiable
           jcr:primaryType: website:apimaster
+          website:seosummary: ''
+          website:shortsummary: ''
+          website:summary: ''
+          website:title: ''
+        /hipposysedit:prototype[2]:
+          /website:introduction:
+            hippostd:content: ''
+            jcr:primaryType: hippostd:html
+          /website:releaseinfos:
+            jcr:primaryType: website:releaseinfo
+            website:changesummary: ''
+            website:effectivedate: 0001-01-01T12:00:00Z
+            website:otherversionreference: ''
+            website:releasedate: 0001-01-01T12:00:00Z
+            website:releasestatus: ''
+            website:version: ''
+          /website:seosummary:
+            hippostd:content: ''
+            jcr:primaryType: hippostd:html
+          /website:summary:
+            hippostd:content: ''
+            jcr:primaryType: hippostd:html
+          common:FacetType: apimaster
+          common:searchRank: 5
+          common:searchable: true
+          hippostd:holder: holder
+          hippostd:state: draft
+          hippostdpubwf:createdBy: ''
+          hippostdpubwf:creationDate: 2019-05-24T14:57:09.771Z
+          hippostdpubwf:lastModificationDate: 2018-05-24T14:57:09.771Z
+          hippostdpubwf:lastModifiedBy: ''
+          hippotranslation:id: document-type-locale-id
+          hippotranslation:locale: document-type-locale
+          jcr:mixinTypes:
+          - hippotranslation:translated
+          - mix:referenceable
+          - hippotaxonomy:classifiable
+          - hippostd:relaxed
+          jcr:primaryType: nt:unstructured
           website:seosummary: ''
           website:shortsummary: ''
           website:summary: ''
