@@ -160,6 +160,7 @@ definitions:
               jcr:primaryType: frontend:pluginconfig
             caption: Lead image caption
             field: leadimagecaption
+            hint: ''
             jcr:primaryType: frontend:plugin
             plugin.class: org.hippoecm.frontend.editor.plugins.field.NodeFieldPlugin
             wicket.id: ${cluster.id}.left.item
