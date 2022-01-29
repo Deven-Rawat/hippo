@@ -34,7 +34,7 @@ public class EarlyAccessKeyPlugin extends PropertyFieldPlugin {
     public EarlyAccessKeyPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
         List<String> captions = Arrays.asList(config.getStringArray("caption"));
-        if (captions != null && captions.isEmpty()) {
+        if (captions != null && captions.size() > 0) {
             this.add(new Component[]{new Label("name", (Serializable)captions.get(0))});
         } else {
             this.add(new Component[]{new Label("name", "")});
