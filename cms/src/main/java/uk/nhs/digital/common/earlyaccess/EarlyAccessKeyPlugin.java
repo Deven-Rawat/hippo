@@ -1,7 +1,9 @@
 package uk.nhs.digital.common.earlyaccess;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.hippoecm.frontend.editor.plugins.field.EditablePropertyFieldContainer;
@@ -14,7 +16,10 @@ import org.hippoecm.frontend.service.IRenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.List;
 import javax.jcr.RepositoryException;
 
 public class EarlyAccessKeyPlugin extends PropertyFieldPlugin {
@@ -28,6 +33,12 @@ public class EarlyAccessKeyPlugin extends PropertyFieldPlugin {
 
     public EarlyAccessKeyPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
+        List<String> captions = Arrays.asList(config.getStringArray("caption"));
+        if (captions != null && captions.isEmpty()) {
+            this.add(new Component[]{new Label("name", (Serializable)captions.get(0))});
+        } else {
+            this.add(new Component[]{new Label("name", "")});
+        }
         form = getDisabledForm();
         add(form);
     }
