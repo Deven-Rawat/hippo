@@ -17,13 +17,12 @@
 	<#if document.docType?has_content && (document.docType == "Feature" || document.docType == "Blog") && (section.type == "Hero video right" || section.type == "Hero video left")>
 		<#assign heroOptions = getHeroOptions(document) />
 		<#assign heroOptions += {
-			"colour": "Dark blue",
 			"video": section.videoUrl,
 			"introText": "",
 			"title": "",
 			"summary": section.text,
 			"videoOptions": {
-				"caption": "${htmlCaption?no_esc}",
+				"caption": "${htmlCaption?has_content?then(htmlCaption?no_esc,'')}",
 				"autoplay": "${section.behaviour?then('1','0')}",
 				"loop": "${section.loop?then('1','0')}",
 				"playlist": "${section.playlist}",	<#-- need a playlist for loop to work -->
