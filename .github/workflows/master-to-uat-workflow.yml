@@ -244,3 +244,27 @@ jobs:
         env:
           DISTRIBUTION: ${{ steps.distribution.outputs.id }}
           ENVIRONMENT: ${{ fromJson(steps.find-target.outputs.result).id }}
+      # Clean-up steps below.
+
+      # Delete JWT refresh token
+      - name: Request Deletion of JWT Refresh Access tokens
+        if: always()
+        id: jwt_token_invalidate
+        run: |
+          code=$(curl -L \
+          -H "Accept: application/json; charset=utf-8" \
+          -X DELETE https://api.${{ secrets.HOST }}/v3/authn/refresh_token \
+          -d '{ "grant_type": "refresh_token", "refresh_token": "${{ env.REFRESH }}" }' \
+          -o /dev/null -w '%{http_code}\n' -s)
+          echo "::set-output name=code::$code"
+        env:
+          REFRESH:  ${{ steps.jwt_token.outputs.refresh }}
+      - name: Check Response Code from Deletion of JWT Refresh Access tokens
+        if: ${{ steps.jwt_token_invalidate.outputs.code != 200 }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('The JWT Deletion of JWT Refresh Access tokens failed!')
+        env:
+          # 'CODE' is for debugging fails
+          CODE: ${{ steps.jwt_token_invalidate.outputs.code }}
