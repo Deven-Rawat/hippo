@@ -74,19 +74,6 @@ jobs:
             ${{ runner.os }}-node-nhs-
 
       #
-      # Step 4
-      # Prepare for RD communication
-      #
-      - name: Configure SSH certificates
-
-      #
-      # Step 5
-      #
-      - name: Bump the version number
-        run: make version.bumpup
-
-
-      #
       # Step 6
       #
       - name: Build master
