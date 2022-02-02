@@ -94,22 +94,7 @@ jobs:
       #
       - name: Upload build
         run: make ondemand.upload
-
-      #
-      # Step 9
-      #
-      - name: Deploy request
-        id: pipeline-deploy
-
-      #
-      # Step 10
-      #
-      - name: Push tag back to github
-
-      #
-      # Step 11
-      #
-      - name: Slack message (end message)
+        
       #
       # Step 12
       # Deployment to ODv2
