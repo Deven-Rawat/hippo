@@ -2,35 +2,129 @@
 
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - master
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
+    name: Build Master
     runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
+      CHANNEL_ID: C8QJFKBC2 # support channel
+      ENV: "uat"
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      #
+      # Step 1
+      #
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Need all the tags for versioning
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      #
+      # Step 2
+      #
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 8
+
+      #
+      # Step 3
+      # Get the Caches
+      #
+      - name: Get cache key helper values
+        uses: actions/github-script@v4.0.2
+        id: cache-key-helper
+        with:
+          result-encoding: string
+          script: |
+            return JSON.stringify({
+              "year" : new Date().getFullYear(),
+              "rotation" : new Date().getTimezoneOffset()
+            })
+      - name: Setup cache (Maven packages)
+        uses: actions/cache@v2
+        env:
+          YEAR: ${{ fromJSON(steps.cache-key-helper.outputs.result).year }}
+          ROTATION: ${{ fromJSON(steps.cache-key-helper.outputs.result).rotation }}
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
+          restore-keys: |
+            ${{ runner.os }}-maven-nhs-digital-${{ env.YEAR }}-
+            ${{ runner.os }}-maven-nhs-digital-
+            ${{ runner.os }}-maven-nhs-
+      - name: Setup cache (Node.js packages)
+        uses: actions/cache@v2
+        env:
+          YEAR: ${{ fromJSON(steps.cache-key-helper.outputs.result).year }}
+          ROTATION: ${{ fromJSON(steps.cache-key-helper.outputs.result).rotation }}
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
+          restore-keys: |
+            ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-
+            ${{ runner.os }}-node-nhs-digital-
+            ${{ runner.os }}-node-nhs-
+
+      #
+      # Step 4
+      # Prepare for RD communication
+      #
+      - name: Configure SSH certificates
+
+      #
+      # Step 5
+      #
+      - name: Bump the version number
+        run: make version.bumpup
+
+
+      #
+      # Step 6
+      #
+      - name: Build master
+        run: make clean build
+        env:
+          HIPPO_MAVEN_PASSWORD: ${{ secrets.HIPPO_MAVEN_PASSWORD }}
+          HIPPO_MAVEN_USERNAME: ${{ secrets.HIPPO_MAVEN_USERNAME }}
+
+
+      #
+      # Step 7
+      #
+      - name: Set the commit's Git status
+        run: make github.status.success
+
+      #
+      # Step 8
+      #
+      - name: Upload build
+        run: make ondemand.upload
+
+      #
+      # Step 9
+      #
+      - name: Deploy request
+        id: pipeline-deploy
+
+      #
+      # Step 10
+      #
+      - name: Push tag back to github
+
+      #
+      # Step 11
+      #
+      - name: Slack message (end message)
+      #
+      # Step 12
+      # Deployment to ODv2
