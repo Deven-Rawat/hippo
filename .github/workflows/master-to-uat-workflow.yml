@@ -244,7 +244,22 @@ jobs:
         env:
           DISTRIBUTION: ${{ steps.distribution.outputs.id }}
           ENVIRONMENT: ${{ fromJson(steps.find-target.outputs.result).id }}
-      # Clean-up steps below.
+
+      #
+      # upload build for next job
+      #
+      - name: Store Artifact for Later in the Pipeline
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: target/*.tar.gz
+          if-no-files-found: error
+
+      - name: Download version artifact
+        uses: actions/download-artifact@v2
+        id: down
+        
+        # Clean-up steps below.
 
       # Delete JWT refresh token
       - name: Request Deletion of JWT Refresh Access tokens
