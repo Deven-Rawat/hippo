@@ -84,7 +84,15 @@ jobs:
           HIPPO_MAVEN_PASSWORD: ${{ secrets.HIPPO_MAVEN_PASSWORD }}
           HIPPO_MAVEN_USERNAME: ${{ secrets.HIPPO_MAVEN_USERNAME }}
 
-
+      #
+      # upload build for next job
+      #
+      - name: Store Artifact for Later in the Pipeline
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: target/*.tar.gz
+          if-no-files-found: error
       #
       # Step 7
       #
@@ -191,15 +199,6 @@ jobs:
           DISTRIBUTION: ${{ steps.distribution.outputs.id }}
           ENVIRONMENT: ${{ fromJson(steps.find-target.outputs.result).id }}
 
-      #
-      # upload build for next job
-      #
-      - name: Store Artifact for Later in the Pipeline
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: target/*.tar.gz
-          if-no-files-found: erro
 
         # Clean-up steps below.
 
