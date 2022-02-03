@@ -90,14 +90,17 @@ jobs:
         run: make github.status.success
 
       #
-      # Step 12
-      # Deployment to ODv2
+      # Step 8
+      #
+      - name: Upload build
+        run: make ondemand.upload
+
       #
   ODv2Deployment:
     runs-on: ubuntu-latest
     steps:
       # Get API access token and verify it.
-      - name: Obtaino JWT Token
+      - name: Obtain JWT Token
         id: jwt_token
         run: |
           response=$(curl -i \
