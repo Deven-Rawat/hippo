@@ -104,6 +104,31 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      #
+      # Identify target server
+      #
+      - name: Identify target
+        uses: actions/github-script@v4.0.2
+        id: find-target
+        with:
+          result-encoding: json
+          script: |
+            const environments = {
+              C026PH4GQSH: {
+                "name": "development",
+                "id": "c033120b-291a-463c-8ba7-363fb50ea072",
+              }
+            }
+            if(environments[`${process.env.CHANNEL_ID}`] === undefined) {
+              core.setFailed("No target environment has been identifed.")
+            } else {
+              return environments[`${process.env.CHANNEL_ID}`]
+            }
+            
+      - name: Print Identify target for debugging
+        run: |
+          echo ${{fromJson(steps.find-target.outputs.result).name}}
+          echo ${{fromJson(steps.find-target.outputs.result).id}}
       # Get API access token and verify it.
       - name: Obtain JWT Token
         id: jwt_token
@@ -200,7 +225,7 @@ jobs:
           ENVIRONMENT: ${{ fromJson(steps.find-target.outputs.result).id }}
 
 
-        # Clean-up steps below.
+          # Clean-up steps below.
 
       # Delete JWT refresh token
       - name: Request Deletion of JWT Refresh Access tokens
