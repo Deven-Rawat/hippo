@@ -129,6 +129,11 @@ jobs:
         env:
           # 'CODE' is for debugging fails
           CODE: ${{ steps.jwt_token_verify.outputs.code }}
+
+      - name: Download version artifact
+        uses: actions/download-artifact@v2
+        id: down
+        
           #Upload Build to BR Cloud
       - name: Upload Build to BR Cloud
         id: distribution
