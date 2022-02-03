@@ -90,12 +90,6 @@ jobs:
         run: make github.status.success
 
       #
-      # Step 8
-      #
-      - name: Upload build
-        run: make ondemand.upload
-        
-      #
       # Step 12
       # Deployment to ODv2
       #
