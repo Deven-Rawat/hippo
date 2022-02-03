@@ -133,7 +133,7 @@ jobs:
       - name: Download version artifact
         uses: actions/download-artifact@v2
         id: down
-        
+
           #Upload Build to BR Cloud
       - name: Upload Build to BR Cloud
         id: distribution
@@ -199,11 +199,7 @@ jobs:
         with:
           name: build
           path: target/*.tar.gz
-          if-no-files-found: error
-
-      - name: Download version artifact
-        uses: actions/download-artifact@v2
-        id: down
+          if-no-files-found: erro
 
         # Clean-up steps below.
 
