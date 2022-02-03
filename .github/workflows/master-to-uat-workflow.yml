@@ -97,6 +97,7 @@ jobs:
 
       #
   ODv2Deployment:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       # Get API access token and verify it.
