@@ -115,8 +115,7 @@ jobs:
           script: |
             const environments = {
               C026PH4GQSH: {
-                "name": "development",
-                "id": "c033120b-291a-463c-8ba7-363fb50ea072",
+                "name": "uat"
               }
             }
             if(environments[`${process.env.CHANNEL_ID}`] === undefined) {
@@ -124,7 +123,7 @@ jobs:
             } else {
               return environments[`${process.env.CHANNEL_ID}`]
             }
-            
+
       - name: Print Identify target for debugging
         run: |
           echo ${{fromJson(steps.find-target.outputs.result).name}}
