@@ -73,22 +73,7 @@ jobs:
             ${{ runner.os }}-node-nhs-digital-
             ${{ runner.os }}-node-nhs-
 
-      #
-      # Step 4
-      # Prepare for RD communication
-      #
-      - name: Configure SSH certificates
-        run: |
-          mkdir ~/.ssh
-          echo "${{ secrets.IDM_KEY }}" > ~/.ssh/id_rsa
-          echo "${{ secrets.IDM_PUB }}" > ~/.ssh/id_rsa.pub
-          chmod 400 ~/.ssh/id_rsa
-          chmod 400 ~/.ssh/id_rsa.pub
-      - name: Configure known hosts
-        run: |
-          touch ~/.ssh/known_hosts
-          ssh-keygen -R ${{ secrets.RD_FTP }}
-          ssh-keyscan -H -t rsa ${{ secrets.RD_FTP }} >> ~/.ssh/known_hosts
+  
 
       #
       # Step 5
