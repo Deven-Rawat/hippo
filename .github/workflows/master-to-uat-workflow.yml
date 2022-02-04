@@ -106,10 +106,6 @@ jobs:
     env:
       CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }} # support channel
     steps:
-      - name: Print Identify target for debugging
-        run: |
-          echo ${{fromJson(steps.find-target.outputs.result).name}}
-          echo ${{fromJson(steps.find-target.outputs.result).id}}
       # Get API access token and verify it.
       - name: Obtain JWT Token
         id: jwt_token
