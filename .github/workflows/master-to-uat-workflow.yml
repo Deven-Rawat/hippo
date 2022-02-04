@@ -167,13 +167,14 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/appconfigfiles)
           echo "::set-output name=details::${response}"
+
       - name: Get Lastest System Properties for Envrinment
         id: system-properties
         run: |
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-system-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
           echo "::set-output name=id::${id}"
         env:
-          TARGET: ${{ fromJson(steps.find-target.outputs.result).name }}
+          TARGET: "uat"
 
       - name: Get Lastest AWS Keys for Envrinment
         id: aws-keys
@@ -181,7 +182,7 @@ jobs:
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-aws-credentials-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
           echo "::set-output name=id::${id}"
         env:
-          TARGET: ${{ fromJson(steps.find-target.outputs.result).name }}
+          TARGET: "uat"
 
       - name: Get Lastest IP Configuration File ID
         id: latest-ip-whitelist
@@ -199,7 +200,7 @@ jobs:
           -d '{ "distributionId": "${{ env.DISTRIBUTION }}", "strategy" : "rollingupdate", "appConfigFileRoles": [ { "appConfigFileId": ${{ steps.aws-keys.outputs.id }}, "role": "file", "newFilename": "aws-credentials.properties" }, { "appConfigFileId": ${{ steps.system-properties.outputs.id }}, "role": "systemproperty" }, { "appConfigFileId": ${{ steps.latest-ip-whitelist.outputs.id }}, "role": "file", "newFilename": "hippo-ipfilter.properties" } ] }'
         env:
           DISTRIBUTION: ${{ steps.distribution.outputs.id }}
-          ENVIRONMENT: ${{ fromJson(steps.find-target.outputs.result).id }}
+          ENVIRONMENT: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
 
 
           # Clean-up steps below.
