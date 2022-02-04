@@ -103,9 +103,32 @@ jobs:
   ODv2Deployment:
     needs: build
     runs-on: ubuntu-latest
-    env:
-      CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }} # support channel
     steps:
+      #
+      # Identify target server
+      #
+      - name: Identify target
+        uses: actions/github-script@v4.0.2
+        id: find-target
+        with:
+          result-encoding: json
+          script: |
+            const environments = {
+              C026PH4GQSH: {
+                "name": "uat",
+                "id": "083ff91e-6ac5-4638-945c-3ee18acc40bf",
+              }
+            }
+            if(environments[`${process.env.CHANNEL_ID}`] === undefined) {
+              core.setFailed("No target environment has been identifed.")
+            } else {
+              return environments[`${process.env.CHANNEL_ID}`]
+            }
+
+      - name: Print Identify target for debugging
+        run: |
+          echo ${{fromJson(steps.find-target.outputs.result).name}}
+          echo ${{fromJson(steps.find-target.outputs.result).id}}
       # Get API access token and verify it.
       - name: Obtain JWT Token
         id: jwt_token
