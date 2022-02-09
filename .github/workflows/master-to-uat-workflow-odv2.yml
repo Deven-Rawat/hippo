@@ -1,4 +1,4 @@
-name: Deploy to UAT and Git Tag
+name: Deploy to UAT and Git Tag (v2)
 
 on:
   push:
