@@ -48,3 +48,14 @@ jobs:
         env:
           # 'CODE' is for debugging fails
           CODE: ${{ steps.jwt_token_verify.outputs.code }}
+
+      #
+      # Prepare App Config Deployment Details
+      #
+      - name: Get Configuration Files Details
+        id: files
+        run: |
+          response=$(curl \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
+          -X GET https://api.${{ secrets.HOST }}/v3/distributions)
+          echo "::set-output name=details::${response}"
