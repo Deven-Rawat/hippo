@@ -111,7 +111,7 @@ jobs:
 
 
   ODv1Deployment:
-    name: Deploy on ODv1
+    name: Deploy to ODv1
     needs: build
     runs-on: ubuntu-latest
     env:
@@ -174,7 +174,7 @@ jobs:
 
 
   ODv2Deployment:
-    name: Deploy on ODv2
+    name: Deploy to ODv2
     needs: build
     runs-on: ubuntu-latest
     steps:
