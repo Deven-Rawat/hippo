@@ -3,74 +3,46 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    - cron: "*/1 * * * *"
 
 jobs:
   build:
-    name: Build Master
+    name: Clear Builds
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    env:
-      SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
-      CHANNEL_ID: C8QJFKBC2 # support channel
-      ENV: "uat"
 
     steps:
-
-      #
-      # Step 1
-      #
-      - name: Checkout
-        uses: actions/checkout@v2
+      # Get API access token and verify it.
+      - name: Obtaino JWT Token
+        id: jwt_token
+        run: |
+          response=$(curl -i \
+          -H "Accept: application/json; charset=utf-8" \
+          -X POST https://api.${{ secrets.HOST }}/v3/authn/access_token \
+          -d '{ "username": "${{ env.USERNAME }}", "password": "${{ env.PASSWORD }}" }')
+          token=$(echo $response | awk 'match($0, /access_token":"[^"]+"/) {print substr($0, RSTART+15)}' | cut -d '"' -f 1 )
+          refresh=$(echo $response | awk 'match($0, /refresh_token":"[^"]+"/) {print substr($0, RSTART+16)}' | cut -d '"' -f 1 )
+          echo "::set-output name=token::$token"
+          echo "::set-output name=refresh::$refresh"
+        env:
+          USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
+          PASSWORD: ${{ secrets.MISSION_CONTROL_API_PASSWORD }}
+      - name: Verify JWT Token
+        id: jwt_token_verify
+        run: |
+          code=$(curl -L \
+          -H "Accept: application/json; charset=utf-8" \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
+          -X GET https://api.${{ secrets.HOST }}/v3/authn/verify_token \
+          -o /dev/null -w '%{http_code}\n' -s)
+          echo "::set-output name=code::$code"
+      - name: Check Response Code from Verify JWT Token
+        if: ${{ steps.jwt_token_verify.outputs.code != 200 }}
+        uses: actions/github-script@v3
         with:
-          fetch-depth: 0 # Need all the tags for versioning
-
-      #
-      # Step 2
-      #
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: 8
-
-      #
-      # Step 3
-      # Get the Caches
-      #
-      - name: Get cache key helper values
-        uses: actions/github-script@v4.0.2
-        id: cache-key-helper
-        with:
-          result-encoding: string
           script: |
-            return JSON.stringify({
-              "year" : new Date().getFullYear(),
-              "rotation" : new Date().getTimezoneOffset()
-            })
-      - name: Setup cache (Maven packages)
-        uses: actions/cache@v2
+            core.setFailed('The JWT token failed verification!')
         env:
-          YEAR: ${{ fromJSON(steps.cache-key-helper.outputs.result).year }}
-          ROTATION: ${{ fromJSON(steps.cache-key-helper.outputs.result).rotation }}
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
-          restore-keys: |
-            ${{ runner.os }}-maven-nhs-digital-${{ env.YEAR }}-
-            ${{ runner.os }}-maven-nhs-digital-
-            ${{ runner.os }}-maven-nhs-
-      - name: Setup cache (Node.js packages)
-        uses: actions/cache@v2
-        env:
-          YEAR: ${{ fromJSON(steps.cache-key-helper.outputs.result).year }}
-          ROTATION: ${{ fromJSON(steps.cache-key-helper.outputs.result).rotation }}
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
-          restore-keys: |
-            ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-
-            ${{ runner.os }}-node-nhs-digital-
-            ${{ runner.os }}-node-nhs-
+          # 'CODE' is for debugging fails
+          CODE: ${{ steps.jwt_token_verify.outputs.code }}
