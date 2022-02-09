@@ -61,4 +61,7 @@ jobs:
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo ::set-output name=details::${response}
           echo "::debug::Set the Octocat variable"
+          echo "::group::My title"
+          echo "Inside group"
+          echo "::endgroup::"
 
