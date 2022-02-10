@@ -64,12 +64,5 @@ jobs:
       - name: Get Lastest Distribution for Envrinment
         id: latest-distribution
         run: |
-          id=$(echo '${{steps.distributions.outputs.details}}'
-                | sed -e 's/+00:00/Z/g'
-                | jq ' .
-                | map( select( .name | startswith( "website-" ) ) )
-                | sort_by( .createdAt | fromdate )
-                | reverse
-                | .[0].id')
-
-          
+          id=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "website-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
+          echo ${id}
