@@ -54,14 +54,16 @@ jobs:
       # Prepare App Config Deployment Details
       #
       - name: Get Configuration Files Details
-        id: files
+        id: distributions
         run: |
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
-          echo ::set-output ${response}
-          echo "::debug::Set the Octocat variable"
-          echo "::group::My title"
-          echo "Inside group"
-          echo "::endgroup::"
+          echo "::set-output name=details::${response}"
 
+      - name: Get Lastest Distribution for Envrinment
+        id: latest-distribution
+        run: |
+          id=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "website-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
+          echo "::set-output name=id::${id}"
+          echo ${id}
