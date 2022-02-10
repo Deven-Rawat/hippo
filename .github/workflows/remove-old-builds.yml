@@ -72,4 +72,4 @@ jobs:
         id: remove-builds
         run: |
           echo "Hello Wrold"
-          echo ${steps.latest-distribution.outputs.distributionList}
+          echo ${{steps.latest-distribution.outputs.distributionList}}
