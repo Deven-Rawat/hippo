@@ -88,8 +88,11 @@ jobs:
       - name: Remove old Distribution from Environment
         id: remove-distribution
         run: |
-          distributionList=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
+          distributionList=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date)')
           echo "::set-output name=distributionList::${distributionList}"
+          echo "***********************"
+          echo ${distributionList}
+          echo "***********************"
 
   remove-builds:
     name: Remove Builds
@@ -99,3 +102,4 @@ jobs:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
     steps:
       - run: echo ${{matrix.id}}
+      - run: echo ${{matrix.date}}
