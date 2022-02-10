@@ -65,4 +65,10 @@ jobs:
         id: latest-distribution
         run: |
           id=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
-          echo ${id}
+           echo "::set-output name=distributionList::${id}
+
+
+      - name: This one
+        id: remove-builds
+        run: |
+          for id in ${{steps.latest-distribution.outputs.distributionList}}; do echo ${id}; done
