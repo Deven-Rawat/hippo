@@ -67,6 +67,11 @@ jobs:
            count=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq '  [.items[]] | length ')
            echo "::set-output name=numberOFDistributions::${count}"
 
+      - name: Get Latest Distribution for Envrinment
+        id: latest-distribution
+        run: |
+          latestId=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) | | reverse | .[0].id')
+          echo "::set-output name=latestId::${latestId}"
 
       - name: Get Lastest Distribution for Envrinment
         id: latest-distribution
@@ -75,6 +80,5 @@ jobs:
            echo "------------------"
            echo ${id}
            echo ${{steps.count-distribution.outputs.numberOFDistributions}}
-
+           echo ${{steps.latest-distribution.outputs.latestId}}
            echo "------------------"
-           for dis in ${id}; do echo 'D1 -->' ${dis}; done
