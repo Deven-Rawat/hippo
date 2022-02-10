@@ -67,10 +67,11 @@ jobs:
           latestId=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq '  [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) | reverse | .[0]')
           echo "::set-output name=latestId::${latestId}"
 
-      - name: Get Lastest Distribution for Envrinment
-        id: list-distribution
+      - name: Remove old Distribution from Environment
+        id: remove-distribution
         run: |
-          id=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
+           id=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
+           for f in ${id}; do echo "f-- "; done
            echo "------------------"
            echo ${id}
            echo ${{steps.latest-distribution-id.outputs.latestId}}
