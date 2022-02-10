@@ -94,7 +94,7 @@ jobs:
         id: remove-distribution
         run: |
           distributionList=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date)')
-          JSON="{\"include\":"+${distributionList}+"}"
+          JSON="{\"include\":"fromJson(${distributionList})}
 
           echo "::set-output name=distributionList::${JSON}"
           echo "***********************"
