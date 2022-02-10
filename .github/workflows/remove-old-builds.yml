@@ -88,7 +88,7 @@ jobs:
       - name: Remove old Distribution from Environment
         id: remove-distribution
         run: |
-          distributionList=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date)')
+          distributionList=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date)')
           echo "::set-output name=distributionList::${distributionList}"
           echo "***********************"
           echo ${distributionList}
