@@ -16,7 +16,7 @@ jobs:
       - id: set-matrix
 
         run: |
-          distributionList={[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}
+          distributionList={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}
           echo "::set-output name=matrix::${distributionList}"
           echo ${distributionList}
 
@@ -94,9 +94,11 @@ jobs:
         id: remove-distribution
         run: |
           distributionList=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date)')
-          echo "::set-output name=distributionList::${distributionList}"
+          JSON="{\"include\":"${distributionList}}
+
+          echo "::set-output name=distributionList::${JSON}"
           echo "***********************"
-          echo ${distributionList}
+          echo ${JSON}
           echo "***********************"
 
   remove-builds:
