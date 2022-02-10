@@ -71,4 +71,5 @@ jobs:
       - name: This one
         id: remove-builds
         run: |
-          echo ${{steps.latest-distribution.outputs.distributionList}}
+          echo "Hello Wrold"
+          echo ${steps.latest-distribution.outputs.distributionList}
