@@ -68,11 +68,4 @@ jobs:
            echo "------------------"
            echo ${id}
            echo "------------------"
-           echo "::set-output name=distributionList::${id}"
-
-
-      - name: This one
-        id: remove-builds
-        run: |
-          echo "Hello Wrold"
-          echo ${{steps.latest-distribution.outputs.distributionList}}
+           for dis in ${id}; do echo 'D1 -->' ${dis}; done
