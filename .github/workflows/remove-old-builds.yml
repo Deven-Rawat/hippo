@@ -65,6 +65,9 @@ jobs:
         id: latest-distribution
         run: |
           id=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
+           echo "------------------"
+           echo ${id}
+           echo "------------------"
            echo "::set-output name=distributionList::${id}"
 
 
