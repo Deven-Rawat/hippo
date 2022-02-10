@@ -16,7 +16,7 @@ jobs:
       - id: set-matrix
 
         run: |
-          distributionList={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}
+          distributionList={[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}
           echo "::set-output name=matrix::${distributionList}"
           echo ${distributionList}
 
