@@ -11,6 +11,8 @@ jobs:
   build:
     name: Clear Builds
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.distribution-list.outputs.details }}
     timeout-minutes: 90
 
     steps:
@@ -70,9 +72,19 @@ jobs:
       - name: Remove old Distribution from Environment
         id: remove-distribution
         run: |
-           id=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
-           for f in ${id}; do echo "f-- "; done
-           echo "------------------"
-           echo ${id}
-           echo ${{steps.latest-distribution-id.outputs.latestId}}
-           echo "------------------"
+          id=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
+          for f in ${id}; do echo
+           if: ;
+          done
+          echo "------------------"
+          echo ${id}
+          echo ${{steps.latest-distribution-id.outputs.latestId}}
+          echo "------------------"
+  remove-builds:
+    name: Remove Builds
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+    steps:
+      - run: echo ${{matrix.id}}
