@@ -28,7 +28,7 @@ jobs:
     name: Clear Builds
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{steps.distribution-list.outputs.matrix}}
+      matrix: ${{steps.remove-distribution.outputs.distributionList}}
     timeout-minutes: 90
 
     steps:
@@ -84,6 +84,12 @@ jobs:
         run: |
           latestId=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq '  [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) | reverse | .[0]')
           echo "::set-output name=latestId::${latestId}"
+
+    - name: Remove old Distribution from Environment
+      id: remove-distribution
+      run: |
+        distributionList=$(echo '${{steps.distribution-list.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
+        echo "::set-output name=distributionList::${distributionList}"
 
   remove-builds:
     name: Remove Builds
