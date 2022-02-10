@@ -60,6 +60,7 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=details::${response}"
+          echo "::set-output name=length::jq '${response} | length'"
 
       - name: Get Lastest Distribution for Envrinment
         id: latest-distribution
@@ -67,5 +68,7 @@ jobs:
           id=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) ')
            echo "------------------"
            echo ${id}
+           echo ${{steps.distributions.outputs.length}}
+
            echo "------------------"
            for dis in ${id}; do echo 'D1 -->' ${dis}; done
