@@ -70,7 +70,7 @@ jobs:
       - name: Get Latest Distribution for Envrinment
         id: latest-distribution
         run: |
-          latestId=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) | | reverse | .[0].id')
+          latestId=$(echo '${{steps.distributions.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' [.items[] | {id: .id , date: .createdAt}] | sort_by(.date) | map(.id) | | reverse | .[0]')
           echo "::set-output name=latestId::${latestId}"
 
       - name: Get Lastest Distribution for Envrinment
