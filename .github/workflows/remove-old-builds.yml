@@ -71,4 +71,4 @@ jobs:
       - name: This one
         id: remove-builds
         run: |
-          for id in ${{steps.latest-distribution.outputs.distributionList}}; do echo ${id}; done
+          echo ${{steps.latest-distribution.outputs.distributionList}}
