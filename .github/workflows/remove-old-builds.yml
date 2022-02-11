@@ -113,6 +113,6 @@ jobs:
     needs: build
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
-    if: ${{ ! contains(needs.build.outputs.matrix, matrix.id) }}
+    if: ${{ ! contains(needs.build.outputs.matrix, needs.build.outputs.matrix.id) }}
     steps:
       - run: echo "SomeString did exist and should run"
