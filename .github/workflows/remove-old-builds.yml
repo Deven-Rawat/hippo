@@ -93,7 +93,7 @@ jobs:
       - name: Remove old Distribution from Environment
         id: remove-distribution
         run: |
-          distributionListL=$(echo '${{steps.distribution-list.outputs.matrix}}')
+          distributionListL=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g')
           echo "::set-output name=deven::${distributionListL}"
 
       - name: Print JSON
