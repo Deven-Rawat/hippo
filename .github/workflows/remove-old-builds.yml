@@ -93,8 +93,7 @@ jobs:
       - name: Remove old Distribution from Environment
         id: remove-distribution
         run: |
-          distributionListL={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}
-          JSON={\"include\":${distributionListL}}
+          distributionListL=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq '[.items[] | {id: .id , date: .createdAt}]')
           echo "::set-output name=deven::${distributionListL}"
 
       - name: Print JSON
