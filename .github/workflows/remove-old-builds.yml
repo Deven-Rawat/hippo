@@ -95,7 +95,7 @@ jobs:
         run: |
           distributionListL=$(echo '${{steps.distribution-list.outputs.matrix}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ]')
            JSON={\"include\":${distributionList}}
-          echo "::set-output name=deven::${JSON}"
+          echo "::set-output name=deven::{\"include\":${distributionList}}"
 
       - name: Print JSON
         id: print-json
