@@ -114,5 +114,5 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
     steps:
-      - run: echo ${{matrix.id}}
-      - run: echo ${{matrix.date}}
+      - if: ${{ contains(${{steps.latest-distribution-id.outputs.latestId}}, ${{matrix.id}})}}
+        echo ${{matrix.id}}
