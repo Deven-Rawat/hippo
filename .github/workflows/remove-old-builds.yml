@@ -113,6 +113,6 @@ jobs:
     needs: build
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
+    if: ${{ contains(${{steps.latest-distribution-id.outputs.latestId}}, ${{matrix.id}})}}
     steps:
-      - if: ${{ contains(${{steps.latest-distribution-id.outputs.latestId}}, ${{matrix.id}})}}
-        echo ${{matrix.id}}
+      - run: echo ${{matrix.id}}
