@@ -90,6 +90,7 @@ jobs:
           latestId=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("^web"))) | map(.id) | .[:10]')
           echo "::set-output name=latestId::${latestId}"
 
+
       - name: Remove old Distribution from Environment
         id: remove-distribution
         run: |
@@ -105,7 +106,8 @@ jobs:
           echo "***********************"
           echo ${{steps.latest-distribution-id.outputs.latestId}}
           echo "***********************"
-
+      outputs:
+        latestIds: ${{ steps.latest-distribution-id.outputs.latestId }}
 
   remove-builds:
     name: Remove Builds
@@ -113,6 +115,6 @@ jobs:
     needs: build
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
-    if: ${{  contains(needs.build.outputs.matrix, needs.build.outputs.matrix.id) }}
+    if: ${{  contains(needs.build.outputs.matrix, needs.build.outputs.latestIds) }}
     steps:
       - run: echo "SomeString did exist and should run"
