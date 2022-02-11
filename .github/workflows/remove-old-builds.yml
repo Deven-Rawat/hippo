@@ -113,6 +113,6 @@ jobs:
     needs: build
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
-    if: ${{ contains(${{steps.latest-distribution-id.outputs.latestId}}, ${{matrix.id}})}}
-    steps:
-      - run: echo ${{matrix.id}}
+    if: contains(${{steps.latest-distribution-id.outputs.latestId}}, ${{matrix.id}})
+    run:|
+      echo "SomeString did exist and should run"
