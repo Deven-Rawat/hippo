@@ -106,8 +106,6 @@ jobs:
           echo "***********************"
           echo ${{steps.latest-distribution-id.outputs.latestId}}
           echo "***********************"
-      outputs:
-        latestIds: ${{ steps.latest-distribution-id.outputs.latestId }}
 
   remove-builds:
     name: Remove Builds
