@@ -103,6 +103,8 @@ jobs:
           echo "***********************"
           echo ${{steps.remove-distribution.outputs.deven}}
           echo "***********************"
+          echo ${{steps.latest-distribution-id.outputs.latestId}}
+          echo "***********************"
 
 
   remove-builds:
