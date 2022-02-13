@@ -124,5 +124,5 @@ jobs:
           echo " Matrix id is " + ${{matrix.id}}
           echo "::set-output name=matixId::{\"include\":${matrix.id}}"
      - name: if condition
-       if: ${{  contains(needs.build.outputs.matrix, steps.check_value.outputs.matixId) }}
+       if: ${{ contains( '${{ contains(needs.build.outputs.matrix }}', '${{ matrix.id }}') }}
        run: echo "This is good"
