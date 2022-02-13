@@ -121,4 +121,4 @@ jobs:
         run: |
           echo "SomeString did exist and should run"
           echo " single id is " + ${{needs.build.outputs.latestIds}}
-          echo " Matrix id is " + ${{needs.build.outputs.matrix.id}}
+          echo " Matrix id is " + ${{matrix.id}}
