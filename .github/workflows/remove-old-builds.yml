@@ -116,7 +116,9 @@ jobs:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
     if: ${{ contains(needs.build.outputs.latestIds , needs.build.outputs.matrix.id) }}
     steps:
-      - run: |
-        echo "SomeString did exist and should run"
-        echo " single id is " + ${{needs.build.outputs.latestIds}}
-        echo " Matrix id is " + ${{needs.build.outputs.matrix.id}}
+     -  name: Cehck values
+        id: check_value
+        run: |
+          echo "SomeString did exist and should run"
+          echo " single id is " + ${{needs.build.outputs.latestIds}}
+          echo " Matrix id is " + ${{needs.build.outputs.matrix.id}}
