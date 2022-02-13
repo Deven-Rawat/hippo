@@ -131,4 +131,4 @@ jobs:
        uses: actions/github-script@v3
        with:
          script: |
-           core.setFailed(e)        
+           core.setFailed('Status Code is ' + {steps.remove_build.outputs.code}) 
