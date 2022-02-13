@@ -123,5 +123,5 @@ jobs:
           echo " single id is " + ${{needs.build.outputs.latestIds}}
           echo " Matrix id is " + ${{matrix.id}}
      - name: if condition
-       if: ${{ contains( '${{ needs.build.outputs.latestIds }}', '${{ matrix.id }}') }}
+       if: ${{ contains( '${{needs.build.outputs.latestIds}}', '${{matrix.id}}') }}
        run: echo "This is good"
