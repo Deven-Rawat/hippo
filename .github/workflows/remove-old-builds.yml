@@ -121,6 +121,6 @@ jobs:
        if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
        run: |
          response=$(curl \
-         -H "Authorization: Bearer ${{ needs.build.outputs.token }}" \
+         -H "Authorization: Bearer ${{ needs.build.outputs.tokens }}" \
          -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}})
          echo ${response}
