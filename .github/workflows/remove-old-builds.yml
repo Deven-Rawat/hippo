@@ -121,5 +121,5 @@ jobs:
        run: |
          response=$(curl \
          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
-         -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${matrix.id})
+         -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}})
          echo ${response}
