@@ -122,3 +122,6 @@ jobs:
           echo "SomeString did exist and should run"
           echo " single id is " + ${{needs.build.outputs.latestIds}}
           echo " Matrix id is " + ${{matrix.id}}
+     - name: if condition
+       if: ${{  contains(needs.build.outputs.matrix, matrix.id) }}
+       run: echo "This is good"
