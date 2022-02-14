@@ -103,7 +103,7 @@ jobs:
   remove-non-prod-builds:
     name: Remove Non Prod Builds
     runs-on: ubuntu-latest
-    needs: process-non-prod-dist-list
+    needs: retrieve-all-distribution-ids
     strategy:
       matrix: ${{fromJson(needs.process-non-prod-dist-list.outputs.allNonProdDistIds)}}
       fail-fast: false
