@@ -132,7 +132,7 @@ jobs:
        with:
          script: |
            core.setFailed('Removal failed ') 
-     - name: Removal of Build failed : Authentication failed
+     - name: Authentication failed
        if: ${{ steps.remove_build.outputs.code == 401 }}
        uses: actions/github-script@v3
        with:
