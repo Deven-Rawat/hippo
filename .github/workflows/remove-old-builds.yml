@@ -22,6 +22,7 @@ jobs:
       allDistributionIds: ${{ steps.all-distribution-list.outputs.allDistIds }}
       allNonProdDistIds: ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
       latestNonProdDistIds: ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
+      deventokens: ${{steps.jwt_token.outputs.token1}}
     timeout-minutes: 90
 
     steps:
@@ -33,9 +34,9 @@ jobs:
           -H "Accept: application/json; charset=utf-8" \
           -X POST https://api.${{ secrets.HOST }}/v3/authn/access_token \
           -d '{ "username": "${{ env.USERNAME }}", "password": "${{ env.PASSWORD }}" }')
-          token=$(echo $response | awk 'match($0, /access_token":"[^"]+"/) {print substr($0, RSTART+15)}' | cut -d '"' -f 1 )
+          token1=$(echo $response | awk 'match($0, /access_token":"[^"]+"/) {print substr($0, RSTART+15)}' | cut -d '"' -f 1 )
           refresh=$(echo $response | awk 'match($0, /refresh_token":"[^"]+"/) {print substr($0, RSTART+16)}' | cut -d '"' -f 1 )
-          echo "::set-output name=token::$token"
+          echo "::set-output name=token1::$token1"
           echo "::set-output name=refresh::$refresh"
 
         env:
@@ -118,8 +119,9 @@ jobs:
        id: remove_build
        if: ${{ ! contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
        run: |
+         echo "Token is " {{needs.retrieve-token.outputs.deventokens}}
          code=$(curl \
-         -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.tokens }}" \
+         -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.deventokens }}" \
          -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}} \
          -o /dev/null -w '%{http_code}\n' -s)
          echo ${code}
