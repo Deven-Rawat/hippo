@@ -114,7 +114,7 @@ jobs:
          echo ${code}
          echo "::set-output name=code::$code"
      - name: Authentication failed
-       if: ${{ steps.remove_build.outputs.code == 404 }}
+       if: ${{ steps.remove_build.outputs.code == 401 }}
        uses: actions/github-script@v3
        with:
          script: |
