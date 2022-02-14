@@ -9,7 +9,8 @@ on:
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
   NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 70
-
+  PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[distribution.tar.gz]"
+  NON_PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[a-z0-9]+-[distribution.tar.gz]"
 jobs:
 
   build:
@@ -72,7 +73,7 @@ jobs:
       - name: Get Latest Distribution Id Of Environment
         id: latest-distribution-id
         run: |
-          latestId=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("^web"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
+          latestId=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test(${{env.NON_PROD_REG_EXPRESSION}}))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
           echo "::set-output name=latestId::${latestId}"
 
 
