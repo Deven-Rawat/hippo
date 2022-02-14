@@ -93,8 +93,8 @@ jobs:
           echo ${{steps.latest-non-prod-distribution-id.outputs.latestId}}
           echo "***********************"
 
-  remove-builds:
-    name: Remove Builds
+  remove-non-prod-builds:
+    name: Remove Non Prod Builds
     runs-on: ubuntu-latest
     needs: build
     strategy:
