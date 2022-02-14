@@ -19,7 +19,7 @@ jobs:
     name: Retrieve All distribution Ids
     runs-on: ubuntu-latest
     outputs:
-      allDistributionIds: ${{ steps.all-distribution-list.outputs.allDistIds }}
+      allDistributionIds: ${{steps.all-distribution-list.outputs.allDistIds}}
     timeout-minutes: 90
 
     steps:
@@ -83,7 +83,7 @@ jobs:
 
     outputs:
       allNonProdDistIds: ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
-      latestNonProdDistIds: ${{ steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds }}
+      latestNonProdDistIds: ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
     timeout-minutes: 90
     steps:
       - name: Get Latest NON-Prod Distribution Ids
