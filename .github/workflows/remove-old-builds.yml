@@ -111,7 +111,6 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.process-non-prod-dist-list.outputs.allNonProdDistIds)}}
       fail-fast: false
-    if: ${{ contains(needs.process-non-prod-dist-list.outputs.latestNonProdDistIds , matrix.id) }}
     steps:
      - name: Build is recent
        id: keep_build
