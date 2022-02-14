@@ -111,7 +111,7 @@ jobs:
     steps:
      - name: Build is recent
        id: keep_build
-       if: ${{ contains(needs.retrieve-all-distribution-ids.latestNonProdDistIds, matrix.id) }}
+       if: ${{ contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
        run: |
          echo " Keep the build "
          echo "::set-output name=code::100"
