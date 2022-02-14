@@ -98,22 +98,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: retrieve-token
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.retrieve-token.outputs.matrix)}}
       fail-fast: false
-    if: ${{ contains(needs.build.outputs.latestIds , needs.build.outputs.matrix.id) }}
+    if: ${{ contains(needs.retrieve-token.outputs.latestIds , needs.retrieve-token.outputs.matrix.id) }}
     steps:
      - name: Build is recent
        id: keep_build
-       if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
+       if: ${{ contains(needs.retrieve-token.outputs.latestIds, matrix.id) }}
        run: |
          echo " Keep the build "
          echo "::set-output name=code::100"
      - name: Check if Build to be deleted
        id: remove_build
-       if: ${{ ! contains(needs.build.outputs.latestIds, matrix.id) }}
+       if: ${{ ! contains(needs.retrieve-token.outputs.latestIds, matrix.id) }}
        run: |
          code=$(curl \
-         -H "Authorization: Bearer ${{ needs.build.outputs.tokens }}" \
+         -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.tokens }}" \
          -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}} \
          -o /dev/null -w '%{http_code}\n' -s)
          echo ${code}
