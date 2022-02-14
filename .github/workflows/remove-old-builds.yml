@@ -28,6 +28,7 @@ jobs:
           refresh=$(echo $response | awk 'match($0, /refresh_token":"[^"]+"/) {print substr($0, RSTART+16)}' | cut -d '"' -f 1 )
           echo "::set-output name=token::$token"
           echo "::set-output name=refresh::$refresh"
+          echo "Token here ${token}"
         env:
           USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
           PASSWORD: ${{ secrets.MISSION_CONTROL_API_PASSWORD }}
