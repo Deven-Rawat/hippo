@@ -63,7 +63,7 @@ jobs:
       - name: Get ALL Prod Dist List
         id: all-distribution-list
         run: |
-          echo " Token is  "${needs.retrieve-token.outputs.jwt-token}
+          echo " Token is  "${{needs.retrieve-token.outputs.jwt-token}}
           response=$(curl \
           -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.jwt-token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
