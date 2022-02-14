@@ -11,8 +11,9 @@ jobs:
   retrieve-token:
     name: Get Token for Removing Distributions
     runs-on: ubuntu-latest
+
     outputs:
-      jwt-token: ${{steps.jwt_token.outputs.token}}
+      token: ${{steps.jwt_token.outputs.token}}
     timeout-minutes: 90
 
     steps:
@@ -64,7 +65,7 @@ jobs:
       - name: Get ALL Prod Dist List
         id: all-distribution-list
         run: |
-          echo " Token is  "${{needs.retrieve-token.outputs.jwt-token}}
+          echo " Token is  "${{needs.retrieve-token.outputs.token}}
           response=$(curl \
           -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.jwt-token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
