@@ -17,9 +17,7 @@ jobs:
     name: Get Token for Removing Distributions
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{steps.remove-distribution.outputs.deven}}
-      latestIds: ${{ steps.latest-non-prod-distribution-id.outputs.latestId }}
-      tokens: ${{steps.jwt_token.outputs.token}}
+      jwt-token: ${{steps.jwt_token.outputs.token}}
     timeout-minutes: 90
 
     steps:
@@ -59,58 +57,71 @@ jobs:
           # 'CODE' is for debugging fails
           CODE: ${{ steps.jwt_token_verify.outputs.code }}
 
-      #
-      # Prepare App Config Deployment Details
-      #
-      - name: Get Distribution List
-        id: distribution-list
+  get-all-distribution-ids:
+    name: Get All Distribution Ids
+    runs-on: ubuntu-latest
+    needs: retrieve-token
+    outputs:
+      allDistributionIds: ${{ steps.all-distribution-list.outputs.allDistIds }}
+    timeout-minutes: 90
+    steps:
+      - name: Get ALL Prod Dist List
+        id: all-distribution-list
         run: |
           response=$(curl \
-          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
+          -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.jwt-token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
-          echo "::set-output name=matrix::${response}"
+          echo "::set-output name=allDistIds::${response}"
 
+  process-non-prod-dist-list:
+    name: Process Non Prod Distribution List
+    runs-on: ubuntu-latest
+    needs: get-all-distribution-ids
+    outputs:
+      allNonProdDistIds: ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
+      latestNonProdDistIds: ${{ steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds }}
+    timeout-minutes: 90
+    steps:
       - name: Get Latest NON-Prod Distribution Ids
-        id: latest-non-prod-distribution-id
+        id: latest-non-prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.distribution-list.outputs.matrix}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
-          echo "::set-output name=latestId::${latestId}"
+          latestId=$(echo '${{needs.get-all-distribution-ids.outputs.allDistributionIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
+          echo "::set-output name=latestNonProdDistIds::${latestId}"
 
-
-      - name: Remove old Distribution from Environment
-        id: remove-distribution
+      - name: All non prod Distribution Ids
+        id: all-non-prod-distribution-ids
         run: |
-          distributionListL=$(echo '${{steps.distribution-list.outputs.matrix}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ]')
-           JSON={\"include\":${distributionListL}}
-          echo "::set-output name=deven::{\"include\":${distributionListL}}"
+          distIds=$(echo '${{needs.get-all-distribution-ids.outputs.allDistributionIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ]')
+          JSON={\"include\":${distributionListL}}
+          echo "::set-output name=allNonProdDistIds::{\"include\":${distIds}}"
 
       - name: Print JSON
         id: print-json
         run: |
           echo "***********************"
-          echo ${{steps.remove-distribution.outputs.deven}}
+          echo ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
           echo "***********************"
-          echo ${{steps.latest-non-prod-distribution-id.outputs.latestId}}
+          echo ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
           echo "***********************"
 
   remove-non-prod-builds:
     name: Remove Non Prod Builds
     runs-on: ubuntu-latest
-    needs: retrieve-token
+    needs: process-non-prod-dist-list
     strategy:
-      matrix: ${{fromJson(needs.retrieve-token.outputs.matrix)}}
+      matrix: ${{fromJson(needs.process-non-prod-dist-list.outputs.allNonProdDistIds)}}
       fail-fast: false
-    if: ${{ contains(needs.retrieve-token.outputs.latestIds , needs.retrieve-token.outputs.matrix.id) }}
+    if: ${{ contains(needs.process-non-prod-dist-list.outputs.latestNonProdDistIds , matrix.id) }}
     steps:
      - name: Build is recent
        id: keep_build
-       if: ${{ contains(needs.retrieve-token.outputs.latestIds, matrix.id) }}
+       if: ${{ contains(needs.process-non-prod-dist-list.outputs.latestNonProdDistIds, matrix.id) }}
        run: |
          echo " Keep the build "
          echo "::set-output name=code::100"
      - name: Check if Build to be deleted
        id: remove_build
-       if: ${{ ! contains(needs.retrieve-token.outputs.latestIds, matrix.id) }}
+       if: ${{ ! contains(needs.process-non-prod-dist-list.outputs.latestNonProdDistIds, matrix.id) }}
        run: |
          code=$(curl \
          -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.tokens }}" \
