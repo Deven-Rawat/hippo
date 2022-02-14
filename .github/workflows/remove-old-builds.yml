@@ -119,7 +119,7 @@ jobs:
        id: remove_build
        if: ${{ ! contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
        run: |
-         echo "Token is " {{needs.retrieve-token.outputs.deventokens}}
+         echo "Token is " ${{needs.retrieve-token.outputs.deventokens}}
          code=$(curl \
          -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.deventokens }}" \
          -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}} \
