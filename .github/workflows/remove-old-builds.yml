@@ -60,7 +60,7 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
-          echo "Here "  ${{ steps.all-distribution-list.outputs.allDistIds }}
+          echo "Here "  ${allDistIds}
 
       - name: Distribution Ids Retrival failed
         if: ${{ contains(steps.all-distribution-list.response ,'401') }}
