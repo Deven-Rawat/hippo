@@ -98,11 +98,13 @@ jobs:
     if: ${{ contains(needs.build.outputs.latestIds , needs.build.outputs.matrix.id) }}
     steps:
      - name: Build is recent
-       if: ${{ ! contains(needs.build.outputs.latestIds, matrix.id) }}
-       run: exit(0)
+       if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
+       run: |
+         echo " Does not exists, Keep the build "
+         exit(0)
      - name: Check if Build to be deleted
        id: remove_build
-       if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
+       if: ${{ ! contains(needs.build.outputs.latestIds, matrix.id) }}
        run: |
          code=$(curl \
          -H "Authorization: Bearer ${{ needs.build.outputs.tokens }}" \
