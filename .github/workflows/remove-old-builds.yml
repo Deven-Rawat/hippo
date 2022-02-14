@@ -19,7 +19,7 @@ jobs:
     name: Retrieve All distribution Ids
     runs-on: ubuntu-latest
     outputs:
-      allDistributionIds: ${{steps.all-distribution-list.outputs.allDistIds}}
+      allDistributionIds: "Helllo World"
     timeout-minutes: 90
 
     steps:
