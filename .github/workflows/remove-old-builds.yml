@@ -121,10 +121,11 @@ jobs:
        id: remove_build
        if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
        run: |
-         response=$(curl \
+         code=$(curl \
          -H "Authorization: Bearer ${{ needs.build.outputs.tokens }}" \
-         -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}})
-         echo ${response}
+         -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}} \
+         -o /dev/null -w '%{http_code}\n' -s)
+         echo ${code}
          echo "::set-output name=code::$code"
      - name: Authentication failed
        if: ${{ steps.remove_build.outputs.code == 401 }}
