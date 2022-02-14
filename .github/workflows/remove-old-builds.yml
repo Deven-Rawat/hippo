@@ -69,11 +69,11 @@ jobs:
           echo "::set-output name=allDistIds::${response}"
           echo ${response}
       - name: Distribution Ids Retrival failed
-        if: ${{ steps.all-distribution-list.code != 200 }}
+        if: ${{ contains(steps.all-distribution-list.reponse ,'401') }}
         uses: actions/github-script@v3
         with:
           script: |
-            core.setFailed('Removal failed ')
+            core.setFailed('Retrival of distibution ids failed ')
 
   process-non-prod-dist-list:
     name: Process Non Prod Distribution List
