@@ -6,11 +6,6 @@ on:
   push:
     branches:
       - master
-env:
-  NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
-  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 70
-  PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[distribution.tar.gz]"
-  NON_PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[a-z0-9]+-[distribution.tar.gz]"
 jobs:
 
   retrieve-token:
@@ -73,10 +68,22 @@ jobs:
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
           echo ${response}
+      - name: Distribution Ids Retrival failed
+        if: ${{ steps.all-distribution-list.code != 200 }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Removal failed ')
+
   process-non-prod-dist-list:
     name: Process Non Prod Distribution List
     runs-on: ubuntu-latest
     needs: get-all-distribution-ids
+    env:
+      NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
+      NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 70
+      PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[distribution.tar.gz]"
+      NON_PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[a-z0-9]+-[distribution.tar.gz]"
     outputs:
       allNonProdDistIds: ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
       latestNonProdDistIds: ${{ steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds }}
