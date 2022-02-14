@@ -126,15 +126,15 @@ jobs:
          -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}})
          echo ${response}
          echo "::set-output name=code::$code"
+     - name: Authentication failed
+       if: ${{ steps.remove_build.outputs.code == 401 }}
+       uses: actions/github-script@v3
+       with:
+         script: |
+           core.setFailed(' 401 Authentication error' )         
      - name: Removal of Build failed
        if: ${{ steps.remove_build.outputs.code != 200 }}
        uses: actions/github-script@v3
        with:
          script: |
            core.setFailed('Removal failed ') 
-     - name: Authentication failed
-       if: ${{ steps.remove_build.outputs.code == 401 }}
-       uses: actions/github-script@v3
-       with:
-         script: |
-           core.setFailed(' 401 Authentication error' )
