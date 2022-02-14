@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{steps.remove-distribution.outputs.deven}}
-      latestIds: ${{ steps.latest-distribution-id.outputs.latestId }}
+      latestIds: ${{ steps.latest-non-prod-distribution-id.outputs.latestId }}
       tokens: ${{steps.jwt_token.outputs.token}}
     timeout-minutes: 90
 
