@@ -95,6 +95,7 @@ jobs:
     needs: build
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      fail-fast: false
     if: ${{ contains(needs.build.outputs.latestIds , needs.build.outputs.matrix.id) }}
     steps:
      - name: Build is recent
