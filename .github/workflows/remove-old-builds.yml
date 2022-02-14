@@ -117,7 +117,10 @@ jobs:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
     if: ${{ contains(needs.build.outputs.latestIds , needs.build.outputs.matrix.id) }}
     steps:
-     - name: if condition
+     - name: Authentication failed
+       if: ${{ ! contains(needs.build.outputs.latestIds, matrix.id) }}
+       run: exit_with_success
+     - name: Check if Build to be deleted
        id: remove_build
        if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
        run: |
