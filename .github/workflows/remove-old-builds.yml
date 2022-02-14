@@ -102,7 +102,7 @@ jobs:
        id: keep_build
        if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
        run: |
-         echo " Does not exists, Keep the build "
+         echo " Keep the build "
          echo "::set-output name=code::100"
      - name: Check if Build to be deleted
        id: remove_build
