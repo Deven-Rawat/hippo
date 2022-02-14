@@ -72,7 +72,7 @@ jobs:
           -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.jwt-token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
-
+          echo ${response}
   process-non-prod-dist-list:
     name: Process Non Prod Distribution List
     runs-on: ubuntu-latest
