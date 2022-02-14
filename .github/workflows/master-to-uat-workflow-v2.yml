@@ -277,11 +277,11 @@ jobs:
           ENVIRONMENT: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
 
       - name: Check Response Code from Request Deployment
-        if: ${{ steps.deployment.outputs.code != 200 }}
+        if: ${{ steps.deployment.outputs.code <= 202 }}
         uses: actions/github-script@v3
         with:
           script: |
-            core.setFailed('Response code missmatch whuke requesting deployment from BR Cloud!')
+            core.setFailed('Response code mismatch while requesting deployment from BR Cloud!')
 
 
       # Clean-up steps below.
