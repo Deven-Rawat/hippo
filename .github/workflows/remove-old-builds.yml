@@ -105,18 +105,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: retrieve-all-distribution-ids
     strategy:
-      matrix: ${{fromJson(needs.process-non-prod-dist-list.outputs.allNonProdDistIds)}}
+      matrix: ${{fromJson(needs.retrieve-all-distribution-ids.outputs.allNonProdDistIds)}}
       fail-fast: false
     steps:
      - name: Build is recent
        id: keep_build
-       if: ${{ contains(needs.process-non-prod-dist-list.outputs.latestNonProdDistIds, matrix.id) }}
+       if: ${{ contains(needs.retrieve-all-distribution-ids.latestNonProdDistIds, matrix.id) }}
        run: |
          echo " Keep the build "
          echo "::set-output name=code::100"
      - name: Check if Build to be deleted
        id: remove_build
-       if: ${{ ! contains(needs.process-non-prod-dist-list.outputs.latestNonProdDistIds, matrix.id) }}
+       if: ${{ ! contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
        run: |
          code=$(curl \
          -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.tokens }}" \
