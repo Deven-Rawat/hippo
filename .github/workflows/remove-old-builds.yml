@@ -97,6 +97,12 @@ jobs:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
     if: ${{ contains(needs.build.outputs.latestIds , needs.build.outputs.matrix.id) }}
     steps:
+     - name: Build is recent
+       id: keep_build
+       if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
+       run: |
+         echo " Does not exists, Keep the build "
+         echo "::set-output name=code::100"
      - name: Check if Build to be deleted
        id: remove_build
        if: ${{ ! contains(needs.build.outputs.latestIds, matrix.id) }}
@@ -114,7 +120,7 @@ jobs:
          script: |
            core.setFailed(' 401 Authentication error' )
      - name: Removal of Build failed
-       if: ${{ steps.remove_build.outputs.code != '' && steps.remove_build.outputs.code != 200 }}
+       if: ${{ steps.keep_build.outputs.code != 100 && steps.remove_build.outputs.code != 200 }}
        uses: actions/github-script@v3
        with:
          script: |
