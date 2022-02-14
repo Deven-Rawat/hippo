@@ -99,7 +99,7 @@ jobs:
     steps:
      - name: Build is recent
        if: ${{ ! contains(needs.build.outputs.latestIds, matrix.id) }}
-       run: exit_with_success
+       run: exit(0)
      - name: Check if Build to be deleted
        id: remove_build
        if: ${{ contains(needs.build.outputs.latestIds, matrix.id) }}
@@ -115,10 +115,10 @@ jobs:
        uses: actions/github-script@v3
        with:
          script: |
-           core.setFailed(' 401 Authentication error' )         
+           core.setFailed(' 401 Authentication error' )
      - name: Removal of Build failed
        if: ${{ steps.remove_build.outputs.code != 200 }}
        uses: actions/github-script@v3
        with:
          script: |
-           core.setFailed('Removal failed ') 
+           core.setFailed('Removal failed ')
