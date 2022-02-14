@@ -11,7 +11,6 @@ jobs:
   retrieve-all-distribution-ids:
     name: Retrieve All distribution Ids
     runs-on: ubuntu-latest
-
     outputs:
       allDistributionIds: ${{ steps.all-distribution-list.outputs.allDistIds }}
     timeout-minutes: 90
@@ -43,7 +42,7 @@ jobs:
           -X GET https://api.${{ secrets.HOST }}/v3/authn/verify_token \
           -o /dev/null -w '%{http_code}\n' -s)
           echo "::set-output name=code::$code"
-
+          echo "Here "  ${{ steps.all-distribution-list.outputs.allDistIds }}
       - name: Check Response Code from Verify JWT Token
         if: ${{ steps.jwt_token_verify.outputs.code != 200 }}
         uses: actions/github-script@v3
@@ -61,7 +60,7 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
-          
+
       - name: Distribution Ids Retrival failed
         if: ${{ contains(steps.all-distribution-list.response ,'401') }}
         uses: actions/github-script@v3
