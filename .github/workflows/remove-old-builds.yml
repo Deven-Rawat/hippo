@@ -67,7 +67,7 @@ jobs:
         id: all-distribution-list
         run: |
           response=$(curl \
-          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
           echo "Here "  ${response}
