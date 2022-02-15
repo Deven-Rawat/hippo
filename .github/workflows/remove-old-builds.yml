@@ -104,7 +104,7 @@ jobs:
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
 
-                        const result = await github.get("https://www.google.com")
+                        const result = await github.request("https://www.google.com")
                         console.log(result);
                     })
                 }
