@@ -101,7 +101,7 @@ jobs:
           echo ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
           echo "***********************"
       - name: Run Script
-      - uses: actions/github-script@v6
+        uses: actions/github-script@v6
         with:
           script: |
             console.log("result")
