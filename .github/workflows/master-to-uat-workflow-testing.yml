@@ -108,3 +108,20 @@ jobs:
           name: build
           path: target/*.tar.gz
           if-no-files-found: error
+
+
+  Testing:
+    name: Testing
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Download version artifact
+        uses: actions/download-artifact@v2
+        id: down
+
+      #
+      # Upload the distribution to RD
+      #
+      - name: Upload distribution
+        run: put ${{steps.download.outputs.download-path}} | sftp nhs@static.hosting.onehippo.com
