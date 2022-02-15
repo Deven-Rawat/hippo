@@ -91,14 +91,6 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ]')
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
-      - name: Print JSON
-        id: print-json
-        run: |
-          echo "***********************"
-          echo ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
-          echo "***********************"
-          echo ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
-          echo "***********************"
       - name: Run Script
         uses: actions/github-script@v6
         with:
