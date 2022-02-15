@@ -103,18 +103,9 @@ jobs:
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
-                  $.ajax({
-                  type: "POST",
-                  url: "http://yourdomain.com/example.php",
-                  data: {
-                    api_key: "xxxxxxxx"
-                  },
-                  success: function(data) {
-                    console.log(data);
-                    //do something when request is successfull
-                },
-                  dataType: "json"
-                });
+                      
+                      const result = await github.request("https://www.google.com")
+                      console.log(result)
                 }
             }
 
