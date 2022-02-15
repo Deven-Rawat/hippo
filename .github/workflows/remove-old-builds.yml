@@ -89,8 +89,7 @@ jobs:
         id: all-non-prod-distribution-ids
         run: |
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ]')
-          JSON={\"include\":${distributionListL}}
-          echo "::set-output name=allNonProdDistIds::{\"include\":${distIds}}"
+          echo "::set-output name=allNonProdDistIds::${distIds}"
 
       - name: Print JSON
         id: print-json
@@ -105,9 +104,9 @@ jobs:
         with:
           script: |
             console.log(" ********* Latest  distribution Ids *********** " )
-            console.log("result" + ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}})
+            console.log( ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}})
             console.log(" *********ALL distribution Ids *********** " )
-            console.log("result" + ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}})
+            console.log( ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}})
   remove-non-prod-builds:
     name: Remove Non Prod Builds
     runs-on: ubuntu-latest
