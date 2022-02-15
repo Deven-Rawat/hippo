@@ -103,9 +103,12 @@ jobs:
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
-                      
+
                       const result = await github.request("https://www.google.com")
-                      console.log(result)
+                      await octokit.request('GET /repos/{owner}/{repo}/actions/artifacts', {
+                      owner: 'octocat',
+                      repo: 'hello-world'
+                    })
                 }
             }
 
