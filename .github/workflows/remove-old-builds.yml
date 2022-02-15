@@ -7,10 +7,22 @@ on:
     branches:
       - master
 
+env:
+  NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
+  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 70
+  PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[distribution.tar.gz]"
+  NON_PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[a-z0-9]+-[distribution.tar.gz]"
+
 jobs:
-  build:
-    name: Clear Builds
+
+  retrieve-all-distribution-ids:
+    name: Retrieve All distribution Ids
     runs-on: ubuntu-latest
+    outputs:
+      allDistributionIds: ${{ steps.all-distribution-list.outputs.allDistIds }}
+      allNonProdDistIds: ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
+      latestNonProdDistIds: ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
+      deventokens: ${{steps.jwt_token.outputs.token1}}
     timeout-minutes: 90
 
     steps:
@@ -22,10 +34,11 @@ jobs:
           -H "Accept: application/json; charset=utf-8" \
           -X POST https://api.${{ secrets.HOST }}/v3/authn/access_token \
           -d '{ "username": "${{ env.USERNAME }}", "password": "${{ env.PASSWORD }}" }')
-          token=$(echo $response | awk 'match($0, /access_token":"[^"]+"/) {print substr($0, RSTART+15)}' | cut -d '"' -f 1 )
+          token1=$(echo $response | awk 'match($0, /access_token":"[^"]+"/) {print substr($0, RSTART+15)}' | cut -d '"' -f 1 )
           refresh=$(echo $response | awk 'match($0, /refresh_token":"[^"]+"/) {print substr($0, RSTART+16)}' | cut -d '"' -f 1 )
-          echo "::set-output name=token::$token"
+          echo "::set-output name=token1::$token1"
           echo "::set-output name=refresh::$refresh"
+
         env:
           USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
           PASSWORD: ${{ secrets.MISSION_CONTROL_API_PASSWORD }}
@@ -35,7 +48,7 @@ jobs:
         run: |
           code=$(curl -L \
           -H "Accept: application/json; charset=utf-8" \
-          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/authn/verify_token \
           -o /dev/null -w '%{http_code}\n' -s)
           echo "::set-output name=code::$code"
@@ -50,13 +63,86 @@ jobs:
           # 'CODE' is for debugging fails
           CODE: ${{ steps.jwt_token_verify.outputs.code }}
 
-      #
-      # Prepare App Config Deployment Details
-      #
-      - name: Get Configuration Files Details
-        id: files
+      - name: Get ALL Prod Dist List
+        id: all-distribution-list
         run: |
           response=$(curl \
-          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
-          echo "::set-output name=details::${response}"
+          echo "::set-output name=allDistIds::${response}"
+          echo "Here "  ${response}
+
+      - name: Distribution Ids Retrival failed
+        if: ${{ contains(steps.all-distribution-list.response ,'401') }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Retrival of distibution ids failed ')
+
+      - name: Get Latest NON-Prod Distribution Ids
+        id: latest-non-prod-distribution-ids
+        run: |
+          latestId=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
+          echo "::set-output name=latestNonProdDistIds::${latestId}"
+
+      - name: All non prod Distribution Ids
+        id: all-non-prod-distribution-ids
+        run: |
+          distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ] | map(.id)')
+          echo "::set-output name=allNonProdDistIds::${distIds}"
+
+      - name: Run Script
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log(" ********* Latest  distribution Ids *********** " )
+            let latestNonProdDistIds = ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
+            console.log(" *********ALL distribution Ids *********** " )
+            let allNonProdDistIds = ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
+             console.log(allNonProdDistIds.length )
+            for (let step = 0; step < allNonProdDistIds.length; step++) {
+                  if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
+                      console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
+                      
+                      const result = await github.request("https://www.google.com")
+                      console.log(result)
+                }
+            }
+
+  remove-non-prod-builds:
+    name: Remove Non Prod Builds
+    runs-on: ubuntu-latest
+    needs: retrieve-all-distribution-ids
+    strategy:
+      matrix: ${{fromJson(needs.retrieve-all-distribution-ids.outputs.allNonProdDistIds)}}
+      fail-fast: false
+    steps:
+     - name: Build is recent
+       id: keep_build
+       if: ${{ contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
+       run: |
+         echo " Keep the build "
+         echo "::set-output name=code::100"
+     - name: Check if Build to be deleted
+       id: remove_build
+       if: ${{ ! contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
+       run: |
+         echo "Token is " ${{needs.retrieve-token.outputs.deventokens}}
+         code=$(curl \
+         -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.deventokens }}" \
+         -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}} \
+         -o /dev/null -w '%{http_code}\n' -s)
+         echo ${code}
+         echo "::set-output name=code::$code"
+     - name: Authentication failed
+       if: ${{ steps.remove_build.outputs.code == 401 }}
+       uses: actions/github-script@v3
+       with:
+         script: |
+           core.setFailed(' 401 Authentication error' )
+     - name: Removal of Build failed
+       if: ${{ steps.keep_build.outputs.code != 100 && steps.remove_build.outputs.code != 200 }}
+       uses: actions/github-script@v3
+       with:
+         script: |
+           core.setFailed('Removal failed ')
