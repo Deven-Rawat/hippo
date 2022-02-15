@@ -108,6 +108,7 @@ jobs:
                       await octokit.request('GET /repos/{owner}/{repo}/actions/artifacts', {
                       owner: 'octocat',
                       repo: 'hello-world'
+
                     })
                 }
             }
