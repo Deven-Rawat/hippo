@@ -98,7 +98,11 @@ jobs:
             console.log(" ********* Latest  distribution Ids *********** " )
             console.log( ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}})
             console.log(" *********ALL distribution Ids *********** " )
-            console.log( ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}})
+            let allNonProdDistIds = ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
+            console.log(allNonProdDistIds.length )
+            for (let step = 0; step < allNonProdDistIds.length; step++) {
+              console.log('Walking east one step');
+            }
 
   remove-non-prod-builds:
     name: Remove Non Prod Builds
