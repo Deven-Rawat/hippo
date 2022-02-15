@@ -103,6 +103,27 @@ jobs:
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
+                      var url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=YOUR_KEY';
+                      var data = {some: json};
+                        fetch(url, {
+                        body: JSON.stringify(data),
+                        headers: {
+                          'dataType': 'json',
+                          'content-type': 'application/json'
+                        },
+                        method: 'POST',
+                        redirect: 'follow'
+                      })
+                        .then(response => {
+                        if (response.status === 200) {
+                        console.log(response.text());
+                      } else {
+                        throw new Error('Something went wrong on api server!');
+                      }
+                      })
+                        .catch(error => {
+                        console.error(error);
+                      });
                   }
             }
 
