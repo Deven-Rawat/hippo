@@ -102,7 +102,7 @@ jobs:
              console.log(allNonProdDistIds.length )
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(allNonProdDistIds.indexOf(allNonProdDistIds[step]) > -1){
-                    console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + step);
+                    console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + allNonProdDistIds.indexOf(allNonProdDistIds[step]));
                   }else{
                     console.log('*************** ' +allNonProdDistIds[step] + ' step --> ' + step);
                   }
