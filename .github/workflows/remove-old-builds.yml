@@ -104,7 +104,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log("result")
+            console.log("result" + ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}})
   remove-non-prod-builds:
     name: Remove Non Prod Builds
     runs-on: ubuntu-latest
