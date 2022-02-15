@@ -18,7 +18,7 @@ jobs:
       #
       - name: Checkout
         run: |
-          make mkdir target
+          mkdir target
           cd target && touch website-v3.0.857-23-gc5cf9e9dd-distribution.tar.gz
 
 
