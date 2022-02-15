@@ -101,8 +101,8 @@ jobs:
             let allNonProdDistIds = ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
              console.log(allNonProdDistIds.length )
             for (let step = 0; step < allNonProdDistIds.length; step++) {
-                  if( ! latestNonProdDistIds.indexOf(allNonProdDistIds[step]) > -1){
-                    console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
+                  if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
+                      console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
                   }
             }
 
