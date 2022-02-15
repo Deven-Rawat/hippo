@@ -148,7 +148,7 @@ jobs:
       - name: Upload Build to BR Cloud
         id: distribution
         run: |
-          filelist=($(ls build/))
+          filelist=($(ls builgd/))
           file="dist_file=@build/${filelist[0]}"
           response=$(curl -i \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \

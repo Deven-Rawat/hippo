@@ -1,4 +1,4 @@
-name: Deploy to UAT and Git Tag (testing)
+name: Deploy to UAT and Git Tag (v2)
 
 on:
   push:
@@ -68,16 +68,15 @@ jobs:
             ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-
             ${{ runner.os }}-node-nhs-digital-
             ${{ runner.os }}-node-nhs-
-
       #
-      # Step 3
+      # Step 4
       #
       - name: Bump the version number
         run: make version.bumpup
 
 
       #
-      # Step 4
+      # Step 5
       #
       - name: Build master
         run: make clean build
@@ -86,7 +85,7 @@ jobs:
           HIPPO_MAVEN_USERNAME: ${{ secrets.HIPPO_MAVEN_USERNAME }}
 
       #
-      # Step 5
+      # Step 6
       #
       - name: Set the commit's Git status
         run: make github.status.success
@@ -98,7 +97,6 @@ jobs:
         run: |
           make git.update-environment-tag
           git push --tags
-
       #
       # upload build for next job
       #
@@ -110,18 +108,52 @@ jobs:
           if-no-files-found: error
 
 
-  Testing:
-    name: Testing
+  ODv1Deployment:
+    name: Deploy to ODv1
     needs: build
     runs-on: ubuntu-latest
+    env:
+      ENV: "uat"
     steps:
 
+      #
+      # Prepare for RD communication
+      #
+      - name: Configure SSH certificates
+        run: |
+          mkdir ~/.ssh
+          echo "${{ secrets.IDM_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.IDM_PUB }}" > ~/.ssh/id_rsa.pub
+          chmod 400 ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa.pub
+      - name: Configure known hosts
+        run: |
+          touch ~/.ssh/known_hosts
+          ssh-keygen -R ${{ secrets.RD_FTP }}
+          ssh-keyscan -H -t rsa ${{ secrets.RD_FTP }} >> ~/.ssh/known_hosts
+      #
+      # Download the distribution artifact
+      #
       - name: Download version artifact
         uses: actions/download-artifact@v2
-        id: down
+        id: download
+
+      - name: Get artifact details
+        id: details
+        run: |
+          ls
+          echo "::set-output name=build::"$(echo ls *.tar.gz | awk '{ print $2 }')
+          echo "::set-output name=version::"$(ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
+        working-directory: ${{steps.download.outputs.download-path}}
 
       #
       # Upload the distribution to RD
       #
       - name: Upload distribution
-        run: put ${{steps.download.outputs.download-path}} | sftp nhs@static.hosting.onehippo.com
+        run: |
+          ls
+          echo put ${{ env.BUILD }} /uploads/dists/${{ env.VERSION }}.tar.gz | sftp nhs@static.hosting.onehippo.com
+        env:
+          BUILD: ${{steps.details.output.build}}
+          VERSION: ${{steps.details.output.version}}
+        working-directory: ${{steps.download.outputs.download-path}}
