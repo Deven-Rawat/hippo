@@ -9,7 +9,7 @@ on:
 
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
-  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 70
+  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 78
   PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[distribution.tar.gz]"
   NON_PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[a-z0-9]+-[distribution.tar.gz]"
 
@@ -102,11 +102,14 @@ jobs:
              console.log(allNonProdDistIds.length )
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
-                      console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
+                      console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
+                      const deleteResponse = await github.request('DELETE https://api.${{ secrets.HOST }}/v3/distributions/allNonProdDistIds[step]', {
+                      header: {
+                        Authorization: "Bearer ${{ steps.jwt_token.outputs.token1 }}"
+                      }
+                      })
+                    console.log("status " + deleteResponse.status)
 
-                        const result = await github.request("https://www.google.com")
-                        console.log(result);
-                    })
                 }
             }
 
