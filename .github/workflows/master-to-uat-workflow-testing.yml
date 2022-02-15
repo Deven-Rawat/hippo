@@ -122,7 +122,6 @@ jobs:
       #
       - name: Download version artifact
         uses: actions/download-artifact@v2
-        id: download
 
       - name: Get artifact details
         id: details
@@ -130,7 +129,6 @@ jobs:
           ls
           echo "::set-output name=build::"$(echo ls *.tar.gz | awk '{ print $2 }')
           echo "::set-output name=version::"$(ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
-        working-directory: ${{steps.download.outputs.download-path}}
 
       #
       # Upload the distribution to RD
@@ -142,4 +140,3 @@ jobs:
         env:
           BUILD: ${{steps.details.output.build}}
           VERSION: ${{steps.details.output.version}}
-        working-directory: ${{steps.download.outputs.download-path}}
