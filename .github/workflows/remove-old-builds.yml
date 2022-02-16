@@ -107,14 +107,16 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ] | map(.id)')
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
-      - name: Test
-        uses: octokit/request-action@v2.x
-        id: get_latest_release
-        with:
-          route: DELETE https://api.${{ secrets.HOST }}/v3/distributions/1234567890'
-        env:
-          GITHUB_TOKEN: ${{ steps.jwt_token.outputs.token1 }}
-          
+
+      - name: Cehck this
+        run: |
+          declare -a arr=("element1" "element2" "element3")
+          for i in "${arr[@]}"
+          do
+          echo "$i"
+          # or do whatever with individual element of the array
+          done
+
       - name: Run Script
         uses: actions/github-script@v6
         with:
@@ -128,9 +130,6 @@ jobs:
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
-                      const execa = import('execa')
-                      const { stdout } = await execa('echo', ['hello', 'world'])
-                      console.log(stdout)
                 }
             }
 
