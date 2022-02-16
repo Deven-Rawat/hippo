@@ -47,10 +47,12 @@ jobs:
       #
       - name: Download version artifact
         uses: actions/download-artifact@v2
+        id: download
 
       - name: Get artifact details
         id: details
         run: |
+          pwd
           ls
           echo "::set-output name=build::"$(echo ls *.tar.gz | awk '{ print $2 }')
           echo "::set-output name=version::"$(ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
