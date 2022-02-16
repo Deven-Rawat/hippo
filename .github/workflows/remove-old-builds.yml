@@ -121,7 +121,7 @@ jobs:
 
       - name: Remove Prod Old Distribution
         run: |
-          declare -a  allDistributionIds=$(echo  '${{steps.all-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+          declare -a  allDistributionIds=$(echo  '${{steps.all-prod-active-distribution-ids.outputs.allProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
           declare -a  prodLatestDistIds=$(echo  '${{steps.latest-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
 
           echo "allDistributionIds  Length --> "  ${#allDistributionIds[@]}
