@@ -101,7 +101,7 @@ jobs:
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
       - name: Run Script
-        uses: actions/github-script@v6
+        uses: actions/github-script@v5
         with:
           script: |
             console.log(" ********* Latest  distribution Ids *********** " )
