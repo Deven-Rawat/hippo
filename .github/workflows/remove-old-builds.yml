@@ -124,14 +124,7 @@ jobs:
                       toBeDeleted.push(allNonProdDistIds[step]);
                 }
             }
-            
-        - name: Cehck this
-            run: |
-              declare -a arr=${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
-              for i in "${arr[@]}"
-              do
-                echo "$i"
-              done
+
 
   remove-non-prod-builds:
     name: Remove Non Prod Builds
