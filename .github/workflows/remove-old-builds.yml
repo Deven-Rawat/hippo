@@ -105,7 +105,7 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
           newArray=$(echo  ${distIds} | tr "[" "(" | tr "]" ")" | tr "," " ")
           echo "newArray  --> "  ${newArray}
-          for i in ${echo ${distIds} | tr "[" "(" | tr "]" ")" | tr "," " "}
+          for i in "${newArray[@]}"
           do
             echo   " inside -->> "+  "$i"
           done
