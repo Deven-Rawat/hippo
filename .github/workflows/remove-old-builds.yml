@@ -89,12 +89,11 @@ jobs:
         id: all-active-distribution-ids
         run: |
           distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
-          echo "::set-output name=allNonProdDistIds::${distIds}"
+          echo "::set-output name=allDistributionIdMap::${distIds}"
 
-      - name: Return this
+      - name: Remove Non Prod Old Distribution
         run: |
-          distIds=$(echo '${{steps.all-active-distribution-ids.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
-          declare -a  allDistributionIds=$(echo  ${distIds} | tr "[" "(" | tr "]" ")" | tr "," " ")
+          declare -a  allDistributionIds=$(echo  '${{steps.all-active-distribution-ids.outputs.allDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
           declare -a  nonProdLatestDistIds=$(echo  '${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
 
           echo "allDistributionIds  Length --> "  ${#allDistributionIds[@]}
