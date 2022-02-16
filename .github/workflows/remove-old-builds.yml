@@ -103,7 +103,6 @@ jobs:
       - name: Run Script
         uses: actions/github-script@v6
         with:
-          github-token: ${{ steps.jwt_token.outputs.token1 }}
           script: |
             console.log(" ********* Latest  distribution Ids *********** " )
             let latestNonProdDistIds = ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
