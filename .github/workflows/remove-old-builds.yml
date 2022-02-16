@@ -120,22 +120,3 @@ jobs:
                 echo "Here "  ${response}
             fi
           done
-
-
-      - name: Run Script
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ steps.jwt_token.outputs.token1 }}
-          script: |
-            console.log(" ********* Latest  distribution Ids *********** " )
-            let latestNonProdDistIds = ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
-            console.log(" *********ALL distribution Ids *********** " )
-            let allNonProdDistIds = ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
-             console.log(allNonProdDistIds.length )
-            var toBeDeleted = new Array()
-            for (let step = 0; step < allNonProdDistIds.length; step++) {
-                  if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
-                      console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
-                      toBeDeleted.push(allNonProdDistIds[step]);
-                }
-            }
