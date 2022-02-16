@@ -3,9 +3,8 @@
 name: Clear Builds
 
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    - cron: "*/5 * * * *"
 
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
@@ -97,7 +96,7 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id, name: .name} ] | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id)')
           echo "::set-output name=allProdDistributionIdMap::${distIds}"
 
-      - name: Remove Non Prod Old Distribution
+      - name: Remove Old Non Prod Distribution
         run: |
           declare -a  allDistributionIds=$(echo  '${{steps.all-non-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
           declare -a  nonProdLatestDistIds=$(echo  '${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
@@ -119,7 +118,7 @@ jobs:
             fi
           done
 
-      - name: Remove Prod Old Distribution
+      - name: Remove Old Prod Distribution
         run: |
           declare -a  allDistributionIds=$(echo  '${{steps.all-prod-active-distribution-ids.outputs.allProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
           declare -a  prodLatestDistIds=$(echo  '${{steps.latest-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
