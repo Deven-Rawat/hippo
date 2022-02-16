@@ -110,9 +110,11 @@ jobs:
           echo "allDistributionIds  Length --> "  ${#allDistributionIds[@]}
           echo "nonProdLatestDistIds  Length --> "  ${#nonProdLatestDistIds[@]}
 
-          for i in "${nonProdLatestDistIds[@]}"
+          for value in "${allDistributionIds[@]}"
           do
-            echo   " inside -->> "+  "$i"
+            if [[ ! " ${nonProdLatestDistIds[*]} " =~ " ${value} " ]]; then
+              echo   " Id should be deleted  -->> "+  "$value"
+            fi
           done
 
 
