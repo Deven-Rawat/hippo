@@ -86,14 +86,20 @@ jobs:
           echo "::set-output name=latestProdDistIds::${latestId}"
 
       - name: All Non Prod Distribution Ids
-        id: all-active-distribution-ids
+        id: all-non-prod-active-distribution-ids
         run: |
           distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id, name: .name} ] | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id)')
-          echo "::set-output name=allDistributionIdMap::${distIds}"
+          echo "::set-output name=allNonProdDistributionIdMap::${distIds}"
+
+      - name: All  Prod Distribution Ids
+        id: all-prod-active-distribution-ids
+        run: |
+          distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id, name: .name} ] | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id)')
+          echo "::set-output name=allProdDistributionIdMap::${distIds}"
 
       - name: Remove Non Prod Old Distribution
         run: |
-          declare -a  allDistributionIds=$(echo  '${{steps.all-active-distribution-ids.outputs.allDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+          declare -a  allDistributionIds=$(echo  '${{steps.all-non-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
           declare -a  nonProdLatestDistIds=$(echo  '${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
 
           echo "allDistributionIds  Length --> "  ${#allDistributionIds[@]}
@@ -102,6 +108,28 @@ jobs:
           for value in "${allDistributionIds[@]}"
           do
             if [[ ! " ${nonProdLatestDistIds[*]} " =~ " ${value} " ]]; then
+              code=$(curl \
+                -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
+                -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/$value \
+                -o /dev/null -w '%{http_code}\n' -s)
+
+                if [ "$code" = "409" ]; then
+                   echo "Distribution id is in use "  ${value}
+                fi
+            fi
+          done
+
+      - name: Remove Prod Old Distribution
+        run: |
+          declare -a  allDistributionIds=$(echo  '${{steps.all-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+          declare -a  prodLatestDistIds=$(echo  '${{steps.latest-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+
+          echo "allDistributionIds  Length --> "  ${#allDistributionIds[@]}
+          echo "prodLatestDistIds  Length --> "  ${#prodLatestDistIds[@]}
+
+          for value in "${allDistributionIds[@]}"
+          do
+            if [[ ! " ${prodLatestDistIds[*]} " =~ " ${value} " ]]; then
               code=$(curl \
                 -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
                 -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/$value \
