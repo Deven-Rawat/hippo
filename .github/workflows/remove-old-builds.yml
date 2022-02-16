@@ -109,7 +109,7 @@ jobs:
 
       - name: Return this
         run: |
-          declare -a arr=("element1" "element2" "element3")
+          declare -a arr= ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
           for i in "${arr[@]}"
           do
             echo "$i"
