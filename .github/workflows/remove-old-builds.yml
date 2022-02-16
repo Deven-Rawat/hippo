@@ -15,14 +15,9 @@ env:
 
 jobs:
 
-  retrieve-all-distribution-ids:
-    name: Retrieve All distribution Ids
+  remove-old-distributions:
+    name: Remove Old distribution Ids
     runs-on: ubuntu-latest
-    outputs:
-      allDistributionIds: ${{ steps.all-distribution-list.outputs.allDistIds }}
-      allNonProdDistIds: ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
-      latestNonProdDistIds: ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
-      deventokens: ${{steps.jwt_token.outputs.token1}}
     timeout-minutes: 90
 
     steps:
@@ -63,26 +58,16 @@ jobs:
           # 'CODE' is for debugging fails
           CODE: ${{ steps.jwt_token_verify.outputs.code }}
 
-      - name: Get ALL Prod Dist List
-        id: all-distribution-list
+      - name: Get All Distribution Ids
+        id: all-distribution-id
         run: |
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
-          echo "Here "  ${response}
-
-      - name: Delete Single Distribution
-        id: delete-distribution
-        run: |
-          response=$(curl \
-          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
-          -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/7ff98aa6-e4f8-479c-886b-a00840e9e0e3)
-          echo "Here "  ${response}
-
 
       - name: Distribution Ids Retrival failed
-        if: ${{ contains(steps.all-distribution-list.response ,'401') }}
+        if: ${{ contains(steps.all-distribution-id.response ,'401') }}
         uses: actions/github-script@v3
         with:
           script: |
@@ -91,19 +76,24 @@ jobs:
       - name: Get Latest NON-Prod Distribution Ids
         id: latest-non-prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
           echo "::set-output name=latestNonProdDistIds::${latestId}"
-          echo " latestId --->  "+ ${latestNonProdDistIds}
 
-      - name: All non prod Distribution Ids
-        id: all-non-prod-distribution-ids
+      - name: Get Latest Prod Distribution Ids
+        id: latest-prod-distribution-ids
         run: |
-          distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_PROD}}]')
+          echo "::set-output name=latestProdDistIds::${latestId}"
+
+      - name: All Distribution Ids
+        id: all-active-distribution-ids
+        run: |
+          distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
       - name: Return this
         run: |
-          distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
+          distIds=$(echo '${{steps.all-active-distribution-ids.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
           declare -a  allDistributionIds=$(echo  ${distIds} | tr "[" "(" | tr "]" ")" | tr "," " ")
           declare -a  nonProdLatestDistIds=$(echo  '${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
 
