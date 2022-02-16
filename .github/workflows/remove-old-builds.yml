@@ -107,8 +107,8 @@ jobs:
                 -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/$value \
                 -o /dev/null -w '%{http_code}\n' -s)
 
-                if [[ ${code} == '409']] then
-                  echo "Distribution id is in use "  ${value}
+                if [ "$code" = "409" ]; then
+                  echo "x has the value 'valid'"
                 fi
             fi
           done
