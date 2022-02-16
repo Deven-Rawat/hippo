@@ -104,7 +104,7 @@ jobs:
       - name: All non prod Distribution Ids
         id: all-non-prod-distribution-ids
         run: |
-          distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '(.items[] | {id: .id , date: .createdAt} ) | map(.id)')
+          distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '(.items[] | {id: .id , date: .createdAt})')
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
       - name: Return this
