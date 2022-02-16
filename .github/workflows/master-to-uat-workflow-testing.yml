@@ -57,7 +57,7 @@ jobs:
           build=$(echo ls *.tar.gz | awk '{ print $2 }')
           version=$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
           echo "::set-output name=build::$build"
-          echo "::set-output name=version::"$version"
+          echo "::set-output name=version::$version"
         working-directory: ${{steps.download.outputs.download-path}}/distribution
 
       #
