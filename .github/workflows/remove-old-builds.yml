@@ -107,7 +107,7 @@ jobs:
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
       - name: Run Script
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ steps.jwt_token.outputs.token1 }}
           script: |
