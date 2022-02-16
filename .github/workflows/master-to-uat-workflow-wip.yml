@@ -263,7 +263,7 @@ jobs:
           response=$(curl -i \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X POST https://api.${{ secrets.HOST }}/v3/distributions \
-          -F ${{ env.DISTROBUTION }})
+          -F "${{ env.DISTROBUTION }}")
           id=$(echo $response | awk 'match($0, /id":"[^"]+"/) {print substr($0, RSTART+5)}' | cut -d '"' -f 1 )
           echo "::set-output name=id::$id"
         env:
