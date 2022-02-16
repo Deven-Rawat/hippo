@@ -113,7 +113,7 @@ jobs:
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
                       const deleteResponse = await github.request('DELETE https://api.${{ secrets.HOST }}/v3/distributions/'+allNonProdDistIds[step],
-                      {headers: {authorization: 'Bearer '${{ steps.jwt_token.outputs.token1 }} }}
+                      {headers: {authorization: 'Bearer ${{ steps.jwt_token.outputs.token1 }}' }}
                       )
                       console.log("status " + deleteResponse.status)
 
