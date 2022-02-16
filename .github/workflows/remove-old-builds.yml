@@ -32,6 +32,7 @@ jobs:
           node-version: '14'
       - run: npm install @octokit/action
       - run: npm install execa
+      - run: npm install node-fetch@2.6.1
       # Get API access token and verify it.
       - name: Obtaino JWT Token
         id: jwt_token
