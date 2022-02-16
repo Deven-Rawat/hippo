@@ -112,7 +112,7 @@ jobs:
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
-                      const deleteResponse = await request('https://api.${{ secrets.HOST }}/v3/distributions/'+allNonProdDistIds[step],
+                      const deleteResponse = await github.request('https://api.${{ secrets.HOST }}/v3/distributions/'+allNonProdDistIds[step],
                       {
                         method: 'GET',
                         headers: {}
