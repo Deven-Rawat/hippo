@@ -111,8 +111,8 @@ jobs:
         run: |
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
 
-          echo  "  ---->>>  "  ${distIds}
-          for i in "${username[@]}"
+          newArray = echo  "  ---->>>  "  ${distIds} | tr "{" "(" | tr "}" ")" | tr "," " "
+          for i in "${newArray[@]}"
           do
             echo "$i"
           done
