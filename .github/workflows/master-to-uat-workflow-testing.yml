@@ -28,7 +28,7 @@ jobs:
       - name: Store Artifact for Later in the Pipeline
         uses: actions/upload-artifact@v2
         with:
-          name: build
+          name: distribution
           path: target/*.tar.gz
           if-no-files-found: error
 
@@ -54,11 +54,12 @@ jobs:
         run: |
           pwd
           ls
+          awk
           $(echo ls *.tar.gz | awk '{ print $2 }')
           $(ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
           echo "::set-output name=build::"$(echo ls *.tar.gz | awk '{ print $2 }')
           echo "::set-output name=version::"$(ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
-        working-directory: ${{steps.download.outputs.download-path}}/build
+        working-directory: ${{steps.download.outputs.download-path}}/distribution
 
       #
       # Upload the distribution to RD
@@ -70,4 +71,4 @@ jobs:
         env:
           BUILD: ${{steps.details.output.build}}
           VERSION: ${{steps.details.output.version}}
-        working-directory: ${{steps.download.outputs.download-path}}
+        working-directory: ${{steps.download.outputs.download-path}}/distribution
