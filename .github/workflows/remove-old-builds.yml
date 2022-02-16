@@ -26,6 +26,7 @@ jobs:
     timeout-minutes: 90
 
     steps:
+      - uses: actions/github-script@v5
       # Get API access token and verify it.
       - name: Obtaino JWT Token
         id: jwt_token
@@ -99,7 +100,6 @@ jobs:
         run: |
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ] | map(.id)')
           echo "::set-output name=allNonProdDistIds::${distIds}"
-      - uses: actions/github-script@v5
 
       - name: Run Script
         uses: octokit/request-action@v2.x
