@@ -60,8 +60,8 @@ jobs:
           echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)'
           version=$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
           echo $version
-          echo '::set-output name=distribution::$(echo ls *.tar.gz | awk '{ print $2 }')'
-          echo '::set-output name=version::$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')'
+          echo '::set-output name=distribution::'$(echo ls *.tar.gz | awk '{ print $2 }')
+          echo '::set-output name=version::'$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
         working-directory: ${{steps.download.outputs.download-path}}/distribution
 
       #
