@@ -26,7 +26,6 @@ jobs:
     timeout-minutes: 90
 
     steps:
-      - uses: octokit/request-action@v2.x
       # Get API access token and verify it.
       - name: Obtaino JWT Token
         id: jwt_token
@@ -116,7 +115,7 @@ jobs:
                       console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
                       const deleteResponse = await octokit.request('https://api.${{ secrets.HOST }}/v3/distributions/'+allNonProdDistIds[step],
                       {
-                        method: 'GET',
+                        method: 'DELETE',
                         headers: {}
                       })
                       console.log("status " + deleteResponse.status)
