@@ -109,7 +109,7 @@ jobs:
 
       - name: Return this
         run: |
-          declare -a arr= echo ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}} | tr "{" "(" | tr "}" ")" | "," " "'
+          declare arr= echo ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}} | tr "{" "(" | tr "}" ")" | "," " "'
           for i in 'echo ${arr} | tr "," " "'
           do
             echo "$i"
