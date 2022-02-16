@@ -9,7 +9,7 @@ on:
 
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
-  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 78
+  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 89
   PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[distribution.tar.gz]"
   NON_PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[a-z0-9]+-[distribution.tar.gz]"
 
