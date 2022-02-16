@@ -94,7 +94,7 @@ jobs:
       - name: Run Script
         uses: actions/github-script@v6
         with:
-          token: ${{ steps.jwt_token.outputs.token1 }}
+          github-token: ${{ steps.jwt_token.outputs.token1 }}
           script: |
             console.log(" ********* Latest  distribution Ids *********** " )
             let latestNonProdDistIds = ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
@@ -105,7 +105,7 @@ jobs:
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
                       const deleteResponse = await github.request('DELETE https://api.${{ secrets.HOST }}/v3/distributions/'+allNonProdDistIds[step])
-                    console.log("status " + deleteResponse.status)
+                      console.log("status " + deleteResponse.status)
 
                 }
             }
