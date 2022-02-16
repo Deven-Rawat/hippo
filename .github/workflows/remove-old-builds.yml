@@ -100,8 +100,9 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ] | map(.id)')
           echo "::set-output name=allNonProdDistIds::${distIds}"
       - uses: actions/github-script@v5
-      - uses: octokit/request-action@v2.x
+
       - name: Run Script
+        uses: octokit/request-action@v2.x
         with:
           github-token: ${{ steps.jwt_token.outputs.token1 }}
           script: |
