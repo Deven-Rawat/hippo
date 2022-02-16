@@ -108,14 +108,7 @@ jobs:
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
 
-      - name: Cehck this
-        run: |
-          declare -a arr=("element1" "element2" "element3")
-          for i in "${arr[@]}"
-          do
-          echo "$i"
-          # or do whatever with individual element of the array
-          done
+
 
       - name: Run Script
         uses: actions/github-script@v6
@@ -127,11 +120,20 @@ jobs:
             console.log(" *********ALL distribution Ids *********** " )
             let allNonProdDistIds = ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
              console.log(allNonProdDistIds.length )
+            var toBeDeleted = new Array()
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
+                      toBeDeleted.push(allNonProdDistIds[step]);
                 }
             }
+        - name: Cehck this
+            run: |
+              declare -a arr=${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
+              for i in "${arr[@]}"
+              do
+                echo "$i"
+              done
 
   remove-non-prod-builds:
     name: Remove Non Prod Builds
