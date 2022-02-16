@@ -85,7 +85,7 @@ jobs:
           latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_PROD}}]')
           echo "::set-output name=latestProdDistIds::${latestId}"
 
-      - name: All Distribution Ids
+      - name: All Mapped Distribution Ids
         id: all-active-distribution-ids
         run: |
           distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
@@ -106,6 +106,6 @@ jobs:
               response=$(curl \
                 -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
                 -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/$value)
-                echo "Here "  ${response}
+                echo "Here "  ${response.error_code}
             fi
           done
