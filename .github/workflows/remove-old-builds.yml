@@ -120,7 +120,7 @@ jobs:
             for (let step = 0; step < allNonProdDistIds.length; step++) {
                   if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
                       console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
-                      const execa = require('execa')
+                      const execa = import('execa')
                       const { stdout } = await execa('echo', ['hello', 'world'])
                       console.log(stdout)
                 }
