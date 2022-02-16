@@ -114,6 +114,10 @@ jobs:
           do
             if [[ ! " ${nonProdLatestDistIds[*]} " =~ " ${value} " ]]; then
               echo   " Id should be deleted  -->> "+  "$value"
+              response=$(curl \
+                -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
+                -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/$value)
+                echo "Here "  ${response}
             fi
           done
 
@@ -135,41 +139,3 @@ jobs:
                       toBeDeleted.push(allNonProdDistIds[step]);
                 }
             }
-
-  remove-non-prod-builds:
-    name: Remove Non Prod Builds
-    runs-on: ubuntu-latest
-    needs: retrieve-all-distribution-ids
-    strategy:
-      matrix: ${{fromJson(needs.retrieve-all-distribution-ids.outputs.allNonProdDistIds)}}
-      fail-fast: false
-    steps:
-     - name: Build is recent
-       id: keep_build
-       if: ${{ contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
-       run: |
-         echo " Keep the build "
-         echo "::set-output name=code::100"
-     - name: Check if Build to be deleted
-       id: remove_build
-       if: ${{ ! contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
-       run: |
-         echo "Token is " ${{needs.retrieve-token.outputs.deventokens}}
-         code=$(curl \
-         -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.deventokens }}" \
-         -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}} \
-         -o /dev/null -w '%{http_code}\n' -s)
-         echo ${code}
-         echo "::set-output name=code::$code"
-     - name: Authentication failed
-       if: ${{ steps.remove_build.outputs.code == 401 }}
-       uses: actions/github-script@v3
-       with:
-         script: |
-           core.setFailed(' 401 Authentication error' )
-     - name: Removal of Build failed
-       if: ${{ steps.keep_build.outputs.code != 100 && steps.remove_build.outputs.code != 200 }}
-       uses: actions/github-script@v3
-       with:
-         script: |
-           core.setFailed('Removal failed ')
