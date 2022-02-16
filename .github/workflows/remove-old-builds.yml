@@ -102,11 +102,13 @@ jobs:
           for value in "${allDistributionIds[@]}"
           do
             if [[ ! " ${nonProdLatestDistIds[*]} " =~ " ${value} " ]]; then
-              echo   " Id should be deleted  -->> "+  "$value"
-              code=$(curl \
+              response=$(curl \
                 -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
                 -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/$value \
                 -o /dev/null -w '%{http_code}\n' -s)
-                echo "Here -->"  ${code}
+
+                if [code ='409']
+                  echo "Distribution id is in use "  ${value}
+                fi
             fi
           done
