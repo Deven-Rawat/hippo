@@ -85,10 +85,10 @@ jobs:
           latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_PROD}}]')
           echo "::set-output name=latestProdDistIds::${latestId}"
 
-      - name: All Mapped Distribution Ids
+      - name: All Non Prod Distribution Ids
         id: all-active-distribution-ids
         run: |
-          distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id} ] | map(.id)')
+          distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id, name: .name} ] | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id)')
           echo "::set-output name=allDistributionIdMap::${distIds}"
 
       - name: Remove Non Prod Old Distribution
