@@ -28,7 +28,6 @@ jobs:
       - name: Store Artifact for Later in the Pipeline
         uses: actions/upload-artifact@v2
         with:
-          name: build
           path: target/*.tar.gz
           if-no-files-found: error
 
