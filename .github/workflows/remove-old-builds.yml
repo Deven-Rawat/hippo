@@ -114,7 +114,7 @@ jobs:
                       console.log('Deleting distribution id --> ' +allNonProdDistIds[step] );
                       const deleteResponse = await github.request('https://api.${{ secrets.HOST }}/v3/distributions/'+allNonProdDistIds[step],
                       {
-                        method: 'DELETE',
+                        method: 'GET',
                         headers: {}
                       })
                       console.log("status " + deleteResponse.status)
