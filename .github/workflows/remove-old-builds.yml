@@ -107,6 +107,15 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ] | map(.id)')
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
+      - name: Return this
+        run: |
+          declare -a arr=("element1" "element2" "element3")
+          for i in "${arr[@]}"
+          do
+            echo "$i"
+          done
+
+
       - name: Run Script
         uses: actions/github-script@v6
         with:
@@ -124,14 +133,6 @@ jobs:
                       toBeDeleted.push(allNonProdDistIds[step]);
                 }
             }
-
-        - name: Cehck this
-            run: |
-              declare -a arr=("element1" "element2" "element3")
-              for i in "${arr[@]}"
-              do
-                echo "$i"
-              done
 
   remove-non-prod-builds:
     name: Remove Non Prod Builds
