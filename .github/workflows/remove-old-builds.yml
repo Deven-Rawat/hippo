@@ -107,9 +107,6 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ] | map(.id)')
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
-
-
-
       - name: Run Script
         uses: actions/github-script@v6
         with:
@@ -127,6 +124,7 @@ jobs:
                       toBeDeleted.push(allNonProdDistIds[step]);
                 }
             }
+            
         - name: Cehck this
             run: |
               declare -a arr=${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
