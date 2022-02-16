@@ -1,19 +1,15 @@
-name: Deploy to UAT and Git Tag
+name: Deploy to UAT and Git Tag (v2)
 
 on:
   push:
     branches:
-      - master
+      - geoff-test
 
 jobs:
   build:
     name: Build Master
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    env:
-      SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
-      CHANNEL_ID: C8QJFKBC2 # support channel
-      ENV: "uat"
 
     steps:
 
@@ -48,7 +44,6 @@ jobs:
               "year" : new Date().getFullYear(),
               "rotation" : new Date().getTimezoneOffset()
             })
-
       - name: Setup cache (Maven packages)
         uses: actions/cache@v2
         env:
@@ -56,12 +51,11 @@ jobs:
           ROTATION: ${{ fromJSON(steps.cache-key-helper.outputs.result).rotation }}
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-v2-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
+          key: ${{ runner.os }}-maven-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
           restore-keys: |
-            ${{ runner.os }}-maven-v2-nhs-digital-${{ env.YEAR }}-
-            ${{ runner.os }}-maven-v2-nhs-digital-
-            ${{ runner.os }}-maven-v2-nhs-
-
+            ${{ runner.os }}-maven-nhs-digital-${{ env.YEAR }}-
+            ${{ runner.os }}-maven-nhs-digital-
+            ${{ runner.os }}-maven-nhs-
       - name: Setup cache (Node.js packages)
         uses: actions/cache@v2
         env:
@@ -69,14 +63,21 @@ jobs:
           ROTATION: ${{ fromJSON(steps.cache-key-helper.outputs.result).rotation }}
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-v2-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
+          key: ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
           restore-keys: |
-            ${{ runner.os }}-node-v2-nhs-digital-${{ env.YEAR }}-
-            ${{ runner.os }}-node-v2-nhs-digital-
-            ${{ runner.os }}-node-v2-nhs-
+            ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-
+            ${{ runner.os }}-node-nhs-digital-
+            ${{ runner.os }}-node-nhs-
 
       #
-      # Step 6
+      # Step 4
+      #
+      - name: Bump the version number
+        run: make version.bumpup
+
+
+      #
+      # Step 5
       #
       - name: Build master
         run: make clean build
@@ -85,28 +86,124 @@ jobs:
           HIPPO_MAVEN_USERNAME: ${{ secrets.HIPPO_MAVEN_USERNAME }}
 
       #
-      # upload build for next job
-      #
-      - name: Store Artifact for Later in the Pipeline
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: target/*.tar.gz
-          if-no-files-found: error
-      #
-      # Step 7
+      # Step 6
       #
       - name: Set the commit's Git status
         run: make github.status.success
 
       #
+      # Step 6
+      #
+      - name: Push tag back to github
+        run: |
+          make git.update-environment-tag
+          git push --tags
+
+      #
+      # upload build for next job
+      #
+      - name: Store Artifact for Later in the Pipeline
+        uses: actions/upload-artifact@v2
+        with:
+          name: distribution
+          path: target/*.tar.gz
+          if-no-files-found: error
+
+
+  ODv1Deployment:
+    name: Deploy to ODv1
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
+      CHANNEL_ID: C8QJFKBC2 # support channel
+      ENV: "uat"
+    steps:
+
+      #
+      # Prepare for RD communication
+      #
+      - name: Configure SSH certificates
+        run: |
+          mkdir ~/.ssh
+          echo "${{ secrets.IDM_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.IDM_PUB }}" > ~/.ssh/id_rsa.pub
+          chmod 400 ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa.pub
+      - name: Configure known hosts
+        run: |
+          touch ~/.ssh/known_hosts
+          ssh-keygen -R ${{ secrets.RD_FTP }}
+          ssh-keyscan -H -t rsa ${{ secrets.RD_FTP }} >> ~/.ssh/known_hosts
+
+      #
+      # Download the distribution artifact
+      #
+      - name: Download version artifact
+        uses: actions/download-artifact@v2
+        id: download
+
+      #
+      # Get and store the details of the download
+      #
+      - name: Get artifact details
+        id: details
+        run: |
+          echo '::set-output name=distribution::'$(echo ls *.tar.gz | awk '{ print $2 }')
+          echo '::set-output name=version::'$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
+        working-directory: ${{steps.download.outputs.download-path}}/distribution
+
+      #
+      # Upload the distribution to RD
+      #
+      - name: Upload distribution
+        run: |
+          echo put ${{ env.DISTROBUTION }} /uploads/dists/${{ env.VERSION }}.tar.gz | sftp nhs@static.hosting.onehippo.com
+        env:
+          DISTROBUTION: ${{steps.details.outputs.distribution}}
+          VERSION: ${{steps.details.outputs.version}}
+        working-directory: ${{steps.download.outputs.download-path}}/distribution
+
+      #
+      # Send Deployment Request
+      #
+      - name: Deploy request
+        id: pipeline-deploy
+        run: |
+          curl -LO https://github.com/rundeck/rundeck-cli/releases/download/v1.0.25/rundeck-cli-1.0.25-all.jar
+          java -jar rundeck-cli-1.0.25-all.jar run \
+          --project nhs \
+          --job "jobs/acct/Deploy" \
+          -- \
+          -bootstrap true \
+          -distribution "${{ env.VERSION }}.tar.gz" > pipeline-deploy-output.txt
+          echo "::set-output name=PIPELINE_DEPLOY_URL::"$(cat pipeline-deploy-output.txt | grep -Po "(?<=<)[^>]+")
+        env:
+          RD_URL: ${{ secrets.RD_API }}
+          RD_USER: ${{ secrets.RD_USER }}
+          RD_PASSWORD: ${{ secrets.RD_PASSWORD }}
+          VERSION: ${{steps.details.outputs.version}}
+        working-directory: ${{steps.download.outputs.download-path}}/distribution
+
+      #
+      # Message the progress
+      #
+      - name: Slack message (end message)
+        uses: muinmomin/webhook-action@v1.0.0
+        with:
+          url: ${{ env.SLACK_WEBHOOK }}
+          data: '{ "channel": "${{ env.CHANNEL_ID }}", "text": "Master is being deployed", "attachments": [{ "text" : "RunDeck is deploying. You can track progress here ${{steps.pipeline-deploy.outputs.PIPELINE_DEPLOY_URL}}", "color": "#78BE20" }] }'
+
+
   ODv2Deployment:
+    name: Deploy to ODv2
     needs: build
     runs-on: ubuntu-latest
     steps:
 
-
+      #
       # Get API access token and verify it.
+      #
       - name: Obtain JWT Token
         id: jwt_token
         run: |
@@ -140,23 +237,39 @@ jobs:
           # 'CODE' is for debugging fails
           CODE: ${{ steps.jwt_token_verify.outputs.code }}
 
+      #
+      # Download the distribution artifact
+      #
       - name: Download version artifact
         uses: actions/download-artifact@v2
-        id: down
+        id: download
 
-          #Upload Build to BR Cloud
+      #
+      # Get and store the details of the download
+      #
+      - name: Get artifact details
+        id: details
+        run: |
+          echo '::set-output name=distribution::'$(echo ls *.tar.gz | awk '{ print $2 }')
+          echo '::set-output name=version::'$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
+        working-directory: ${{steps.download.outputs.download-path}}/distribution
+
+      #
+      # Upload Build to BR Cloud
+      #
       - name: Upload Build to BR Cloud
         id: distribution
         run: |
-          filelist=($(ls builgd/))
-          file="dist_file=@build/${filelist[0]}"
           response=$(curl -i \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X POST https://api.${{ secrets.HOST }}/v3/distributions \
-          -F $file)
+          -F ${{ env.DISTROBUTION }})
           id=$(echo $response | awk 'match($0, /id":"[^"]+"/) {print substr($0, RSTART+5)}' | cut -d '"' -f 1 )
           echo "::set-output name=id::$id"
-        working-directory: ${{steps.download.outputs.download-path}}
+        env:
+          DISTROBUTION: ${{steps.details.outputs.distribution}}
+        working-directory: ${{steps.download.outputs.download-path}}/distribution
+
       #
       # Prepare App Config Deployment Details
       #
@@ -202,8 +315,15 @@ jobs:
           DISTRIBUTION: ${{ steps.distribution.outputs.id }}
           ENVIRONMENT: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
 
+      - name: Check Response Code from Request Deployment
+        if: ${{ steps.deployment.outputs.code != 202 }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Response code mismatch while requesting deployment from BR Cloud!')
 
-          # Clean-up steps below.
+
+      # Clean-up steps below.
 
       # Delete JWT refresh token
       - name: Request Deletion of JWT Refresh Access tokens
