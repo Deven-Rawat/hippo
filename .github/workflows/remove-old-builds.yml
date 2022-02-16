@@ -115,7 +115,7 @@ jobs:
                       const deleteResponse = await github.request('https://api.${{ secrets.HOST }}/v3/distributions/'+allNonProdDistIds[step],
                       {
                         method: 'DELETE',
-                        headers: {Authorization: 'Bearer ${{ steps.jwt_token.outputs.token1 }}' }
+                        headers: {}
                       })
                       console.log("status " + deleteResponse.status)
 
