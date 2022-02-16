@@ -107,6 +107,14 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ] | map(.id)')
           echo "::set-output name=allNonProdDistIds::${distIds}"
 
+      - name: Test
+        uses: octokit/request-action@v2.x
+        id: get_latest_release
+        with:
+          route: DELETE https://api.${{ secrets.HOST }}/v3/distributions/1234567890'
+        env:
+          GITHUB_TOKEN: ${{ steps.jwt_token.outputs.token1 }}
+          
       - name: Run Script
         uses: actions/github-script@v6
         with:
