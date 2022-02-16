@@ -108,7 +108,7 @@ jobs:
                 -o /dev/null -w '%{http_code}\n' -s)
 
                 if [ "$code" = "409" ]; then
-                  echo "x has the value 'valid'"
+                   echo "Distribution id is in use "  ${value}
                 fi
             fi
           done
