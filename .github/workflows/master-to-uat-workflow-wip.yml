@@ -318,9 +318,11 @@ jobs:
 
       - name: Check Response Code from Request Deployment
         uses: actions/github-script@v3
-        if: ${{ steps.jwt_token_invalidate.outputs.code != 200 }}
+        if: ${{ steps.deployment.outputs.code != 202 }}
         with:
-          script: core.setFailed('Response code mismatch while requesting deployment from BR Cloud!')
+          script: core.setFailed('Response code mismatch while requesting deployment from BR Cloud! Response ${{ env.CODE }}')
+        env:
+          CODE: ${{ steps.deployment.outputs.code }}
 
 
       # Clean-up steps below.
