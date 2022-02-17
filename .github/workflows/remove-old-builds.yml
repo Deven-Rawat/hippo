@@ -3,8 +3,9 @@
 name: Clear Builds
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
+  push:
+    branches:
+      - master
 
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
