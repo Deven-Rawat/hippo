@@ -354,7 +354,7 @@ jobs:
         id: details
         run: |
           echo '::set-output name=distribution::'$(echo ls *.tar.gz | awk '{ print $2 }')
-          echo '::set-output name=version::'$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-on-demand-distribution.tar.gz)')
+          echo '::set-output name=version::'$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
         working-directory: ${{steps.download.outputs.download-path}}/distribution-odv2
 
       #
