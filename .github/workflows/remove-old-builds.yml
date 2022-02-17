@@ -9,8 +9,8 @@ on:
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
   NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 89
-  PROD_REG_EXPRESSION: "^website-v\d{1,2}\.\d{1,2}\.\d{3,}(?:-(?:cms|distribution)){1,2}\.tar"
-  NON_PROD_REG_EXPRESSION: "^website-v\d{1,2}\.\d{1,2}\.\d{3,}-\d{2}-[a-z0-9]+(?:-(?:cms|distribution)){1,2}\.tar\.gz/gm"
+  PROD_REG_EXPRESSION: "^website-v\\d{1,2}\\.\\d{1,2}\\.\\d{3,}(?:-(?:cms|distribution)){1,2}\\.tar"
+  NON_PROD_REG_EXPRESSION: "^website-v\\d{1,2}\\.\\d{1,2}\\.\\d{3,}-\\d{2}-[a-z0-9]+(?:-(?:cms|distribution)){1,2}\\.tar\\.gz/gm"
 
 jobs:
 
