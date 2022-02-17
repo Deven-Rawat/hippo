@@ -97,6 +97,20 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id, name: .name} ] | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id)')
           echo "::set-output name=allProdDistributionIdMap::${distIds}"
 
+      - name: Print JSON
+        id: print-json
+        run: |
+          echo "***********************"
+          echo " All non Prod Ids "+ ${{steps.all-non-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}
+          echo "***********************"
+           echo " All  Prod Ids "+ ${{steps.all-prod-active-distribution-ids.outputs.allProdDistributionIdMap}}
+          echo "***********************"
+          echo " All latest Non Prod Ids "+ ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
+          echo "***********************"
+          echo " All Latest Prod Ids "+ ${{steps.latest-prod-distribution-ids.outputs.latestProdDistIds}}
+          echo "***********************"
+
+
       - name: Remove Old Non Prod Distribution
         run: |
           declare -a  allDistributionIds=$(echo  '${{steps.all-non-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
@@ -122,7 +136,7 @@ jobs:
       - name: Remove Old Prod Distribution
         run: |
           declare -a  allDistributionIds=$(echo  '${{steps.all-prod-active-distribution-ids.outputs.allProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
-          declare -a  prodLatestDistIds=$(echo  '${{steps.latest-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+          declare -a  prodLatestDistIds=$(echo  '${{steps.latest-prod-distribution-ids.outputs.latestProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
 
           echo "allDistributionIds  Length --> "  ${#allDistributionIds[@]}
           echo "prodLatestDistIds  Length --> "  ${#prodLatestDistIds[@]}
