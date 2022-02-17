@@ -97,8 +97,8 @@ jobs:
           distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id, name: .name} ] | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id)')
           echo "::set-output name=allProdDistributionIdMap::${distIds}"
 
-      - name: Print JSON
-        id: print-json
+      - name: Print Ids
+        id: print-ids
         run: |
           echo "***********************"
           echo " All non Prod Ids "+ ${{steps.all-non-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}
