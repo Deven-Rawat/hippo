@@ -3,8 +3,9 @@
 name: Clear Builds
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
+  push:
+    branches:
+      - master
 
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
@@ -17,7 +18,7 @@ jobs:
   remove-old-distributions:
     name: Remove Old distribution Ids
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 80
 
     steps:
       # Get API access token and verify it.
