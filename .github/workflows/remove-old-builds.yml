@@ -11,7 +11,7 @@ env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
   NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 89
   PROD_REG_EXPRESSION: "v\\d{1,2}\\.\\d{1,2}\\.\\d{3,}\\.tar"
-  NON_PROD_REG_EXPRESSION: "/v\d{1,2}\.\d{1,2}\.\d{3,}\-\d{1,2}-[a-z0-9]+\.tar"
+  NON_PROD_REG_EXPRESSION: "v\\d{1,2}\\.\\d{1,2}\\.\\d{3,}\\-\\d{1,2}-[a-z0-9]+\\.tar"
 
 jobs:
 
