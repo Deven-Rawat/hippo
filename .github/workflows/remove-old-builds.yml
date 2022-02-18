@@ -3,9 +3,8 @@
 name: Remove Old Builds
 
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    - cron: "0 9 * * 1-5"
 
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
