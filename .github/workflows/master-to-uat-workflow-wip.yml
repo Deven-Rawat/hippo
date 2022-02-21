@@ -54,6 +54,7 @@ jobs:
 
   ODv1build:
     name: Build Master For ODv1
+    needs: CalcVersion
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
@@ -230,6 +231,7 @@ jobs:
 
   ODv2build:
     name: Build Master For ODv2
+    needs: CalcVersion
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
