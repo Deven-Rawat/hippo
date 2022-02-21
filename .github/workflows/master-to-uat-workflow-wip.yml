@@ -6,8 +6,8 @@ on:
       - geoff-test
 
 jobs:
-  ODv1build:
-    name: Build Master For ODv1
+  CalcVersion:
+    name: Calculate Version Number
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
@@ -20,6 +20,50 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Need all the tags for versioning
+
+      #
+      # Step 4
+      #
+      - name: Bump the version number
+        run: make version.bumpup
+
+      #
+      # upload build for next job
+      #
+      - name: Store Distribution Version for Later in the Pipeline
+        uses: actions/upload-artifact@v2
+        with:
+          name: distribution-version
+          path: .version
+          if-no-files-found: error
+
+      #
+      # Step 6
+      #
+      - name: Set the commit's Git status
+        run: make github.status.success
+
+      #
+      # Step 6
+      #
+      - name: Push tag back to github
+        run: |
+          make git.update-environment-tag
+          git push --tags
+
+
+  ODv1build:
+    name: Build Master For ODv1
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+
+      #
+      # Step 1
+      #
+      - name: Checkout
+        uses: actions/checkout@v2
 
       #
       # Step 2
@@ -70,34 +114,23 @@ jobs:
             ${{ runner.os }}-node-nhs-
 
       #
+      # Download the distribution artifact
+      #
+      - name: Download Version Artifact
+        uses: actions/download-artifact@v2
+        id: download
+
+      - name: Place Version
+        run: mv ${{steps.download.outputs.download-path}}/version/.version .version
+
+      #
       # Step 4
-      #
-      - name: Bump the version number
-        run: make version.bumpup
-
-
-      #
-      # Step 5
       #
       - name: Build master
         run: make clean build
         env:
           HIPPO_MAVEN_PASSWORD: ${{ secrets.HIPPO_MAVEN_PASSWORD }}
           HIPPO_MAVEN_USERNAME: ${{ secrets.HIPPO_MAVEN_USERNAME }}
-
-      #
-      # Step 6
-      #
-      - name: Set the commit's Git status
-        run: make github.status.success
-
-      #
-      # Step 6
-      #
-      - name: Push tag back to github
-        run: |
-          make git.update-environment-tag
-          git push --tags
 
       #
       # upload build for next job
@@ -151,7 +184,7 @@ jobs:
         run: |
           echo '::set-output name=distribution::'$(echo ls *.tar.gz | awk '{ print $2 }')
           echo '::set-output name=version::'$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-on-demand-distribution.tar.gz)')
-        working-directory: ${{steps.download.outputs.download-path}}/distribution
+        working-directory: ${{steps.download.outputs.download-path}}/distribution-odv1
 
       #
       # Upload the distribution to RD
@@ -162,7 +195,7 @@ jobs:
         env:
           DISTROBUTION: ${{steps.details.outputs.distribution}}
           VERSION: ${{steps.details.outputs.version}}
-        working-directory: ${{steps.download.outputs.download-path}}/distribution
+        working-directory: ${{steps.download.outputs.download-path}}/distribution-odv1
 
       #
       # Send Deployment Request
@@ -183,7 +216,7 @@ jobs:
           RD_USER: ${{ secrets.RD_USER }}
           RD_PASSWORD: ${{ secrets.RD_PASSWORD }}
           VERSION: ${{steps.details.outputs.version}}
-        working-directory: ${{steps.download.outputs.download-path}}/distribution
+        working-directory: ${{steps.download.outputs.download-path}}/distribution-odv1
 
       #
       # Message the progress
@@ -240,11 +273,11 @@ jobs:
           ROTATION: ${{ fromJSON(steps.cache-key-helper.outputs.result).rotation }}
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
+          key: ${{ runner.os }}-v2-maven-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
           restore-keys: |
-            ${{ runner.os }}-maven-nhs-digital-${{ env.YEAR }}-
-            ${{ runner.os }}-maven-nhs-digital-
-            ${{ runner.os }}-maven-nhs-
+            ${{ runner.os }}-v2-maven-nhs-digital-${{ env.YEAR }}-
+            ${{ runner.os }}-v2-maven-nhs-digital-
+            ${{ runner.os }}-v2-maven-nhs-
       - name: Setup cache (Node.js packages)
         uses: actions/cache@v2
         env:
@@ -252,18 +285,21 @@ jobs:
           ROTATION: ${{ fromJSON(steps.cache-key-helper.outputs.result).rotation }}
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
+          key: ${{ runner.os }}-v2-node-nhs-digital-${{ env.YEAR }}-${{ env.ROTATION }}
           restore-keys: |
-            ${{ runner.os }}-node-nhs-digital-${{ env.YEAR }}-
-            ${{ runner.os }}-node-nhs-digital-
-            ${{ runner.os }}-node-nhs-
+            ${{ runner.os }}-v2-node-nhs-digital-${{ env.YEAR }}-
+            ${{ runner.os }}-v2-node-nhs-digital-
+            ${{ runner.os }}-v2-node-nhs-
 
       #
-      # Step 4
+      # Download the distribution artifact
       #
-      - name: Bump the version number
-        run: make version.bumpup
+      - name: Download Version Artifact
+        uses: actions/download-artifact@v2
+        id: download
 
+      - name: Place Version
+        run: mv ${{steps.download.outputs.download-path}}/version/.version .version
 
       #
       # Step 5
@@ -273,20 +309,6 @@ jobs:
         env:
           HIPPO_MAVEN_PASSWORD: ${{ secrets.HIPPO_MAVEN_PASSWORD }}
           HIPPO_MAVEN_USERNAME: ${{ secrets.HIPPO_MAVEN_USERNAME }}
-
-      #
-      # Step 6
-      #
-      - name: Set the commit's Git status
-        run: make github.status.success
-
-      #
-      # Step 6
-      #
-      - name: Push tag back to github
-        run: |
-          make git.update-environment-tag
-          git push --tags
 
       #
       # upload build for next job
@@ -373,6 +395,20 @@ jobs:
           DISTROBUTION: ${{steps.details.outputs.distribution}}
           VERSION: ${{steps.details.outputs.version}}
         working-directory: ${{steps.download.outputs.download-path}}/distribution-odv2
+
+      #
+      # Check Response
+      #
+      - name: Check Response has ID from Upload Build to BR Cloud
+        if: ${{ steps.distribution.outputs.id.length == 36 }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Upload Build to BR Cloud failed!')
+        env:
+          # For debugging
+          ID: ${{ steps.distribution.outputs.id }}
+          ID-LENGTH: ${{ steps.distribution.outputs.id.length }}
 
       #
       # Prepare App Config Deployment Details
