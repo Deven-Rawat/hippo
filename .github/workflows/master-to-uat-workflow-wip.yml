@@ -33,7 +33,7 @@ jobs:
       - name: Store Distribution Version for Later in the Pipeline
         uses: actions/upload-artifact@v2
         with:
-          name: distribution-version
+          name: version
           path: .version
           if-no-files-found: error
 
