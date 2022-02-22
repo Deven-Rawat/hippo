@@ -50,8 +50,6 @@ jobs:
         run: |
           make git.update-environment-tag
           git push --tags
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
 
   ODv1build:
