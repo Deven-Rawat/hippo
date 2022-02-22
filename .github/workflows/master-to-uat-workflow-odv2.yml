@@ -132,7 +132,10 @@ jobs:
           chmod 400 ~/.ssh/id_rsa.pub
       - name: Configure known hosts
         run: |
-          touch -R ~/.ssh/known_hosts
+          touch ~/.ssh/known_hosts
+          ssh-keygen -R ${{ secrets.RD_FTP }}
+          ssh-keyscan -H -t rsa ${{ secrets.RD_FTP }} >> ~/.ssh/known_hosts
+
       #
       # Download the distribution artifact
       #
