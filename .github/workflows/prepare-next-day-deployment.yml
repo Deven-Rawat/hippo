@@ -16,13 +16,13 @@ jobs:
         run: |
             mkdir ~/.ssh
             echo "1"
-            touch ~/.ssh/known_hosts
+            touch $HOME/.ssh/known_hosts
             echo "2"
             ssh-keygen -R github.com
             echo "3"
             ssh-keyscan github.com >> $HOME/.ssh/known_hosts
             echo "4"
-            ssh-add $HOME/.ssh/nhs-ci_rsa && cd ci-cd &&
+            ssh-add $HOME/.ssh/nhs-ci_rsa && cd ci-cd
             echo "5"
             echo ${git log --format="* %s. [Author %an]" prd..rc}
             echo "6"
