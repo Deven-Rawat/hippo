@@ -15,6 +15,7 @@ jobs:
 
       - name: Tagging the build
         run: |
+          cd ci-cd
           git log --format="* %s. [Author %an]" prd..rc
 
 
