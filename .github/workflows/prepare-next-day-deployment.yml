@@ -15,10 +15,15 @@ jobs:
       - name: Tagging the build
         run: |
             mkdir ~/.ssh
+            echo "1"
             touch ~/.ssh/known_hosts
+            echo "2"
             ssh-keygen -R github.com
+            echo "3"
             ssh-keyscan github.com >> $HOME/.ssh/known_hosts
+            echo "4"
             git log --format="* %s. [Author %an]" prd..rc
+            echo "5"
 
 
 
