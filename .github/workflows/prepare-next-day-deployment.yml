@@ -12,19 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
-      - name: Configure SSH certificates
-        run: |
-          mkdir ~/.ssh
-          echo "${{ secrets.IDM_KEY }}" > ~/.ssh/id_rsa
-          echo "${{ secrets.IDM_PUB }}" > ~/.ssh/id_rsa.pub
-          chmod 400 ~/.ssh/id_rsa
-          chmod 400 ~/.ssh/id_rsa.pub
-          echo ~/.ssh/id_rsa.pub
-
-
 
       - name: Tagging the build
         run: |
-            echo "Hello World"
+          git log --format="* %s. [Author %an]" prd..rc
 
 
