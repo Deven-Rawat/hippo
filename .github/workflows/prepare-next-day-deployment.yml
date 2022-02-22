@@ -22,8 +22,10 @@ jobs:
             echo "3"
             ssh-keyscan github.com >> $HOME/.ssh/known_hosts
             echo "4"
-            echo ${git log --format="* %s. [Author %an]" prd..rc}
+            ssh-add $HOME/.ssh/nhs-ci_rsa && cd ci-cd &&
             echo "5"
+            echo ${git log --format="* %s. [Author %an]" prd..rc}
+            echo "6"
 
 
 
