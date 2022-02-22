@@ -7,7 +7,7 @@ on:
 
 jobs:
   CalcVersion:
-    name: Calculate Version Number
+    name: Calculate Distribution Version Number
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
@@ -50,10 +50,12 @@ jobs:
         run: |
           make git.update-environment-tag
           git push --tags
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
 
   ODv1build:
-    name: Build Master For ODv1
+    name: Build Distribution For ODv1
     needs: CalcVersion
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -145,7 +147,7 @@ jobs:
 
 
   ODv1Deployment:
-    name: Deploy to ODv1
+    name: Deploy Distribution to ODv1 UAT
     needs: ODv1build
     runs-on: ubuntu-latest
     env:
@@ -230,7 +232,7 @@ jobs:
 
 
   ODv2build:
-    name: Build Master For ODv2
+    name: Build Distribution For ODv2
     needs: CalcVersion
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -323,7 +325,7 @@ jobs:
           if-no-files-found: error
 
   ODv2Deployment:
-    name: Deploy to ODv2
+    name: Deploy Distribution to ODv2 UAT
     needs: ODv2build
     runs-on: ubuntu-latest
     steps:
