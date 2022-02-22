@@ -22,8 +22,11 @@ jobs:
       - name: Configure known hosts
         run: |
           touch ~/.ssh/known_hosts
+          echo "1"
           ssh-keygen -R ${{ secrets.RD_FTP }}
+          echo "2"
           ssh-keyscan -H -t rsa ${{ secrets.RD_FTP }} >> ~/.ssh/known_hosts
+          echo "3"
       - name: Tagging the build
         run: |
             git log --format="* %s. [Author %an]" prd..rc
