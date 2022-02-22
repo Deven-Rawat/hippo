@@ -19,6 +19,7 @@ jobs:
           echo "${{ secrets.IDM_PUB }}" > ~/.ssh/id_rsa.pub
           chmod 400 ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa.pub
+          echo ~/.ssh/id_rsa.pub
 
 
 
