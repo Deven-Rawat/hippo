@@ -14,6 +14,7 @@ jobs:
     steps:
       - name: Tagging the build
         run: |
+            mkdir ~/.ssh
             touch ~/.ssh/known_hosts
             ssh-keygen -R github.com
             ssh-keyscan github.com >> $HOME/.ssh/known_hosts
