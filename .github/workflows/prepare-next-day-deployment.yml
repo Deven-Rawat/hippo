@@ -22,7 +22,7 @@ jobs:
             echo "3"
             ssh-keyscan github.com >> $HOME/.ssh/known_hosts
             echo "4"
-            git log --format="* %s. [Author %an]" prd..rc
+            echo ${git log --format="* %s. [Author %an]" prd..rc}
             echo "5"
 
 
