@@ -23,7 +23,8 @@ jobs:
 
       - name: Tagging the build
         run: |
-          cd ci-cd
+          make git.update-environment-tag ENV=prd VERSION=rc &&
+          make git.update-environment-tag ENV=rc VERSION=uat
           git log --format="* %s. [Author %an]" prd..rc
 
 
