@@ -7,7 +7,7 @@ on:
 
 jobs:
   CalcVersion:
-    name: Calculate Distribution Version Number
+    name: Update Distribution Version Number
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
@@ -273,13 +273,6 @@ jobs:
             ${{ runner.os }}-v2-node-nhs-digital-${{ env.YEAR }}-
             ${{ runner.os }}-v2-node-nhs-digital-
             ${{ runner.os }}-v2-node-nhs-
-
-      #
-      # Download the distribution artifact
-      #
-      - name: Download Version Artifact
-        uses: actions/download-artifact@v2
-        id: download
 
       #
       # Step 5
