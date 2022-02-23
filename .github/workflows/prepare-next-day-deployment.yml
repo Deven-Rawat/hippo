@@ -13,6 +13,14 @@ jobs:
     timeout-minutes: 85
     steps:
 
+      #
+      # Step 1
+      #
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Need all the tags for versioning
+
       - name: Tagging the build
         run: |
           cd ci-cd
