@@ -87,4 +87,4 @@ jobs:
         id: deploy-prod
         run: |
           file=$(echo git describe --tags --match rc)
-          echo file
+          echo $(file)
