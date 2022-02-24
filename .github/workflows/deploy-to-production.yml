@@ -61,7 +61,7 @@ jobs:
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-system-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
           echo "::set-output name=id::${id}"
         env:
-          TARGET: "prd"
+          TARGET: "prod"
 
       - name: Get Lastest AWS Keys for Envrinment
         id: aws-keys
@@ -69,13 +69,30 @@ jobs:
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-aws-credentials-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
           echo "::set-output name=id::${id}"
         env:
-          TARGET: "prd"
+          TARGET: "prod"
 
       - name: Get Lastest IP Configuration File ID
         id: latest-ip-whitelist
         run: |
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "hippo-ipfilter-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
           echo "::set-output name=id::${id}"
+
+      - name: Get All Distribution Ids
+        id: all-distribution-id
+        run: |
+          response=$(curl \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
+          -X GET https://api.${{ secrets.HOST }}/v3/distributions)
+          echo "::set-output name=allDistIds::${response}"
+          echo ${response}
+
+      - name: Distribution Ids Retrival failed
+        if: ${{ contains(steps.all-distribution-id.response ,'401') }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Retrival of distibution ids failed ')
+
 
 
       - name: Checkout
