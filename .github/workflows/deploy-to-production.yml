@@ -5,6 +5,10 @@ on:
     branches:
       - master
 
+env:
+  PROD_FILE_NAME: "rc.tar.gz"
+  PROD_ENV_ID: "THIS_IS_ID"
+
 jobs:
 
   prepare-prod-deployment:
@@ -94,11 +98,23 @@ jobs:
             core.setFailed('Retrival of distibution ids failed ')
 
       - name: Get Distribution Ids for prod deployment
-        id: latest-non-prod-distribution-ids
+        id: prod-distribution-ids
         run: |
           latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("v3.0.1039.tar.gz"))) | map(.id)')
-          echo "::set-output name=latestNonProdDistIds::${latestId}"
+          echo "::set-output name=prodDistId::${latestId}"
           echo ${latestId}
+
+      - name: Request PROD Deployment from BR Cloud
+        id: deployment
+        run: |
+          curl -i \
+          -H "Accept: application/json; charset=utf-8" \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
+          -X PUT https://api.${{ secrets.HOST }}/v3/environments/${{ env.ENVIRONMENT }}/deploy \
+          -d '{ "distributionId": "${{ env.DISTRIBUTION }}", "strategy" : "rollingupdate", "appConfigFileRoles": [ { "appConfigFileId": ${{ steps.aws-keys.outputs.id }}, "role": "file", "newFilename": "aws-credentials.properties" }, { "appConfigFileId": ${{ steps.system-properties.outputs.id }}, "role": "systemproperty" }, { "appConfigFileId": ${{ steps.latest-ip-whitelist.outputs.id }}, "role": "file", "newFilename": "hippo-ipfilter.properties" } ] }'
+        env:
+          DISTRIBUTION: ${{ steps.prod-distribution-ids.outputs.prodDistId }}
+          ENVIRONMENT: $${{env.PROD_ENV_ID}}
 
 
       - name: Checkout
