@@ -1,8 +1,9 @@
 name: Prepare for next day deployment
 
 on:
-  schedule:
-    - cron: "0 15 * * 1-5"
+  push:
+    branches:
+      -master
 
 jobs:
 
@@ -12,16 +13,7 @@ jobs:
     timeout-minutes: 85
     steps:
 
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Need all the tags for versioning
-
-      - name: Tagging the build
+      - name: Request Deployment from BR Cloud
+        id: deploy-prod
         run: |
-          make git.update-environment-tag ENV=prd VERSION=rc
-          make git.update-environment-tag ENV=rc VERSION=uat
-
-      - name: Message Slack
-        run: |
-          make notify.slack
+          echo $$(git describe --tags --match rc).tar.gz
