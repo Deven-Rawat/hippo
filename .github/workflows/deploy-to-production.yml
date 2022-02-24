@@ -86,5 +86,5 @@ jobs:
       - name: Request Deployment from BR Cloud
         id: deploy-prod
         run: |
-          file=git describe --tags --match rc
-          echo rc.tar.gz
+          file=$(echo git describe --tags --match rc)
+          echo file
