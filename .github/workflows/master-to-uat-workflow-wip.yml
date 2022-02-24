@@ -10,6 +10,8 @@ jobs:
     name: Update Distribution Version Number
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      ENV: uat
 
     steps:
 
@@ -22,19 +24,19 @@ jobs:
           fetch-depth: 0 # Need all the tags for versioning
 
       #
-      # Step 4
+      # Step 2
       #
       - name: Bump the version number
         run: make version.bumpup
 
       #
-      # Step 6
+      # Step 3
       #
       - name: Set the commit's Git status
         run: make github.status.success
 
       #
-      # Step 6
+      # Step 4
       #
       - name: Push tag back to github
         run: |
@@ -47,6 +49,8 @@ jobs:
     needs: CalcVersion
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      ENV: uat
 
     steps:
 
@@ -55,6 +59,8 @@ jobs:
       #
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Need all the tags for versioning
 
       #
       # Step 2
@@ -215,6 +221,8 @@ jobs:
     needs: CalcVersion
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      ENV: uat
 
     steps:
 
@@ -275,7 +283,7 @@ jobs:
             ${{ runner.os }}-v2-node-nhs-
 
       #
-      # Step 5
+      # Step 4
       #
       - name: Build master
         run: make clean build-odv2
@@ -284,6 +292,7 @@ jobs:
           HIPPO_MAVEN_USERNAME: ${{ secrets.HIPPO_MAVEN_USERNAME }}
 
       #
+      # 5
       # upload build for next job
       #
       - name: Store Artifact for Later in the Pipeline
