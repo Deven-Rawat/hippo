@@ -1,4 +1,4 @@
-name: Prepare for next day deployment
+name: Deploy to Production
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
 
   prepare-prod-deployment:
-    name: Prepare for next day deployment
+    name: Deploy to Production
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
