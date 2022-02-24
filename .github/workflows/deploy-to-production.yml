@@ -93,6 +93,12 @@ jobs:
           script: |
             core.setFailed('Retrival of distibution ids failed ')
 
+      - name: Get Distribution Ids for prod deployment
+        id: latest-non-prod-distribution-ids
+        run: |
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("v3.0.1039.tar.gz"))) | map(.id)')
+          echo "::set-output name=latestNonProdDistIds::${latestId}"
+          echo ${latestId}
 
 
       - name: Checkout
