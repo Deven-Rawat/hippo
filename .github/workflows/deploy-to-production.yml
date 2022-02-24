@@ -13,12 +13,47 @@ jobs:
     timeout-minutes: 85
     steps:
 
+      #
+      # Prepare App Config Deployment Details
+      #
+      - name: Get Configuration Files Details
+        id: files
+        run: |
+          response=$(curl \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
+          -X GET https://api.${{ secrets.HOST }}/v3/appconfigfiles)
+          echo "::set-output name=details::${response}"
+
+      - name: Get Lastest System Properties for Envrinment
+        id: system-properties
+        run: |
+          id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-system-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
+          echo "::set-output name=id::${id}"
+        env:
+          TARGET: "prd"
+
+      - name: Get Lastest AWS Keys for Envrinment
+        id: aws-keys
+        run: |
+          id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-aws-credentials-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
+          echo "::set-output name=id::${id}"
+        env:
+          TARGET: "prd"
+
+      - name: Get Lastest IP Configuration File ID
+        id: latest-ip-whitelist
+        run: |
+          id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "hippo-ipfilter-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
+          echo "::set-output name=id::${id}"
+
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Need all the tags for versioning
-          
+
       - name: Request Deployment from BR Cloud
         id: deploy-prod
         run: |
-          echo $$(git describe --tags --match rc).tar.gz
+          file=git describe --tags --match rc
+          echo rc.tar.gz
