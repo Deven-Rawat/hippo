@@ -13,6 +13,11 @@ jobs:
     timeout-minutes: 85
     steps:
 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Need all the tags for versioning
+          
       - name: Request Deployment from BR Cloud
         id: deploy-prod
         run: |
