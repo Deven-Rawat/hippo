@@ -116,14 +116,3 @@ jobs:
           DISTRIBUTION: ${{ steps.prod-distribution-ids.outputs.prodDistId }}
           ENVIRONMENT: $${{env.PROD_ENV_ID}}
 
-
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Need all the tags for versioning
-
-      - name: Request Deployment from BR Cloud
-        id: deploy-prod
-        run: |
-          file=$(echo git describe --tags --match rc)
-          echo $(file)
