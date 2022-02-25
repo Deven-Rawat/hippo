@@ -1,9 +1,8 @@
 name: Deploy to Production
 
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    - cron: "5 12 * * 1-5"
 
 env:
   PROD_FILE_NAME: "rc.tar.gz"
