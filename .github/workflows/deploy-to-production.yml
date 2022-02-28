@@ -91,6 +91,7 @@ jobs:
           respLength=$(echo response | jq '. | length')
           echo "::set-output name=respLength::${respLength}"
           echo ${response}
+          echo ${respLength}
 
       - name: Distribution Ids Retrival failed
         if: ${{ steps.all-distribution-id.output.respLength > 1 }}
