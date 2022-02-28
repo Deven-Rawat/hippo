@@ -93,7 +93,7 @@ jobs:
           echo ${respLengthTemp}
 
       - name: Distribution Ids Retrival failed
-        if: (${{steps.all-distribution-id.outputs.respLength}} < 4)
+        if: (${{steps.all-distribution-id.outputs.respLength < 4}})
         uses: actions/github-script@v3
         with:
           script: |
