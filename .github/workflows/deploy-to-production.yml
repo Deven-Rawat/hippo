@@ -8,6 +8,7 @@ on:
 env:
   PROD_FILE_NAME: "v3.0.1025-10-g760b49c30.tar.gz"
   PROD_ENV_ID: "dde633ee-047e-437e-a29e-1704ff9fe98a"
+  TARGET: "cs"
 
 jobs:
 
@@ -64,16 +65,13 @@ jobs:
         run: |
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-system-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
           echo "::set-output name=id::${id}"
-        env:
-          TARGET: "prod"
+
 
       - name: Get Lastest AWS Keys for Envrinment
         id: aws-keys
         run: |
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-aws-credentials-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
           echo "::set-output name=id::${id}"
-        env:
-          TARGET: "prod"
 
       - name: Get Lastest IP Configuration File ID
         id: latest-ip-whitelist
