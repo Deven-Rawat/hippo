@@ -109,23 +109,14 @@ jobs:
           echo  ${{steps.all-distribution-id.outputs.respLength}}
           echo ${latestId}
 
-      - name: Request PROD Deployment from BR Cloud
+      - name: Request Deployment from BR Cloud
         id: deployment
         run: |
-          code=$(curl -i \
+          curl -i \
           -H "Accept: application/json; charset=utf-8" \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X PUT https://api.${{ secrets.HOST }}/v3/environments/${{ env.ENVIRONMENT }}/deploy \
-          -o /dev/null -w '%{http_code}\n' -s \
-          -d '{ "distributionId": "${{ env.DISTRIBUTION }}", "strategy" : "rollingupdate", "appConfigFileRoles": [ { "appConfigFileId": ${{ steps.aws-keys.outputs.id }}, "role": "file", "newFilename": "aws-credentials.properties" }, { "appConfigFileId": ${{ steps.system-properties.outputs.id }}, "role": "systemproperty" }, { "appConfigFileId": ${{ steps.latest-ip-whitelist.outputs.id }}, "role": "file", "newFilename": "hippo-ipfilter.properties" } ] }')
-          echo "::set-output name=code::$code"
+          -d '{ "distributionId": "${{ env.DISTRIBUTION }}", "strategy" : "rollingupdate", "appConfigFileRoles": [ { "appConfigFileId": ${{ steps.aws-keys.outputs.id }}, "role": "file", "newFilename": "aws-credentials.properties" }, { "appConfigFileId": ${{ steps.system-properties.outputs.id }}, "role": "systemproperty" }, { "appConfigFileId": ${{ steps.latest-ip-whitelist.outputs.id }}, "role": "file", "newFilename": "hippo-ipfilter.properties" } ] }'
         env:
-          DISTRIBUTION: ${{ steps.prod-distribution-ids.outputs.prodDistId }}
+          DISTRIBUTION: "7bd212a7-9a1f-4b04-b3dc-52dbb60a80ea"
           ENVIRONMENT: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
-
-      - name: Check Response Code from Prod Deployment
-        if: ${{ steps.deployment.outputs.code != 200 }}
-        uses: actions/github-script@v3
-        with:
-          script: |
-            core.setFailed('The PROD deployment failed!')
