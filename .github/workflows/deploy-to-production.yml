@@ -2,10 +2,9 @@ name: Deploy to Production
 
 # Schedule deployment to Production
 on:
-  schedule:
-    # Runs at 12:05 pm weekdays (UK time)
-    - cron: "5 12 * * 1-5"
-
+  push:
+    branches:
+      - master
 env:
   PROD_FILE_NAME: "rc.tar.gz"
   PROD_ENV_ID: "THIS_IS_ID"
