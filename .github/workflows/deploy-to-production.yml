@@ -92,6 +92,7 @@ jobs:
           echo "::set-output name=respLength::${respLengthTemp}"
 
           echo " *************** "
+          echo  ${steps.all-distribution-id.output.respLength}
           echo  ${respLengthTemp}
 
       - name: Distribution Ids Retrival failed
