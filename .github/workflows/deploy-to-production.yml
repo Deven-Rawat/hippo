@@ -90,9 +90,9 @@ jobs:
           echo "::set-output name=allDistIds::${response}"
           respLengthTemp=$(echo ${response} | jq '[.items[] | {id: .id , date: .createdAt, name: .name}] | length')
           echo "::set-output name=respLength::${respLengthTemp}"
-          echo ${response}
+
           echo " *************** "
-          echo respLengthTemp --> ${respLengthTemp}
+          echo  ${respLengthTemp}
 
       - name: Distribution Ids Retrival failed
         if: ${{ steps.all-distribution-id.output.respLength > 1 }}
