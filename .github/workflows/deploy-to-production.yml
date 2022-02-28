@@ -103,7 +103,7 @@ jobs:
         id: prod-distribution-ids
         run: |
           latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("${{env.PROD_FILE_NAME}}"))) | map(.id)')
-          prodLatestDistId=${latestId} | tr "[" "" | tr "]" "" | tr "\"" ""
+          prodLatestDistId= echo ${latestId} | tr "[" " " | tr "]" " " | xargs
           echo "::set-output name=prodDistId::${latestId}"
           echo " ***************   *** **  "
           echo ${prodLatestDistId}
