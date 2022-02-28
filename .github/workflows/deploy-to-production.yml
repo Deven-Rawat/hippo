@@ -86,7 +86,7 @@ jobs:
         run: |
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
-          -X GET https://api.${{ secrets.HOST }}/v2/distributions)
+          -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
 
       - name: Distribution Ids Retrival failed
