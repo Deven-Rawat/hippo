@@ -96,7 +96,7 @@ jobs:
           echo  ${respLengthTemp}
 
       - name: Distribution Ids Retrival failed
-        if: ${{steps.all-distribution-id.outputs.respLength}} > 1
+        if: ${{steps.all-distribution-id.outputs.allDistIds}} == "{}" ${{steps.all-distribution-id.outputs.allDistIds}} == "{ }"
         uses: actions/github-script@v3
         with:
           script: |
