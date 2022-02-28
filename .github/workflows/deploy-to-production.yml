@@ -6,7 +6,7 @@ on:
     branches:
       - master
 env:
-  PROD_FILE_NAME: "v3.0.1025-10-g760b49c30.tar.gz"
+  PROD_FILE_NAME: "v3.0.1040.tar.gz"
   PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
   TARGET: "development"
 
