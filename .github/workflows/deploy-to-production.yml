@@ -6,8 +6,8 @@ on:
     branches:
       - master
 env:
-  PROD_FILE_NAME: "rc.tar.gz"
-  PROD_ENV_ID: "THIS_IS_ID"
+  PROD_FILE_NAME: "v3.0.1025-10-g760b49c30.tar.gz"
+  PROD_ENV_ID: "dde633ee-047e-437e-a29e-1704ff9fe98a"
 
 jobs:
 
