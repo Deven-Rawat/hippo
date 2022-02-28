@@ -88,11 +88,11 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
-          respLength=$(echo ${response} | jq '. | length')
-          echo "::set-output name=respLength::${respLength}"
+          respLengthTemp=$(echo ${response} | jq '. | length')
+          echo "::set-output name=respLength::${respLengthTemp}"
           echo ${response}
           echo " *************** "
-          echo respLength --> ${respLength}
+          echo respLengthTemp --> ${respLengthTemp}
 
       - name: Distribution Ids Retrival failed
         if: ${{ steps.all-distribution-id.output.respLength > 1 }}
