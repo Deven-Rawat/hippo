@@ -121,7 +121,7 @@ jobs:
           echo "::set-output name=code::$code"
         env:
           DISTRIBUTION: ${{ steps.prod-distribution-ids.outputs.prodDistId }}
-          ENVIRONMENT: $${{env.PROD_ENV_ID}}
+          ENVIRONMENT: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
 
       - name: Check Response Code from Prod Deployment
         if: ${{ steps.deployment.outputs.code != 200 }}
