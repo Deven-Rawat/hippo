@@ -108,7 +108,7 @@ jobs:
           latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("${{env.PROD_FILE_NAME}}"))) | map(.id)')
           echo "::set-output name=prodDistId::${latestId}"
           echo " ***************   *** **  "
-          echo  ${steps.all-distribution-id.output.respLength}
+          echo  ${{steps.all-distribution-id.output.respLength}}
           echo ${latestId}
 
       - name: Request PROD Deployment from BR Cloud
