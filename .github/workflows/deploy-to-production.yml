@@ -120,8 +120,8 @@ jobs:
           -o /dev/null -w '%{http_code}\n' -s)
           echo "::set-output name=code::$code"
         env:
-          DISTRIBUTION: "7bd212a7-9a1f-4b04-b3dc-52dbb60a80ea"
-          ENVIRONMENT: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
+          DISTRIBUTION: ${{ steps.prod-distribution-ids.outputs.prodDistId }}
+          ENVIRONMENT: $${{env.PROD_ENV_ID}}
 
       - name: Check Response Code from Request Deployment
         uses: actions/github-script@v3
