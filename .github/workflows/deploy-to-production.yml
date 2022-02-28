@@ -121,7 +121,7 @@ jobs:
           echo "::set-output name=code::$code"
         env:
           DISTRIBUTION: ${{ steps.prod-distribution-ids.outputs.prodDistId }}
-          ENVIRONMENT: $${{env.PROD_ENV_ID}}
+          ENVIRONMENT: ${{ env.PROD_ENV_ID }}
 
       - name: Check Response Code from Request Deployment
         uses: actions/github-script@v3
