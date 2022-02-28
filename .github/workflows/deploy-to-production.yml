@@ -7,7 +7,7 @@ on:
       - master
 env:
   PROD_FILE_NAME: "v3.0.1025-10-g760b49c30.tar.gz"
-  PROD_ENV_ID: "c033120b-291a-463c-8ba7-363fb50ea072"
+  PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
   TARGET: "development"
 
 jobs:
