@@ -1,7 +1,9 @@
 name: Deploy to Production
 
+# Schedule deployment to Production
 on:
   schedule:
+    # Runs at 12:05 pm weekdays (UK time)
     - cron: "5 12 * * 1-5"
 
 env:
@@ -87,10 +89,12 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
+          respLength=$(echo response | jq '. | length')
+          echo "::set-output name=respLength::${respLength}"
           echo ${response}
 
       - name: Distribution Ids Retrival failed
-        if: ${{ contains(steps.all-distribution-id.response ,'401') }}
+        if: ${{ steps.all-distribution-id.output.respLength > 1 }}
         uses: actions/github-script@v3
         with:
           script: |
@@ -99,7 +103,7 @@ jobs:
       - name: Get Distribution Ids for prod deployment
         id: prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("v3.0.1039.tar.gz"))) | map(.id)')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test(${{env.PROD_FILE_NAME}}))) | map(.id)')
           echo "::set-output name=prodDistId::${latestId}"
           echo ${latestId}
 
