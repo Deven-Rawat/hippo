@@ -86,7 +86,7 @@ jobs:
         run: |
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
-          -X GET https://api.${{ secrets.HOST }}/v3/distributions)
+          -X GET https://api.${{ secrets.HOST }}/v2/distributions)
           echo "::set-output name=allDistIds::${response}"
           respLengthTemp=$(echo ${response} | jq '[.items[] | {id: .id , date: .createdAt, name: .name}] | length')
           echo "::set-output name=respLength::${respLengthTemp}"
