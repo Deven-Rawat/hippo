@@ -88,10 +88,13 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
-          echo ${response}
+          respLengthTemp=$(echo ${response} | jq '[.items[] | {id: .id , date: .createdAt, name: .name}] | length')
+          echo "::set-output name=respLength::${respLengthTemp}"
+          echo " *************** "
+          echo  ${respLengthTemp}
 
       - name: Distribution Ids Retrival failed
-        if: ((${{steps.all-distribution-id.outputs.allDistIds}} == '{}') || (${{steps.all-distribution-id.outputs.allDistIds}} == '{ }'))
+        if: ${{steps.all-distribution-id.outputs.respLength}} > 3
         uses: actions/github-script@v3
         with:
           script: |
