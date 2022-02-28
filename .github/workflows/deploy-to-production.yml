@@ -6,9 +6,10 @@ on:
     branches:
       - master
 env:
-  PROD_FILE_NAME: "v3.0.1035.tar.gz"
+  PROD_FILE_NAME: "rc.tar.gz"
+  #To be replaced by Prod Env Id
   PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
-  TARGET: "development"
+  TARGET: "prod"
 
 jobs:
 
