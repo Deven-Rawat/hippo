@@ -7,6 +7,9 @@ on:
       prdFileName:
         required: true
         type: string
+    secrets:
+      HOST:
+        required: true
 
 env:
   PROD_FILE_NAME: ${{ inputs.prdFileName }}
