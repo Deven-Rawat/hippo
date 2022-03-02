@@ -10,3 +10,5 @@ jobs:
     uses: ./.github/workflows/deploy-to-production.yml
     with:
       prdFileName: "rc.tar.gz"
+    secrets:
+      HOST: ${{ secrets.HOST }}
