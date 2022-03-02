@@ -6,18 +6,7 @@ on:
       - master
 
 jobs:
-
-  deploy:
-    name: Deploy Prod
-    runs-on: ubuntu-latest
-    env:
-      PROD_FILE_NAME: "rc.tar.gz"
-      #To be replaced by Prod Env Id
-      PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
-      TARGET: "prod"
-
-    steps:
-
-      - uses: "Deven-Rawat/hippo/.github/workflows/deploy-to-production.yml@main"
-        with:
-          username: "rc.tar.gz"
+  deploy-to-prod:
+    uses: Deven-Rawat/hippo/.github/workflows/deploy-to-production.yml@main
+    with:
+      username: "rc.tar.gz"
