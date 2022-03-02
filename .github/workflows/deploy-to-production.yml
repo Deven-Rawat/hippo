@@ -2,11 +2,14 @@ name: Deploy to Production
 
 # Schedule deployment to Production
 on:
-  push:
-    branches:
-      - master
+  workflow_call:
+    inputs:
+      prdFileName:
+        required: true
+        type: string
+
 env:
-  PROD_FILE_NAME: "rc.tar.gz"
+  PROD_FILE_NAME: ${{ inputs.prdFileName }}
   #To be replaced by Prod Env Id
   PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
   TARGET: "prod"

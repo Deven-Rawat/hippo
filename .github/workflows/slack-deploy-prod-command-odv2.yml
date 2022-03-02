@@ -1,0 +1,23 @@
+name: Slack Deployment of PROD Command for ODv2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  deploy:
+    name: Deploy Prod
+    runs-on: ubuntu-latest
+    env:
+      PROD_FILE_NAME: "rc.tar.gz"
+      #To be replaced by Prod Env Id
+      PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
+      TARGET: "prod"
+
+    steps:
+
+      - uses: ./deploy-to-production.yml@main
+        with:
+          username: "rc.tar.gz"
