@@ -7,6 +7,7 @@ on:
 
 jobs:
   deploy-to-prod:
+    name: Slack Deploy to Production
     uses: ./.github/workflows/deploy-to-production.yml
     with:
       prdFileName: "uat.tar.gz"
@@ -15,9 +16,10 @@ jobs:
       MISSION_CONTROL_API_USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
       MISSION_CONTROL_API_PASSWORD: ${{ secrets.MISSION_CONTROL_API_PASSWORD }}
   post-deployment:
+    name: Updating Tag
     needs: deploy-to-prod
     runs-on: ubuntu-latest
     steps:
       - name: Tagging the build
         run: |
-          make git.update-environment-tag ENV=prd VERSION=rc
+          make git.update-environment-tag ENV=prd VERSION=uat

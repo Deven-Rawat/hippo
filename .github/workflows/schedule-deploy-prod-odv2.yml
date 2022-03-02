@@ -8,6 +8,7 @@ on:
 
 jobs:
   deploy-to-prod:
+    name: Scheduled Deploy to Production
     #Calling Deploy to Production workflow
     uses: ./.github/workflows/deploy-to-production.yml
     with:
@@ -17,6 +18,7 @@ jobs:
       MISSION_CONTROL_API_USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
       MISSION_CONTROL_API_PASSWORD: ${{ secrets.MISSION_CONTROL_API_PASSWORD }}
   post-deployment:
+    name: Updating Tag
     needs: deploy-to-prod
     runs-on: ubuntu-latest
     steps:
