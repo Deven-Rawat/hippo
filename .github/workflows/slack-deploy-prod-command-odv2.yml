@@ -7,6 +7,6 @@ on:
 
 jobs:
   deploy-to-prod:
-    uses: Deven-Rawat/hippo/.github/workflows/deploy-to-production.yml@main
+    uses: ./.github/workflows/deploy-to-production.yml
     with:
       username: "rc.tar.gz"
