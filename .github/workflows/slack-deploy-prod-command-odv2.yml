@@ -9,4 +9,4 @@ jobs:
   deploy-to-prod:
     uses: ./.github/workflows/deploy-to-production.yml
     with:
-      username: "rc.tar.gz"
+      prdFileName: "rc.tar.gz"
