@@ -10,5 +10,7 @@ jobs:
     uses: ./.github/workflows/deploy-to-production.yml
     with:
       prdFileName: "rc.tar.gz"
+      username: $${{env.USERNAME}}
+      password: $${{env.PASSWORD}}
     secrets:
       HOST: ${{ secrets.HOST }}

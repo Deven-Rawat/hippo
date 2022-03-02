@@ -7,6 +7,12 @@ on:
       prdFileName:
         required: true
         type: string
+      username:
+        required: true
+        type: string
+      password:
+        required: true
+        type: string
     secrets:
       HOST:
         required: true
@@ -16,7 +22,8 @@ env:
   #To be replaced by Prod Env Id
   PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
   TARGET: "prod"
-
+  USERNAME: ${{ inputs.username }}
+  PASSWORD: ${{ inputs.password }}
 jobs:
 
   prepare-prod-deployment:
