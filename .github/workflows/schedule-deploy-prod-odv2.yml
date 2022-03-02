@@ -1,4 +1,4 @@
-name: Slack Deployment of PROD (ODv2)
+name: Scheduled Deployment of PROD (ODv2)
 
 # Schedule deployment to Production
 on:
