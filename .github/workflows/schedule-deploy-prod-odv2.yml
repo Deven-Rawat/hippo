@@ -1,15 +1,17 @@
 name: Slack Deployment of PROD (ODv2)
 
+# Schedule deployment to Production
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    # Runs at 12:05 pm weekdays (UK time)
+    - cron: "5 12 * * 1-5"
 
 jobs:
   deploy-to-prod:
+    #Calling Deploy to Production workflow
     uses: ./.github/workflows/deploy-to-production.yml
     with:
-      prdFileName: "uat.tar.gz"
+      prdFileName: "rc.tar.gz"
     secrets:
       HOST: ${{ secrets.HOST }}
       MISSION_CONTROL_API_USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
