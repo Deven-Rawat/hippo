@@ -7,15 +7,15 @@ on:
       prdFileName:
         required: true
         type: string
-      username:
-        required: true
-        type: string
-      password:
-        required: true
-        type: string
     secrets:
       HOST:
         required: true
+      MISSION_CONTROL_API_USERNAME:
+        required: true
+      MISSION_CONTROL_API_PASSWORD:
+        required: true
+
+
 
 env:
   PROD_FILE_NAME: ${{ inputs.prdFileName }}
