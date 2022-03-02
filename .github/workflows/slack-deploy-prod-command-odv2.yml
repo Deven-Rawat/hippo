@@ -18,6 +18,6 @@ jobs:
 
     steps:
 
-      - uses: ./deploy-to-production.yml@main
+      - uses: "Deven-Rawat/hippo/.github/workflows/deploy-to-production.yml@main"
         with:
           username: "rc.tar.gz"
