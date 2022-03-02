@@ -17,6 +17,7 @@ jobs:
       MISSION_CONTROL_API_USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
       MISSION_CONTROL_API_PASSWORD: ${{ secrets.MISSION_CONTROL_API_PASSWORD }}
   post-deployment:
+    needs: deploy-to-prod
     runs-on: ubuntu-latest
     steps:
       - name: Tagging the build
