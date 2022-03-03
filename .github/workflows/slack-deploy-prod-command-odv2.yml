@@ -12,9 +12,7 @@ jobs:
     timeout-minutes: 1
 
     steps:
-
       # Validate that the command is called from deployment-od2-prod
-
       - name: Checking source
         uses: actions/github-script@v3
         if: ${{ env.CHANNEL_ID !='C0353KHFXNJ' }}
