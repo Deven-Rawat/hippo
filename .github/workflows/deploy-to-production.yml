@@ -93,14 +93,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
-      - name: Git checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
       - name: Obtain file name for deployment
+        uses: actions/checkout@v2
         id: filename
-        with:
-          fetch-depth: 2
         run: |
           fileName=$echo(git describe --tags --match v3.0* rc)
           echo ${fileName}
