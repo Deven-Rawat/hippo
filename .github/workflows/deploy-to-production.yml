@@ -93,8 +93,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
-      - name: Obtain file name for deployment
+      - name: Git checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Obtain file name for deployment
         id: filename
         with:
           fetch-depth: 2
