@@ -22,7 +22,7 @@ jobs:
   integrity:
     name: Slack Integrity Check
     # Only runs for SLACK Command (hotfix)
-    if: (github.event_name != 'schedule')
+    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
     runs-on: ubuntu-latest
     timeout-minutes: 1
 
@@ -75,7 +75,7 @@ jobs:
 
   update-tag-hotfix:
     # Only runs for SLACK Command (hotfix)
-    if: (github.event_name != 'schedule')
+    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
     needs: integrity
     runs-on: ubuntu-latest
     name: Move tag uat to rc for Hotfix
@@ -87,6 +87,7 @@ jobs:
 
   prepare-prod-deployment:
     name: Deploy to Production
+    needs: update-tag-hotfix
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
@@ -226,6 +227,7 @@ jobs:
   post-deployment:
     # Only runs for SLACK Command (hotfix)
     if: ((github.event_name == 'schedule'))
+    needs: prepare-prod-deployment
     name: Updating Tag
     runs-on: ubuntu-latest
     steps:
