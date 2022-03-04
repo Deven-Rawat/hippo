@@ -85,7 +85,7 @@ jobs:
     steps:
       - name: Tagging the build
         run: |
-          make git.update-environment-tag ENV=rc VERSION=uat
+          make git.update-environment-tag ENV=prd VERSION=uat
 
 
   prepare-prod-deployment:
@@ -198,7 +198,7 @@ jobs:
       - name: Get Distribution Ids for prod deployment
         id: prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("${{env.PROD_FILE_NAME}}"))) | map(.id)')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("${{ steps.filename.outputs.fileName }}"))) | map(.id)')
           prodLatestDistId=$(echo ${latestId} | tr "[" " " | tr "]" " " | xargs)
           echo "::set-output name=prodDistId::${prodLatestDistId}"
           echo  ${{steps.all-distribution-id.outputs.respLength}}
