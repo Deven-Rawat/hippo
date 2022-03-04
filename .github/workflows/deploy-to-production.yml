@@ -78,8 +78,8 @@ jobs:
     name: Move tag uat to rc for Hotfix
     needs: integrity
     # Only runs for SLACK Command (hotfix)
-    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
     steps:
+      - if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
       - name: Tagging the build
         run: |
           make git.update-environment-tag ENV=prd VERSION=uat
