@@ -97,7 +97,7 @@ jobs:
       - name: Obtain file name for deployment
         id: filename
         run: |
-          git describe --tags --match v3.0* rc
+          echo "--> " +  git describe --tags --match v3.0* rc
           echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
 
       # Get API access token and verify it.
