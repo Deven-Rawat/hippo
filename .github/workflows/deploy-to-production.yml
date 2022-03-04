@@ -111,7 +111,8 @@ jobs:
           fileName=$(git describe --tags --match v3.0* rc)+".tar.gz"
           echo "::set-output name=fileName::$(fileName)"
           echo "::set-output name=fileVersion::$(fileVersion)"
-
+          echo fileVersion --> ${fileVersion}
+          echo fileName --> ${fileName}
 
       # Get API access token and verify it.
       - name: Obtaino JWT Token
