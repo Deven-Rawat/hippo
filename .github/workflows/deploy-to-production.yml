@@ -105,7 +105,7 @@ jobs:
         id: filename
         run: |
           echo "--> " +  $(git describe --tags --match v3.0* rc)
-          echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
+          echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc).tar.gz"
 
       # Get API access token and verify it.
       - name: Obtaino JWT Token
