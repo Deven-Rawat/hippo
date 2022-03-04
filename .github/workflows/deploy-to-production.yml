@@ -80,9 +80,7 @@ jobs:
     # Only runs for SLACK Command (hotfix)
     steps:
       - if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
-      - name: Tagging the build
-        run: |
-          make git.update-environment-tag ENV=prd VERSION=uat
+        run: make git.update-environment-tag ENV=prd VERSION=uat
 
 
   prepare-prod-deployment:
