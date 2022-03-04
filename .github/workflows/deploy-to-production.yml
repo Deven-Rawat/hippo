@@ -89,6 +89,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     timeout-minutes: 85
+    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
     needs: update-tag-hotfix
     steps:
       #
