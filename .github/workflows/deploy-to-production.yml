@@ -108,7 +108,7 @@ jobs:
         id: filename
         run: |
           fileVersion=$(git describe --tags --match v3.0* rc)
-          let fileName=$(git describe --tags --match v3.0* rc).tar.gz
+          fileName=$(git describe --tags --match v3.0* rc).tar.gz
           echo fileVersion --> ${fileVersion}
           echo fileName --> ${fileName}
           echo "::set-output name=fileName::$(fileName)"
