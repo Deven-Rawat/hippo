@@ -14,7 +14,6 @@ on:
 
 
 env:
-  PROD_FILE_NAME: ${{ inputs.prdFileName }}
   #To be replaced by Prod Env Id
   PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
   TARGET: "prod"
@@ -198,7 +197,7 @@ jobs:
       - name: Get Distribution Ids for prod deployment
         id: prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("${{ steps.filename.outputs.fileName }}"))) | map(.id)')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test(v3.0.1038.tar.gz))) | map(.id)')
           prodLatestDistId=$(echo ${latestId} | tr "[" " " | tr "]" " " | xargs)
           echo "::set-output name=prodDistId::${prodLatestDistId}"
           echo  ${{steps.all-distribution-id.outputs.respLength}}
@@ -223,3 +222,14 @@ jobs:
           script: core.setFailed('Response code mismatch while requesting deployment from BR Cloud! Response ${{ env.CODE }}')
         env:
           CODE: ${{ steps.deployment.outputs.code }}
+
+  post-deployment:
+    # Only runs for SLACK Command (hotfix)
+    if: ((github.event_name == 'schedule'))
+    name: Updating Tag
+    needs: deploy-to-prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tagging the build
+        run: |
+          make git.update-environment-tag ENV=prd VERSION=rc
