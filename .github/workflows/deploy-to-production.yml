@@ -107,12 +107,13 @@ jobs:
       - name: Obtain file name for deployment
         id: filename
         run: |
-          fileVersion=$echo (git describe --tags --match v3.0* rc)
+          fileVersion=$(git describe --tags --match v3.0* rc)
           let fileName=$(git describe --tags --match v3.0* rc)+".tar.gz"
-          echo "::set-output name=fileName::$(fileName)"
-          echo "::set-output name=fileVersion::$(fileVersion)"
           echo fileVersion --> ${fileVersion}
           echo fileName --> ${fileName}
+          echo "::set-output name=fileName::$(fileName)"
+          echo "::set-output name=fileVersion::$(fileVersion)"
+
 
       # Get API access token and verify it.
       - name: Obtaino JWT Token
