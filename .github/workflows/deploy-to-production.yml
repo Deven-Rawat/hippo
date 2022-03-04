@@ -22,11 +22,12 @@ jobs:
   integrity:
     name: Slack Integrity Check
     # Only runs for SLACK Command (hotfix)
-    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
+
     runs-on: ubuntu-latest
     timeout-minutes: 1
 
     steps:
+      - if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
       # Validate that the command is called from deployment-od2-prod
       - name: Checking source
         uses: actions/github-script@v3
@@ -201,7 +202,6 @@ jobs:
       - name: Request Deployment from BR Cloud
         id: deployment
         run: |
-          echo "--->" ${{ steps.aws-keys.outputs.id }}
           code=$(curl -i \
           -H "Accept: application/json; charset=utf-8" \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
