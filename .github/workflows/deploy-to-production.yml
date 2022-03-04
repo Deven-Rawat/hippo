@@ -100,7 +100,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Fetch Tags
-        run: git fetch -t
+        run: |
+          git tag -l | xargs git tag -d
+          git fetch -t
 
       - name: Obtain file name for deployment
         id: filename
