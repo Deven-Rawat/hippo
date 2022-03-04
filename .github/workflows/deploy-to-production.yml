@@ -104,8 +104,10 @@ jobs:
       - name: Obtain file name for deployment
         id: filename
         run: |
+          git tag -l | xargs git tag -d
+          git fetch -t
           echo "--> " +  $(git describe --tags --match v3.0* rc)
-          echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc).tar.gz"
+          echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
 
       # Get API access token and verify it.
       - name: Obtaino JWT Token
