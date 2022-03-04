@@ -107,14 +107,18 @@ jobs:
       - name: Obtain file name for deployment
         id: filename
         run: |
-          echo "--> " +  $(git describe --tags --match v3.0* rc)
-          echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
+          fileVersion=$(git describe --tags --match v3.0* rc)
+          fileName=$(git describe --tags --match v3.0* rc)+".tar.gz"
+          echo "::set-output name=fileName::$(fileName)"
+          echo "::set-output name=fileVersion::$(fileVersion)"
+
 
       # Get API access token and verify it.
       - name: Obtaino JWT Token
         id: jwt_token
         run: |
-          echo "  Filename ___"  ${{ steps.filename.outputs.fileName }}
+          echo "  File name ->"  ${{ steps.filename.outputs.fileName }}
+          echo "  File Version ->"  ${{ steps.filename.outputs.fileVersion }}
           response=$(curl -i \
           -H "Accept: application/json; charset=utf-8" \
           -X POST https://api.${{ secrets.HOST }}/v3/authn/access_token \
