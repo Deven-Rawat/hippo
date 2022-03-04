@@ -93,8 +93,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
-      - name: Obtain file name for deployment
       - uses: actions/checkout@v2
+      - name: Obtain file name for deployment
         id: filename
         run: |
           echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
