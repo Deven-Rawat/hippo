@@ -109,8 +109,6 @@ jobs:
         run: |
           fileVersion=$(git describe --tags --match v3.0* rc)
           fileName=$(git describe --tags --match v3.0* rc).tar.gz
-          echo fileVersion --> ${fileVersion}
-          echo fileName --> ${fileName}
           echo "::set-output name=fileName::$(fileName)"
           echo "::set-output name=fileVersion::$(fileVersion)"
 
