@@ -28,6 +28,7 @@ jobs:
 
     steps:
       - if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
+        run: echo "Check this"
       # Validate that the command is called from deployment-od2-prod
       - name: Checking source
         uses: actions/github-script@v3
