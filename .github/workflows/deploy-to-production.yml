@@ -76,11 +76,10 @@ jobs:
   update-tag-hotfix:
     runs-on: ubuntu-latest
     name: Move tag uat to rc for Hotfix
-    needs: integrity
     # Only runs for SLACK Command (hotfix)
     steps:
       - if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
-        run: make git.update-environment-tag ENV=prd VERSION=uat
+        run: make git.update-environment-tag ENV=rc VERSION=uat
 
 
   prepare-prod-deployment:
