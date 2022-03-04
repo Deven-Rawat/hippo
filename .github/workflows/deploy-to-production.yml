@@ -96,7 +96,8 @@ jobs:
       - name: Obtain file name for deployment
       - uses: actions/checkout@v2
         id: filename
-        run: echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
+        run: |
+          echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
 
       # Get API access token and verify it.
       - name: Obtaino JWT Token
