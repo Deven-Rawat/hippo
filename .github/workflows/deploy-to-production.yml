@@ -98,8 +98,9 @@ jobs:
       #
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Need all the tags for versioning
+
+      - name: Fetch Tags
+        run: git fetch -t
 
       - name: Obtain file name for deployment
         id: filename
