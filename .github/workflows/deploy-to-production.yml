@@ -74,11 +74,11 @@ jobs:
           CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
 
   update-tag-hotfix:
+    runs-on: ubuntu-latest
+    name: Move tag uat to rc for Hotfix
     # Only runs for SLACK Command (hotfix)
     if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
     needs: integrity
-    runs-on: ubuntu-latest
-    name: Move tag uat to rc for Hotfix
     steps:
       - name: Tagging the build
         run: |
@@ -87,9 +87,9 @@ jobs:
 
   prepare-prod-deployment:
     name: Deploy to Production
-    needs: update-tag-hotfix
     runs-on: ubuntu-latest
     timeout-minutes: 85
+    needs: update-tag-hotfix
     steps:
       #
       # Step 1
