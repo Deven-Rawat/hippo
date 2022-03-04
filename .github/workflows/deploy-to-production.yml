@@ -16,7 +16,7 @@ on:
 env:
   #To be replaced by Prod Env Id
   PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
-  TARGET: "prod"
+  TARGET: "prd"
   USERNAME: ${{ inputs.username }}
   PASSWORD: ${{ inputs.password }}
 jobs:
