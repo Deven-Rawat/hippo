@@ -227,7 +227,6 @@ jobs:
     # Only runs for SLACK Command (hotfix)
     if: ((github.event_name == 'schedule'))
     name: Updating Tag
-    needs: deploy-to-prod
     runs-on: ubuntu-latest
     steps:
       - name: Tagging the build
