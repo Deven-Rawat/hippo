@@ -75,14 +75,6 @@ jobs:
           GITHUB_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
 
-  update-tag-hotfix:
-    runs-on: ubuntu-latest
-    name: Move tag uat to rc for Hotfix
-    # Only runs for SLACK Command (hotfix)
-    steps:
-      - if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
-        run: make git.update-environment-tag ENV=rc VERSION=uat
-
 
   prepare-prod-deployment:
     name: Deploy to Production
@@ -90,6 +82,8 @@ jobs:
     timeout-minutes: 85
     needs: update-tag-hotfix
     steps:
+      - if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
+        run: make git.update-environment-tag ENV=rc VERSION=uat
       #
       # Step 1
       #
@@ -223,8 +217,6 @@ jobs:
           CODE: ${{ steps.deployment.outputs.code }}
 
   post-deployment:
-    # Only runs for SLACK Command (hotfix)
-    if: ((github.event_name == 'schedule'))
     needs: prepare-prod-deployment
     name: Updating Tag
     runs-on: ubuntu-latest
