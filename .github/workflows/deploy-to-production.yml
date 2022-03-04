@@ -8,9 +8,6 @@ on:
   schedule:
     # Runs at 12:05 pm weekdays (UK time)
     - cron: "5 12 * * 1-5"
-  push:
-    branches:
-      - master
 
 
 env:
