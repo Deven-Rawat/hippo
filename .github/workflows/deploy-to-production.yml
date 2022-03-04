@@ -103,8 +103,7 @@ jobs:
       - name: Obtaino JWT Token
         id: jwt_token
         run: |
-          echo "  Filename ___"
-          echo ${{ steps.filename.outputs.fileName }}"
+          echo "  Filename ___"  ${{ steps.filename.outputs.fileName }}
           response=$(curl -i \
           -H "Accept: application/json; charset=utf-8" \
           -X POST https://api.${{ secrets.HOST }}/v3/authn/access_token \
