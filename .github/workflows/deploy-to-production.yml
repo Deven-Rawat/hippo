@@ -205,6 +205,7 @@ jobs:
       - name: Request Deployment from BR Cloud
         id: deployment
         run: |
+          echo "--->" ${{ steps.aws-keys.outputs.id }}
           code=$(curl -i \
           -H "Accept: application/json; charset=utf-8" \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
