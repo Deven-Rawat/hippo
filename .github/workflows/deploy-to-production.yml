@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
-        - name: Obtain file name for deployment
+      - name: Obtain file name for deployment
         uses: actions/checkout@v2
         id: filename
         run: |
