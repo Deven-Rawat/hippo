@@ -93,17 +93,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
-      - name: Obtain file name for deployment
+        - name: Obtain file name for deployment
         uses: actions/checkout@v2
         id: filename
         run: |
-          fileName=$echo(git describe --tags --match v3.0* rc)
-          echo ${fileName}
+          run: echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
 
       # Get API access token and verify it.
       - name: Obtaino JWT Token
         id: jwt_token
         run: |
+          echo "  Filename ___"
+          echo ${{ steps.filename.outputs.fileName }}"
           response=$(curl -i \
           -H "Accept: application/json; charset=utf-8" \
           -X POST https://api.${{ secrets.HOST }}/v3/authn/access_token \
