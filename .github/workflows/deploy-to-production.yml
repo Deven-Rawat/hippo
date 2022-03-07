@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Move tag uat to rc for Hotfix
     # Only runs for SLACK Command (hotfix)
-    needs: integrity
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
     steps:
       - name: Tagging the build
         run: |
