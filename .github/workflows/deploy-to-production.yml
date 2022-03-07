@@ -78,8 +78,9 @@ jobs:
     name: Move tag uat to rc for Hotfix
     # Only runs for SLACK Command (hotfix)
     needs: integrity
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Tagging the build
         run: |
           make git.update-environment-tag ENV=prd VERSION=uat
@@ -196,7 +197,7 @@ jobs:
       - name: Get Distribution Ids for prod deployment
         id: prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("v3.0.1038.tar.gz"))) | map(.id)')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("v3.0.1039.tar.gz"))) | map(.id)')
           prodLatestDistId=$(echo ${latestId} | tr "[" " " | tr "]" " " | xargs)
           echo "::set-output name=prodDistId::${prodLatestDistId}"
           echo  ${{steps.all-distribution-id.outputs.respLength}}
@@ -229,6 +230,9 @@ jobs:
     name: Updating Tag
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Tagging the build
         run: |
           make git.update-environment-tag ENV=prd VERSION=rc
