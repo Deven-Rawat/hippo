@@ -196,7 +196,7 @@ jobs:
       - name: Get Distribution Ids for prod deployment
         id: prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("v3.0.1039.tar.gz"))) | map(.id)')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("v3.0.1038.tar.gz"))) | map(.id)')
           prodLatestDistId=$(echo ${latestId} | tr "[" " " | tr "]" " " | xargs)
           echo "::set-output name=prodDistId::${prodLatestDistId}"
           echo  ${{steps.all-distribution-id.outputs.respLength}}
@@ -224,7 +224,8 @@ jobs:
           CODE: ${{ steps.deployment.outputs.code }}
 
   post-deployment:
-    needs: prepare-prod-deployment
+    if: ${{ always() }}
+    needs: [ prepare-prod-deployment ]
     name: Updating Tag
     runs-on: ubuntu-latest
     steps:
