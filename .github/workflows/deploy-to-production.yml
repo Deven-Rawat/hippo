@@ -88,8 +88,8 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     timeout-minutes: 85
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
-    needs: update-tag-hotfix
+    if: ${{ always() }}
+    needs: [update-tag-hotfix,integrity]
     steps:
       #
       # Step 1
