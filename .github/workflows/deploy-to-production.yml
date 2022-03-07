@@ -22,10 +22,10 @@ jobs:
   integrity:
     name: Slack Integrity Check
     # Only runs for SLACK Command (hotfix)
-    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
+
     runs-on: ubuntu-latest
     timeout-minutes: 1
-
+    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
     steps:
       # Validate that the command is called from deployment-od2-prod
       - name: Checking source
@@ -83,7 +83,6 @@ jobs:
       - name: Tagging the build
         run: |
           make git.update-environment-tag ENV=prd VERSION=uat
-
 
   prepare-prod-deployment:
     name: Deploy to Production
