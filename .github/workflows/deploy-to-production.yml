@@ -77,7 +77,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Move tag uat to rc for Hotfix
     # Only runs for SLACK Command (hotfix)
-    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
     needs: integrity
     steps:
       - name: Tagging the build
