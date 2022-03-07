@@ -8,6 +8,9 @@ on:
   schedule:
     # Runs at 12:05 pm weekdays (UK time)
     - cron: "5 12 * * 1-5"
+  push:
+    branches:
+      - master
 
 
 env:
@@ -19,9 +22,10 @@ jobs:
   integrity:
     name: Slack Integrity Check
     # Only runs for SLACK Command (hotfix)
-    if: ((github.event_name != 'schedule'))
+    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
     runs-on: ubuntu-latest
     timeout-minutes: 1
+
     steps:
       # Validate that the command is called from deployment-od2-prod
       - name: Checking source
@@ -69,14 +73,24 @@ jobs:
           GITHUB_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
 
+  update-tag-hotfix:
+    runs-on: ubuntu-latest
+    name: Move tag uat to rc for Hotfix
+    # Only runs for SLACK Command (hotfix)
+    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
+    needs: integrity
+    steps:
+      - name: Tagging the build
+        run: |
+          make git.update-environment-tag ENV=prd VERSION=uat
+
 
   prepare-prod-deployment:
     name: Deploy to Production
     runs-on: ubuntu-latest
     timeout-minutes: 85
+    needs: update-tag-hotfix
     steps:
-      - if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
-        run: make git.update-environment-tag ENV=rc VERSION=uat
       #
       # Step 1
       #
