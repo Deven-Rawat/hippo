@@ -4,7 +4,7 @@ name: Deploy to Production
 on:
   repository_dispatch:
     types:
-      - slack-prod-deploy-command-odv2
+      - slack-deploy-hotfix-command-odv2
   schedule:
     # Runs at 12:05 pm weekdays (UK time)
     - cron: "5 12 * * 1-5"
