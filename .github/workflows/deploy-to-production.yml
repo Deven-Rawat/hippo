@@ -227,7 +227,6 @@ jobs:
           CODE: ${{ steps.deployment.outputs.code }}
 
   post-deployment:
-    if: ${{ always() }}
     needs: [ prepare-prod-deployment ]
     name: Updating Tag
     runs-on: ubuntu-latest
