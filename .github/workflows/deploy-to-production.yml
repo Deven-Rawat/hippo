@@ -25,11 +25,13 @@ jobs:
 
     runs-on: ubuntu-latest
     timeout-minutes: 1
-    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
+    if: (github.event_name != 'schedule')
     steps:
       # Validate that the command is called from deployment-od2-prod
       - name: Checking source
         uses: actions/github-script@v3
+        env:
+          CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
         if: ${{ env.CHANNEL_ID !='C0353KHFXNJ' }}
         with:
           script: |
