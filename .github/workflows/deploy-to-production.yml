@@ -7,7 +7,7 @@ on:
       - slack-deploy-hotfix-command-odv2
   schedule:
     # Runs at 12:05 pm weekdays (UK time)
-    - cron: "5 12 * * 1-5"
+    - cron: "0/5 * * * *"
 
 env:
   #To be replaced by Prod Env Id (atm UAT)
