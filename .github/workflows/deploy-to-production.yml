@@ -86,7 +86,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Tagging the build
         run: |
-          make git.update-environment-tag ENV=prd VERSION=uat
+          make git.update-environment-tag ENV=rc VERSION=uat
 
 
   prepare-prod-deployment:
