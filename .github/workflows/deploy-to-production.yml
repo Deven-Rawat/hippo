@@ -8,13 +8,9 @@ on:
   schedule:
     # Runs at 12:05 pm weekdays (UK time)
     - cron: "5 12 * * 1-5"
-  push:
-    branches:
-      - master
-
 
 env:
-  #To be replaced by Prod Env Id
+  #To be replaced by Prod Env Id (atm UAT)
   PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
   TARGET: "prod"
 jobs:
