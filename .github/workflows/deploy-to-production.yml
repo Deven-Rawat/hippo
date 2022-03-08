@@ -230,6 +230,7 @@ jobs:
 
   post-deployment:
     needs: prepare-prod-deployment
+    if: ${{ !failure() }}
     timeout-minutes: 60
     name: Updating Tag
     runs-on: ubuntu-latest
