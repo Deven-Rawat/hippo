@@ -82,6 +82,10 @@ jobs:
     # Only runs for SLACK Command (hotfix)
     needs: integrity
     steps:
+      - name: Fetch Tags
+        run: |
+          git tag -l | xargs git tag -d
+          git fetch -t
       - name: Checkout
         uses: actions/checkout@v2
       - name: Tagging the build
