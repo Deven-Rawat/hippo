@@ -229,7 +229,8 @@ jobs:
           CODE: ${{ steps.deployment.outputs.code }}
 
   post-deployment:
-    needs: [ prepare-prod-deployment ]
+    needs: prepare-prod-deployment
+    timeout-minutes: 60
     name: Updating Tag
     runs-on: ubuntu-latest
     steps:
