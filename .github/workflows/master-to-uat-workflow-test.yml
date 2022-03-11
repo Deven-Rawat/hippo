@@ -35,10 +35,11 @@ jobs:
       #
       # Step 3
       #
-      #- name: Bump the version number
-      #  run: |
-      #    git tag -l | xargs git tag -d
-      #    git fetch --tags
+      - name: Bump the version number
+        run: |
+          git tag ${{ env.VERSION }}
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
 
 
       #
