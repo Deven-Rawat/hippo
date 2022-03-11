@@ -29,7 +29,7 @@ jobs:
       - name: Fetch Tags
         run: |
           git fetch --tags
-          git describe --abbrev=0 --tags --match "v3.0.*" | perl -pe 's/^(v(\d+\.)*)(-?\d+)(.*)$/$1.($3+1).$4/e'
+          git describe --tags $(git rev-list --tags --max-count=1) --match "v3.0.*" | perl -pe 's/^(v(\d+\.)*)(-?\d+)(.*)$/$1.($3+1).$4/e'
 
 
       #
