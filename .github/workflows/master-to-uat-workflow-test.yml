@@ -55,4 +55,4 @@ jobs:
           git tag --force ${{ env.ENV }} ${{ env.VERSION }}
           git push --force --no-verify origin tag ${{ env.ENV }}
         env:
-          VERSION: ${{ steps.version.outputs.verison }}
+          VERSION: ${{ steps.version.outputs.version }}
