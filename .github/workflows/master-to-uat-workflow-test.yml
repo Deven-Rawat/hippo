@@ -41,7 +41,6 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
 
-
       #
       # Step 4
       #
