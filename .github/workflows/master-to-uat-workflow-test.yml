@@ -23,43 +23,36 @@ jobs:
         with:
           fetch-depth: 0
 
-      #
-      # Step 2
-      #
-      #- name: Fetch Tags
-      #  run: |
-       #
-      #    git fetch --tags
-
-      - name: Print version (before)
+      - name: Version Calculator
+        id: version
         run: |
-          make version.pprint
+          version=$(git describe --abbrev=0 --tags $(git rev-list --tags --max-count=1) --match "v3.0.*" | perl -pe 's/^(v(\d+\.)*)(-?\d+)(.*)$/$1.($3+1).$4/e')
+          echo "::set-output name=version::$version"
+
+
 
 
       #
       # Step 3
       #
-      - name: Bump the version number
-        run: |
-          git tag -l | xargs git tag -d
-          git fetch --tags
-          git describe --abbrev=0 --tags $(git rev-list --tags --max-count=1) --match "v3.0.*" | perl -pe 's/^(v(\d+\.)*)(-?\d+)(.*)$/$1.($3+1).$4/e'
+      #- name: Bump the version number
+      #  run: |
+      #    git tag -l | xargs git tag -d
+      #    git fetch --tags
 
-
-      - name: Print version (After)
-        run: |
-          make version.pprint
 
       #
       # Step 4
       #
-      - name: Set the commit's Git status
-        run: make github.status.success
+      #- name: Set the commit's Git status
+      #  run: make github.status.success
 
       #
       # Step 5
       #
       - name: Push tag back to github
         run: |
-          make git.update-environment-tag
-          git push --tags
+          git tag --force ${{ env.ENV }} ${{ env.VERSION }}
+          git push --force --no-verify origin tag ${{ env.ENV }}
+        env:
+          VERSION: ${{ steps.version.outputs.verison }}
