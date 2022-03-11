@@ -4,35 +4,30 @@ name: Deploy to Production
 on:
   repository_dispatch:
     types:
-      - slack-prod-deploy-command-odv2
+      - slack-deploy-hotfix-command-odv2
   schedule:
     # Runs at 12:05 pm weekdays (UK time)
-    - cron: "5 12 * * 1-5"
-  push:
-    branches:
-      - master
-
+    - cron: "0/5 * * * *"
 
 env:
-  PROD_FILE_NAME: ${{ inputs.prdFileName }}
-  #To be replaced by Prod Env Id
+  #To be replaced by Prod Env Id (atm UAT)
   PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
   TARGET: "prod"
-  USERNAME: ${{ inputs.username }}
-  PASSWORD: ${{ inputs.password }}
 jobs:
 
   integrity:
     name: Slack Integrity Check
     # Only runs for SLACK Command (hotfix)
-    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
+
     runs-on: ubuntu-latest
     timeout-minutes: 1
-
+    if: (github.event_name != 'schedule')
     steps:
       # Validate that the command is called from deployment-od2-prod
       - name: Checking source
         uses: actions/github-script@v3
+        env:
+          CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
         if: ${{ env.CHANNEL_ID !='C0353KHFXNJ' }}
         with:
           script: |
@@ -76,13 +71,21 @@ jobs:
           GITHUB_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
 
+
   update-tag-hotfix:
-    # Only runs for SLACK Command (hotfix)
-    if: ((github.event_name != 'schedule')&&(github.event_name != 'push'))
-    needs: integrity
     runs-on: ubuntu-latest
     name: Move tag uat to rc for Hotfix
+    # Only runs for SLACK Command (hotfix)
+    needs: integrity
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Fetch Tags
+        run: |
+          git tag -l | xargs git tag -d
+          git fetch -t
+
       - name: Tagging the build
         run: |
           make git.update-environment-tag ENV=rc VERSION=uat
@@ -92,6 +95,8 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     timeout-minutes: 85
+    if: ${{ !failure() }}
+    needs: [update-tag-hotfix,integrity]
     steps:
       #
       # Step 1
@@ -107,14 +112,17 @@ jobs:
       - name: Obtain file name for deployment
         id: filename
         run: |
-          echo "--> " +  $(git describe --tags --match v3.0* rc)
-          echo "::set-output name=fileName::$(git describe --tags --match v3.0* rc)"
+          fileVersion=$(git describe --tags --match v3.0* rc)
+          fileName=$(git describe --tags --match v3.0* rc).tar.gz
+
+          echo "::set-output name=fileName::${fileName}"
+          echo "::set-output name=fileVersion::${fileVersion}"
+
 
       # Get API access token and verify it.
       - name: Obtaino JWT Token
         id: jwt_token
         run: |
-          echo "  Filename ___"  ${{ steps.filename.outputs.fileName }}
           response=$(curl -i \
           -H "Accept: application/json; charset=utf-8" \
           -X POST https://api.${{ secrets.HOST }}/v3/authn/access_token \
@@ -193,7 +201,7 @@ jobs:
       - name: Get Distribution Ids for prod deployment
         id: prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("${{env.PROD_FILE_NAME}}"))) | map(.id)')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("${{ steps.filename.outputs.fileName }}"))) | map(.id)')
           prodLatestDistId=$(echo ${latestId} | tr "[" " " | tr "]" " " | xargs)
           echo "::set-output name=prodDistId::${prodLatestDistId}"
           echo  ${{steps.all-distribution-id.outputs.respLength}}
@@ -219,3 +227,35 @@ jobs:
           script: core.setFailed('Response code mismatch while requesting deployment from BR Cloud! Response ${{ env.CODE }}')
         env:
           CODE: ${{ steps.deployment.outputs.code }}
+
+  post-deployment:
+    needs: prepare-prod-deployment
+    if: ${{ !failure() }}
+    timeout-minutes: 60
+    name: Updating Tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Fetch Tags
+        run: |
+          git tag -l | xargs git tag -d
+          git fetch -t
+
+      - name: Tagging the build
+        run: |
+          make git.update-environment-tag ENV=prd VERSION=rc
+      #
+      # Provide a URL to the active GitHub Actions Workflow run
+      #
+      - name: Slack message (Track progress message)
+        if: ${{ success() }}
+        uses: muinmomin/webhook-action@v1.0.0
+        with:
+          url: ${{ env.SLACK_WEBHOOK }}
+          data: '{ "channel": "${{ env.CHANNEL_ID }}", "text": "Pipeline Finished", "attachments": [{ "text" : "The pipeline finished",  "color": "#7CFC00" }] }'
+        env:
+          SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
+          GITHUB_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
