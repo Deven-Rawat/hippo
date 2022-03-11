@@ -23,6 +23,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch Tags
+        run: |
+          git tag -l | xargs git tag -d
+          git fetch -t
       #
       # Step 2
       #
