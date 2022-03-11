@@ -28,12 +28,14 @@ jobs:
         run: |
           git tag -l | xargs git tag -d
           git fetch -t
+          git describe --abbrev=0 --tags --match "v3.0.*" | perl -pe 's/^(v(\d+\.)*)(-?\d+)(.*)$/$1.($3+1).$4/e'
+
 
       #
       # Step 3
       #
-      - name: Bump the version number
-        run: make version.bumpup
+      #- name: Bump the version number
+      #  run: make version.bumpup
 
       #
       # Step 4
