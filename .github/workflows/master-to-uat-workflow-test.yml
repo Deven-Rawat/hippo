@@ -56,6 +56,5 @@ jobs:
         run: |
           git tag --force ${{ env.ENV }} ${{ env.VERSION }}
           git push --force --no-verify origin tag ${{ env.ENV }}
-          echo "check"
         env:
           VERSION: ${{ steps.version.outputs.version }}
