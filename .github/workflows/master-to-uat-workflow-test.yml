@@ -58,5 +58,6 @@ jobs:
           git tag --force ${{ env.ENV }} ${{ env.VERSION }}
           git push --force --no-verify origin tag ${{ env.ENV }}
           git push --tags
+          echo "Pushed"
         env:
           VERSION: ${{ steps.version.outputs.version }}
