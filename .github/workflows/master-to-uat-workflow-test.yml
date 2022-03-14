@@ -51,4 +51,8 @@ jobs:
 
       - name: Bump the version number
         run: make version.bumpup
-        
+
+      - name: Push tag back to github
+        run: |
+          make git.update-environment-tag
+          git push --tags
