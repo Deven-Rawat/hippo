@@ -56,3 +56,4 @@ jobs:
         run: |
           make git.update-environment-tag
           git push --tags
+          echo "Pushed"
