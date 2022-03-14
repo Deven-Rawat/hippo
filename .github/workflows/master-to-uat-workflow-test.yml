@@ -50,11 +50,12 @@ jobs:
       #- name: Set the commit's Git status
       #  run: make github.status.success
 
-      - name: Bump the version number
-        run: make version.bumpup
-
+      #
+      # Step 5
+      #
       - name: Push tag back to github
         run: |
-          git tag --force $(env.ENV) $(env.VERSION)
-          git push --force --no-verify origin tag $(env.ENV)
-          echo "Pushed 1"
+          git tag --force ${{ env.ENV }} ${{ env.VERSION }}
+          git push --force --no-verify origin tag ${{ env.ENV }}
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
