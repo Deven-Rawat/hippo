@@ -1,29 +1,23 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Clear Builds
+name: Remove Old Builds
 
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    - cron: "0 9 * * 1-5"
 
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
-  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 70
-  PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[distribution.tar.gz]"
-  NON_PROD_REG_EXPRESSION: "website-v[a-zA-Z0-9_.]*-[a-z0-9]+-[distribution.tar.gz]"
+  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 10
+  PROD_REG_EXPRESSION: "v\\\\d{1,2}\\\\.\\\\d{1,2}\\\\.\\\\d{3,}\\\\.tar"
+  NON_PROD_REG_EXPRESSION: "v\\\\d{1,2}\\\\.\\\\d{1,2}\\\\.\\\\d{3,}\\\\-\\\\d{1,2}-[a-z0-9]+\\\\.tar"
 
 jobs:
 
-  retrieve-all-distribution-ids:
-    name: Retrieve All distribution Ids
+  remove-old-distributions:
+    name: Remove Old distribution Ids
     runs-on: ubuntu-latest
-    outputs:
-      allDistributionIds: ${{ steps.all-distribution-list.outputs.allDistIds }}
-      allNonProdDistIds: ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
-      latestNonProdDistIds: ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
-      deventokens: ${{steps.jwt_token.outputs.token1}}
-    timeout-minutes: 90
+    timeout-minutes: 85
 
     steps:
       # Get API access token and verify it.
@@ -63,17 +57,16 @@ jobs:
           # 'CODE' is for debugging fails
           CODE: ${{ steps.jwt_token_verify.outputs.code }}
 
-      - name: Get ALL Prod Dist List
-        id: all-distribution-list
+      - name: Get All Distribution Ids
+        id: all-distribution-id
         run: |
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
           echo "::set-output name=allDistIds::${response}"
-          echo "Here "  ${response}
 
       - name: Distribution Ids Retrival failed
-        if: ${{ contains(steps.all-distribution-list.response ,'401') }}
+        if: ${{ contains(steps.all-distribution-id.response ,'401') }}
         uses: actions/github-script@v3
         with:
           script: |
@@ -82,67 +75,81 @@ jobs:
       - name: Get Latest NON-Prod Distribution Ids
         id: latest-non-prod-distribution-ids
         run: |
-          latestId=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}]')
           echo "::set-output name=latestNonProdDistIds::${latestId}"
 
-      - name: All non prod Distribution Ids
-        id: all-non-prod-distribution-ids
+      - name: Get Latest Prod Distribution Ids
+        id: latest-prod-distribution-ids
         run: |
-          distIds=$(echo '${{steps.all-distribution-list.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id , date: .createdAt} ] | map(.id)')
-          echo "::set-output name=allNonProdDistIds::${distIds}"
+          latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id) | .[:${{env.NO_OF_DISTRIBUTION_TO_KEEP_PROD}}]')
+          echo "::set-output name=latestProdDistIds::${latestId}"
 
-      - name: Run Script
-        uses: actions/github-script@v6
-        with:
-          script: |
-            console.log(" ********* Latest  distribution Ids *********** " )
-            let latestNonProdDistIds = ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
-            console.log(" *********ALL distribution Ids *********** " )
-            let allNonProdDistIds = ${{steps.all-non-prod-distribution-ids.outputs.allNonProdDistIds}}
-             console.log(allNonProdDistIds.length )
-            for (let step = 0; step < allNonProdDistIds.length; step++) {
-                  if(  latestNonProdDistIds.indexOf(allNonProdDistIds[step]) == -1){
-                      console.log('Walking east one step ' +allNonProdDistIds[step] + ' step --> ' + latestNonProdDistIds.indexOf(allNonProdDistIds[step]));
-                      
-                      const result = await github.request("https://www.google.com")
-                      console.log(result)
-                }
-            }
+      - name: All Non Prod Distribution Ids
+        id: all-non-prod-active-distribution-ids
+        run: |
+          distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id, name: .name} ] | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id)')
+          echo "::set-output name=allNonProdDistributionIdMap::${distIds}"
 
-  remove-non-prod-builds:
-    name: Remove Non Prod Builds
-    runs-on: ubuntu-latest
-    needs: retrieve-all-distribution-ids
-    strategy:
-      matrix: ${{fromJson(needs.retrieve-all-distribution-ids.outputs.allNonProdDistIds)}}
-      fail-fast: false
-    steps:
-     - name: Build is recent
-       id: keep_build
-       if: ${{ contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
-       run: |
-         echo " Keep the build "
-         echo "::set-output name=code::100"
-     - name: Check if Build to be deleted
-       id: remove_build
-       if: ${{ ! contains(needs.retrieve-all-distribution-ids.outputs.latestNonProdDistIds, matrix.id) }}
-       run: |
-         echo "Token is " ${{needs.retrieve-token.outputs.deventokens}}
-         code=$(curl \
-         -H "Authorization: Bearer ${{ needs.retrieve-token.outputs.deventokens }}" \
-         -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${{matrix.id}} \
-         -o /dev/null -w '%{http_code}\n' -s)
-         echo ${code}
-         echo "::set-output name=code::$code"
-     - name: Authentication failed
-       if: ${{ steps.remove_build.outputs.code == 401 }}
-       uses: actions/github-script@v3
-       with:
-         script: |
-           core.setFailed(' 401 Authentication error' )
-     - name: Removal of Build failed
-       if: ${{ steps.keep_build.outputs.code != 100 && steps.remove_build.outputs.code != 200 }}
-       uses: actions/github-script@v3
-       with:
-         script: |
-           core.setFailed('Removal failed ')
+      - name: All  Prod Distribution Ids
+        id: all-prod-active-distribution-ids
+        run: |
+          distIds=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | jq --compact-output '[.items[] | {id: .id, name: .name} ] | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id)')
+          echo "::set-output name=allProdDistributionIdMap::${distIds}"
+
+      - name: Print Ids
+        id: print-ids
+        run: |
+          echo "***********************"
+          echo " All non Prod Ids "+ ${{steps.all-non-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}
+          echo "***********************"
+           echo " All  Prod Ids "+ ${{steps.all-prod-active-distribution-ids.outputs.allProdDistributionIdMap}}
+          echo "***********************"
+          echo " All latest Non Prod Ids "+ ${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}
+          echo "***********************"
+          echo " All Latest Prod Ids "+ ${{steps.latest-prod-distribution-ids.outputs.latestProdDistIds}}
+          echo "***********************"
+
+
+      - name: Remove Old Non Prod Distribution
+        run: |
+          declare -a  allDistributionIds=$(echo  '${{steps.all-non-prod-active-distribution-ids.outputs.allNonProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+          declare -a  nonProdLatestDistIds=$(echo  '${{steps.latest-non-prod-distribution-ids.outputs.latestNonProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+
+          echo "allDistributionIds  Length --> "  ${#allDistributionIds[@]}
+          echo "nonProdLatestDistIds  Length --> "  ${#nonProdLatestDistIds[@]}
+
+          for value in "${allDistributionIds[@]}"
+          do
+            if [[ ! " ${nonProdLatestDistIds[*]} " =~ " ${value} " ]]; then
+              code=$(curl \
+                -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
+                -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/$value \
+                -o /dev/null -w '%{http_code}\n' -s)
+
+                if [ "$code" = "409" ]; then
+                   echo "Distribution id is in use "  ${value}
+                fi
+            fi
+          done
+
+      - name: Remove Old Prod Distribution
+        run: |
+          declare -a  allDistributionIds=$(echo  '${{steps.all-prod-active-distribution-ids.outputs.allProdDistributionIdMap}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+          declare -a  prodLatestDistIds=$(echo  '${{steps.latest-prod-distribution-ids.outputs.latestProdDistIds}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+
+          echo "allDistributionIds  Length --> "  ${#allDistributionIds[@]}
+          echo "prodLatestDistIds  Length --> "  ${#prodLatestDistIds[@]}
+
+          for value in "${allDistributionIds[@]}"
+          do
+            if [[ ! " ${prodLatestDistIds[*]} " =~ " ${value} " ]]; then
+              code=$(curl \
+                -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
+                -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/$value \
+                -o /dev/null -w '%{http_code}\n' -s)
+
+                if [ "$code" = "409" ]; then
+                   echo "Distribution id is in use "  ${value}
+                fi
+            fi
+          done

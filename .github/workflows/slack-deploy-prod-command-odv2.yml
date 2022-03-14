@@ -1,0 +1,78 @@
+name: Slack PROD Deploy Command (ODv2)
+
+on:
+  repository_dispatch:
+    types:
+      - slack-prod-deploy-command-odv2
+
+jobs:
+  integrity:
+    name: Slack Integrity Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+
+    steps:
+      # Validate that the command is called from deployment-od2-prod
+      - name: Checking source
+        uses: actions/github-script@v3
+        if: ${{ env.CHANNEL_ID !='C0353KHFXNJ' }}
+        with:
+          script: |
+            core.setFailed('Caller source not verified!')
+
+      #
+      # Validate that the origin is from Slack
+      # See: https://api.slack.com/authentication/verifying-requests-from-slack
+      #
+      - name: Validate Origin
+        uses: actions/github-script@v4.0.2
+        env:
+          AGENT: ${{ github.event.client_payload.integrity.agent }}
+          BODY: ${{ github.event.client_payload.integrity.body }}
+          TIMESTAMP: ${{ github.event.client_payload.integrity.timestamp }}
+          SIGNATURE: ${{ github.event.client_payload.integrity.signature }}
+          SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
+        with:
+          script: |
+            if(!`${process.env.AGENT}`.startsWith("Slackbot")){
+                core.setFailed("User agent mismatch.")
+            } else {
+                const base = `v0:${process.env.TIMESTAMP}:${process.env.BODY}`
+                const hash = require('crypto').createHmac('sha256', `${process.env.SIGNING_SECRET}`).update(base).digest("hex")
+                if(`${process.env.SIGNATURE}` !== `v0=${hash}`) {
+                  core.setFailed("The origin integrity check failed.")
+                }
+            }
+
+      #
+      # Provide a URL to the active GitHub Actions Workflow run
+      #
+      - name: Slack message (Track progress message)
+        if: ${{ success() }}
+        uses: muinmomin/webhook-action@v1.0.0
+        with:
+          url: ${{ env.SLACK_WEBHOOK }}
+          data: '{ "channel": "${{ env.CHANNEL_ID }}", "text": "Pipeline progress...", "attachments": [{ "text" : "The pipeline logs are here ${{ env.GITHUB_WORKFLOW_URL }}",  "color": "#005EB8" }] }'
+        env:
+          SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
+          GITHUB_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
+
+
+  deploy-to-prod:
+    name: Slack Deploy to Production
+    uses: ./.github/workflows/deploy-to-production.yml
+    with:
+      prdFileName: "uat.tar.gz"
+    secrets:
+      HOST: ${{ secrets.HOST }}
+      MISSION_CONTROL_API_USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
+      MISSION_CONTROL_API_PASSWORD: ${{ secrets.MISSION_CONTROL_API_PASSWORD }}
+  post-deployment:
+    name: Updating Tag
+    needs: deploy-to-prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tagging the build
+        run: |
+          make git.update-environment-tag ENV=prd VERSION=uat
