@@ -54,6 +54,7 @@ jobs:
       #
       - name: Push tag back to github
         run: |
+          echo "check "${{ env.VERSION }}
           git tag --force ${{ env.ENV }} ${{ env.VERSION }}
           git push --force --no-verify origin tag ${{ env.ENV }}
           echo "check"
