@@ -49,14 +49,6 @@ jobs:
       #- name: Set the commit's Git status
       #  run: make github.status.success
 
-      #
-      # Step 5
-      #
-      - name: Push tag back to github
-        run: |
-          echo "check "${{ env.VERSION }}
-          git tag --force ${{ env.ENV }} ${{ env.VERSION }}
-          git push --force --no-verify origin tag ${{ env.ENV }}
-          echo "check"
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
+      - name: Bump the version number
+        run: make version.bumpup
+        
