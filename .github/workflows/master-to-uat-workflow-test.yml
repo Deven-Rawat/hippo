@@ -56,4 +56,4 @@ jobs:
       - name: Push tag back to github
         run: |
           make git.update-environment-tag
-          echo "Pushed"
+          echo "Pushed 1"
