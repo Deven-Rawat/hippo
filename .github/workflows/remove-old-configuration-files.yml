@@ -63,7 +63,7 @@ jobs:
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/appconfigfiles)
-          echo "::set-output name=allConfigIds::${response}"
+          echo "::set-output name=allConfigFiles::${response}"
           echo "Files are " ${response}
 
       - name: Get All Environment
@@ -72,11 +72,18 @@ jobs:
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/environments)
-          echo "::set-output name=allEnvs::${response}"
-          echo "Files are " ${response}
           availEnvs=$(echo ${response} | jq --compact-output '[.items[] | {name: .name}] | map(select(.name )) | map(.name)')
-          echo "Files are " ${availEnvs}
+          echo "::set-output name=allEnvs::${response}"
+          echo "Avialable Envs are " ${availEnvs}
 
+      - name: Remove Old Config Files
+        run: |
+          declare -a  envList=$(echo  '${{steps.all-envs.outputs.allEnvs}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
+          for value in "${allDistributionIds[@]}"
+          do
+            envSysProperties=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("${value}-system"))) | map(.name)' )
+            echo --->>> ${envSysProperties}
+          done
 
       - name: Config File Ids Retrival failed
         if: ${{ contains(steps.all-config-file-ids.response ,'401') }}
