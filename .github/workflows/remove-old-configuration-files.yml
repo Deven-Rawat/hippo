@@ -13,7 +13,6 @@ env:
   NON_PROD_REG_EXPRESSION: "v\\\\d{1,2}\\\\.\\\\d{1,2}\\\\.\\\\d{3,}\\\\-\\\\d{1,2}-[a-z0-9]+\\\\.tar"
 
 jobs:
-
   remove-old-configuration:
     name: Remove Old Configuration Files
     runs-on: ubuntu-latest
