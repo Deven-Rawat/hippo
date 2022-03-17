@@ -81,7 +81,7 @@ jobs:
           declare -a  envList=$(echo  '${{steps.all-envs.outputs.allEnvs}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
           for value in "${envList[@]}"
           do
-            envSysProperties=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("${value}-system"))) | map(.name)' )
+            envSysProperties=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("tst-system"))) | map(.name)' )
             echo ----This one --  ${envSysProperties}
           done
 
