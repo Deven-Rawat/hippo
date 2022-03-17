@@ -64,7 +64,7 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/appconfigfiles)
           echo "::set-output name=allConfigIds::${response}"
-          echo "Files are " response
+          echo "Files are " ${response}
 
       - name: Config File Ids Retrival failed
         if: ${{ contains(steps.all-config-file-ids.response ,'401') }}
