@@ -73,7 +73,7 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/environments)
           availEnvs=$(echo ${response} | jq --compact-output '[.items[] | {name: .name}] | map(select(.name )) | map(.name)')
-          echo "::set-output name=allEnvs::${response}"
+          echo "::set-output name=allEnvs::${availEnvs}"
           echo "Avialable Envs are " ${availEnvs}
 
       - name: Remove Old Config Files
