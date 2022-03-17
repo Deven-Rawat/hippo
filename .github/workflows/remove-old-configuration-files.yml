@@ -66,6 +66,15 @@ jobs:
           echo "::set-output name=allConfigIds::${response}"
           echo "Files are " ${response}
 
+      - name: Get All Environment
+        id: all-envs
+        run: |
+          response=$(curl \
+          -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
+          -X GET https://api.${{ secrets.HOST }}/v3/environments)
+          echo "::set-output name=allEnvs::${response}"
+          echo "Files are " ${response}
+
       - name: Config File Ids Retrival failed
         if: ${{ contains(steps.all-config-file-ids.response ,'401') }}
         uses: actions/github-script@v3
