@@ -73,7 +73,9 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/environments)
           echo "::set-output name=allEnvs::${response}"
-          echo "Files are " ${response} | jq --compact-output '[.items[] | {name: .name}] | map(select(.name )) | map(.name)'
+          availEnvs=$(echo '${response}' | jq --compact-output '[.items[] | {name: .name}] | map(select(.name )) | map(.name)'
+          echo "Files are " ${availEnvs}
+
 
       - name: Config File Ids Retrival failed
         if: ${{ contains(steps.all-config-file-ids.response ,'401') }}
