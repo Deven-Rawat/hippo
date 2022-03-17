@@ -82,7 +82,7 @@ jobs:
           for value in "${envList[@]}"
           do
             temp=${value}
-            envSysProperties=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test(\\"$value-system\\"))) | map(.name)' )
+            envSysProperties=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test($value"-system"))) | map(.name)' )
             echo ----Thidds on1e --  ${envSysProperties}
           done
 
