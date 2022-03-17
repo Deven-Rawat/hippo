@@ -3,8 +3,9 @@
 name: Remove Old Configuration Files
 
 on:
-  schedule:
-    - cron: "0 9 * * 1-5"
+  push:
+    branches:
+      - master
 
 env:
   NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
