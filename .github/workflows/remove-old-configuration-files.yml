@@ -82,11 +82,11 @@ jobs:
           for value in "${envList[@]}"
           do
             temp=" ${value} "
-            envSysProperties=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("'${value}'-system"))) | map(.id)' )
+            envSysProperties=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("'${value}'-system"))) | map(.id,.name,.createdAt)' )
             envSysFileCount=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq '[.[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("'${value}'-system"))) | map(.id) | length' )
             echo ----File Ids --  ${envSysProperties}
             echo ----File Counts --  ${envSysFileCount}
-          
+
           done
 
       - name: Config File Ids Retrival failed
