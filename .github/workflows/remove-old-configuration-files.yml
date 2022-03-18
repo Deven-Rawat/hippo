@@ -89,6 +89,7 @@ jobs:
             for i in "${!envSysConfigIds[@]}";
             do
               printf "%s\t%s\n" "$i" "${envSysConfigIds[$i]}"
+              i=i+1
             done
           done
 
