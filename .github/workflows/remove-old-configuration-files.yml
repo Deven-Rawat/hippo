@@ -92,14 +92,14 @@ jobs:
               printf "%s\t%s\n" "$i" "${envSysConfigIds[$i]}"
             done
 
-            for i in "${!envAWSConfigIds[@]}";
+            for ii in "${!envAWSConfigIds[@]}";
             do
-              printf "%s\t%s\n" "$i" "${envAWSConfigIds[$i]}"
+              printf "%s\t%s\n" "$ii" "${envAWSConfigIds[$ii]}"
             done
 
-            for i in "${!envHippoConfigIds[@]}";
+            for iii in "${!envHippoConfigIds[@]}";
             do
-              printf "%s\t%s\n" "$i" "${envHippoConfigIds[$i]}"
+              printf "%s\t%s\n" "$iii" "${envHippoConfigIds[$iii]}"
             done
 
 
