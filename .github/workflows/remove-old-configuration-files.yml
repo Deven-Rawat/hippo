@@ -77,7 +77,7 @@ jobs:
           echo "::set-output name=allEnvs::${availEnvs}"
           echo "Avialable Envs are " ${availEnvs}
 
-      - name: Remove Old Config Files
+      - name: Remove Old System & AWS Files
         run: |
           declare -a  envList=$(echo  '${{steps.all-envs.outputs.allEnvs}}' | tr "[" "(" | tr "]" ")" | tr "," " ")
           for value in "${envList[@]}"
@@ -85,7 +85,6 @@ jobs:
             temp=" ${value} "
             declare -a  envSysConfigIds=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq --compact-output '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("'${value}'-system"))) | map(.name) ' | tr "[" "(" | tr "]" ")" | tr "," " " )
             declare -a  envAWSConfigIds=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq --compact-output '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("'${value}'-aws"))) | map(.name) ' | tr "[" "(" | tr "]" ")" | tr "," " " )
-            declare -a  envHippoConfigIds=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq --compact-output '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("hippo-"))) | map(.name) ' | tr "[" "(" | tr "]" ")" | tr "," " " )
 
             for i in "${!envSysConfigIds[@]}";
             do
@@ -96,14 +95,16 @@ jobs:
             do
               printf "%s\t%s\n" "$ii" "${envAWSConfigIds[$ii]}"
             done
+          done
 
-            for iii in "${!envHippoConfigIds[@]}";
+      - name: Remove old hippo filter files
+        run: |
+            declare -a  envHippoConfigIds=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq --compact-output '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("hippo-"))) | map(.name) ' | tr "[" "(" | tr "]" ")" | tr "," " " )
+            for i in "${!envHippoConfigIds[@]}";
             do
-              printf "%s\t%s\n" "$iii" "${envHippoConfigIds[$iii]}"
+              printf "%s\t%s\n" "$i" "${envHippoConfigIds[$i]}"
             done
 
-
-          done
 
       - name: Config File Ids Retrival failed
         if: ${{ contains(steps.all-config-file-ids.response ,'401') }}
