@@ -95,12 +95,12 @@ jobs:
               echo ${response}
             done
 
-            for ii in "${!envAWSConfigIds[@]}";
+            for i in "${!envAWSConfigIds[@]}";
             do
-              printf "%s\t%s\n" "$ii" "${envAWSConfigIds[$ii]}"
+              printf "%s\t%s\n" "$i" "${envAWSConfigIds[$i]}"
               response=$(curl \
                 -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
-                -X DELETE https://api.${{ secrets.HOST }}/v3/appconfigfiles/${envSysConfigIds[$i]})
+                -X DELETE https://api.${{ secrets.HOST }}/v3/appconfigfiles/${envAWSConfigIds[$i]})
               echo ${response}
 
             done
