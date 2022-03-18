@@ -12,6 +12,7 @@ env:
   NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 10
   PROD_REG_EXPRESSION: "v\\\\d{1,2}\\\\.\\\\d{1,2}\\\\.\\\\d{3,}\\\\.tar"
   NON_PROD_REG_EXPRESSION: "v\\\\d{1,2}\\\\.\\\\d{1,2}\\\\.\\\\d{3,}\\\\-\\\\d{1,2}-[a-z0-9]+\\\\.tar"
+  FILE_TYPES: system-properties,aws-credentials,hippo-ipfilter
 
 jobs:
   remove-old-configuration:
@@ -82,11 +83,26 @@ jobs:
           for value in "${envList[@]}"
           do
             temp=" ${value} "
-            declare -a  envSysConfigIds=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq --compact-output '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("'${value}'-system"))) | map(.id) | .[1:]' | tr "[" "(" | tr "]" ")" | tr "," " " )
+            declare -a  envSysConfigIds=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq --compact-output '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("'${value}'-system"))) | map(.name) | .[1:]' | tr "[" "(" | tr "]" ")" | tr "," " " )
+            declare -a  envAWSConfigIds=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq --compact-output '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("'${value}'-aws-credentials"))) | map(.name) | .[1:]' | tr "[" "(" | tr "]" ")" | tr "," " " )
+            declare -a  envHippoConfigIds=$(echo '${{steps.all-config-file-ids.outputs.allConfigFiles}}' |  jq --compact-output '[.[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse| map(select(.name | test("'${value}'-hippo-ipfilter"))) | map(.name) | .[1:]' | tr "[" "(" | tr "]" ")" | tr "," " " )
+
             for i in "${!envSysConfigIds[@]}";
             do
               printf "%s\t%s\n" "$i" "${envSysConfigIds[$i]}"
             done
+
+            for i in "${!envAWSConfigIds[@]}";
+            do
+              printf "%s\t%s\n" "$i" "${envAWSConfigIds[$i]}"
+            done
+
+            for i in "${!envHippoConfigIds[@]}";
+            do
+              printf "%s\t%s\n" "$i" "${envHippoConfigIds[$i]}"
+            done
+
+
           done
 
       - name: Config File Ids Retrival failed
