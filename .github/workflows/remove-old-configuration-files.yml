@@ -3,16 +3,8 @@
 name: Remove Old Configuration Files
 
 on:
-  push:
-    branches:
-      - master
-
-env:
-  NO_OF_DISTRIBUTION_TO_KEEP_PROD: 40
-  NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD: 10
-  PROD_REG_EXPRESSION: "v\\\\d{1,2}\\\\.\\\\d{1,2}\\\\.\\\\d{3,}\\\\.tar"
-  NON_PROD_REG_EXPRESSION: "v\\\\d{1,2}\\\\.\\\\d{1,2}\\\\.\\\\d{3,}\\\\-\\\\d{1,2}-[a-z0-9]+\\\\.tar"
-  FILE_TYPES: system-properties,aws-credentials,hippo-ipfilter
+  schedule:
+    - cron: "0 9 * * 1-5"
 
 jobs:
   remove-old-configuration:
