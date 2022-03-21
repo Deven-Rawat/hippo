@@ -77,18 +77,18 @@ jobs:
         id: latest-non-prod-distribution-ids
         run: |
           latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.id) | .[${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}:]')
-          fileNames=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.name,.date,.id) | .[${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}:]')
+          fileNamesNonProd=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date) | reverse | map(select(.name | test("${{env.NON_PROD_REG_EXPRESSION}}"))) | map(.name,.date,.id) | .[${{env.NO_OF_DISTRIBUTION_TO_KEEP_NON_PROD}}:]')
           echo "::set-output name=latestNonProdDistIds::${latestId}"
-          echo "::set-output name=latestNonProdDistName::${fileNames}"
+          echo "::set-output name=latestNonProdDistName::${fileNamesNonProd}"
 
       - name: Get Latest Prod Distribution Ids to be removed
         #Retrieve all prod distribution ids which needs to be removed
         id: latest-prod-distribution-ids
         run: |
           latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date)| reverse | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.id) | .[${{env.NO_OF_DISTRIBUTION_TO_KEEP_PROD}}:]')
-          fileNames=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date)| reverse | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.name,.date,.id) | .[${{env.NO_OF_DISTRIBUTION_TO_KEEP_PROD}}:]')
+          fileNamesProd=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | sort_by(.date)| reverse | map(select(.name | test("${{env.PROD_REG_EXPRESSION}}"))) | map(.name,.date,.id) | .[${{env.NO_OF_DISTRIBUTION_TO_KEEP_PROD}}:]')
           echo "::set-output name=latestProdDistIds::${latestId}"
-          echo "::set-output name=latestProdDistName::${fileNames}"
+          echo "::set-output name=latestProdDistName::${fileNamesProd}"
 
       - name: Print Names
         #Step for logging purpose
