@@ -111,7 +111,7 @@ jobs:
               printf "%s\t%s\n" "$i" "${nonProdLatestDistIds[$i]}"
               response=$(curl \
                 -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
-                -X DELETE https://api.${{ secrets.HOST }}/v3/appconfigfiles/${nonProdLatestDistIds[$i]})
+                -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${nonProdLatestDistIds[$i]})
               echo ${response}
             done
 
@@ -126,6 +126,6 @@ jobs:
               printf "%s\t%s\n" "$i" "${prodLatestDistIds[$i]}"
               response=$(curl \
                 -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token1 }}" \
-                -X DELETE https://api.${{ secrets.HOST }}/v3/appconfigfiles/${prodLatestDistIds[$i]})
+                -X DELETE https://api.${{ secrets.HOST }}/v3/distributions/${prodLatestDistIds[$i]})
               echo ${response}
             done
