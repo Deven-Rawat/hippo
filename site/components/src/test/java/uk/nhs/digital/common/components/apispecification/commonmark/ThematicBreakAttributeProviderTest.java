@@ -49,6 +49,6 @@ public class ThematicBreakAttributeProviderTest {
         thematicBreakAttributeProvider.setAttributes(nodeOtherThanThematicBreak, "tagName is ignored", attributes);
 
         // then
-        then(attributes).shouldHaveZeroInteractions();
+        then(attributes).shouldHaveNoInteractions();
     }
 }

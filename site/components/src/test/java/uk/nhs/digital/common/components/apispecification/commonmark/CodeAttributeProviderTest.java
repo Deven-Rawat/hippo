@@ -49,6 +49,6 @@ public class CodeAttributeProviderTest {
         codeAttributeProvider.setAttributes(nodeOtherThanCode, "tagName is ignored", attributes);
 
         // then
-        then(attributes).shouldHaveZeroInteractions();
+        then(attributes).shouldHaveNoInteractions();
     }
 }
