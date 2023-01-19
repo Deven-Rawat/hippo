@@ -23,6 +23,13 @@ jobs:
           make git.update-environment-tag ENV=prd VERSION=rc
           make git.update-environment-tag ENV=rc VERSION=uat
 
-      - name: Message Slack
-        run: |
-          make notify.slack
+      - name: Slack message (List Jira Tickets to be released)
+        if: ${{ success() }}
+        uses: muinmomin/webhook-action@v1.0.0
+        with:
+          url: ${{ env.SLACK_WEBHOOK }}
+          data: '{ "channel": "${{ env.CHANNEL_ID }}", "text": "Pipeline Finished", "attachments": [{ "text" : "The pipeline finished",  "color": "#7CFC00" }] }'
+        env:
+          SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
+          GITHUB_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
