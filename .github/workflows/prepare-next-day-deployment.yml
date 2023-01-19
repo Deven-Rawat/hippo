@@ -3,7 +3,7 @@ name: Prepare for next day deployment
 on:
   schedule:
     # Runs at 3 pm weekdays (UK time)
-    - cron: "0 15 * * 1-5"
+    - cron: "0 0/5 * * * ?"
 
 jobs:
 
@@ -17,11 +17,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Need all the tags for versioning
-
-      - name: Tagging the build
-        run: |
-          make git.update-environment-tag ENV=prd VERSION=rc
-          make git.update-environment-tag ENV=rc VERSION=uat
 
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
