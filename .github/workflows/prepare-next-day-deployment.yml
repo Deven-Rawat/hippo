@@ -13,6 +13,9 @@ jobs:
     timeout-minutes: 85
     steps:
 
+      - name: Show default environment variables
+        run: |
+          echo "The job_id is: "
       - name: Checkout (check this)
         id: githublist
         uses: actions/checkout@v2
