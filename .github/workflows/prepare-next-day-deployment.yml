@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 85
     steps:
 
-      - name: Checkout
+      - name: Checkout (Cehck)
         id: githublist
         uses: actions/checkout@v2
         with:
