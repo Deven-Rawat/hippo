@@ -19,6 +19,11 @@ jobs:
           fetch-depth: 0 # Need all the tags for versioning
           run: |
             echo LASTMERGES=$(git log --format="* %s. [Author %an]" prd..rc) >> $GITHUB_ENV
+
+      - name: output last merges
+          run: |
+            echo "LASTMERGES: ${{ env.LASTMERGES }}"
+
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
         uses: muinmomin/webhook-action@v1.0.0
