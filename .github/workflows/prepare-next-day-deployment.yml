@@ -21,6 +21,7 @@ jobs:
             echo LASTMERGES=$(git log --format="* %s. [Author %an]" prd..rc) >> $GITHUB_ENV
 
       - name: output last merges
+          uses: actions/checkout@v2
           run: |
             echo "LASTMERGES: ${{ env.LASTMERGES }}"
 
