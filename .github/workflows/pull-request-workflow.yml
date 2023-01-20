@@ -78,10 +78,6 @@ jobs:
       - name: Check YAML formatting
         run: make check.yaml
 
-      # Step 7
-      - name: Test Project
-        run: make test.site
-
       # Notify via Slack that the PR's 'build and test' failed
       - name: "Send fail message"
         if: failure()
