@@ -3,7 +3,7 @@ name: Prepare for next day deployment
 on:
   schedule:
     # Runs at 3 pm weekdays (UK time)
-    - cron: "*/1 * * * *"
+    - cron: "*/5 * * * *"
 
 jobs:
 
