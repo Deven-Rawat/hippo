@@ -15,7 +15,7 @@ jobs:
 
       - name: Show default environment variables
         run: |
-          echo "The job_id is: "
+          echo "The job_id is: --> "
 
       - name: Checkout (check this)
         id: githublist
