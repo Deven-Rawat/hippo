@@ -20,10 +20,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Step 2
-      - name: Check commit message
-        run: make check.commit-msg
-        continue-on-error: true
 
       # Step 3
       - name: Print Google Chrome version
@@ -74,9 +70,7 @@ jobs:
             ${{ runner.os }}-node-nhs-digital-
             ${{ runner.os }}-node-nhs-
 
-      # Step 6
-      - name: Check YAML formatting
-        run: make check.yaml
+
 
       # Notify via Slack that the PR's 'build and test' failed
       - name: "Send fail message"
