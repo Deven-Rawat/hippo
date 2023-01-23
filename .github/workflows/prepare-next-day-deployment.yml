@@ -7,7 +7,7 @@ on:
 jobs:
 
   prepare-prod-deployment:
-    name: Prepare for next day deployment
+    name: Prepare for next day deployment -1
     runs-on: ubuntu-latest
     timeout-minutes: 85
     steps:
