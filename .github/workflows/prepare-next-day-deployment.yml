@@ -27,7 +27,7 @@ jobs:
         run: |
           echo ${{ github.event.head_commit.message }}
           jiraList=$(echo $(git log --format="* %s. [Author %an]" uat..rc))
-          echo '--->' ${{jiraList}}
+          echo '--->' $jiraList
 
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
