@@ -1,8 +1,9 @@
 name: Prepare for next day deployment
 
 on:
-  schedule:
-    - cron: '*/2 * * * *'
+  push:
+    branches:
+      - master
 
 jobs:
   prepare-prod-deployment:
