@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0 # Need all the tags for versioning
           run: |
-            echo "Deven-->"
+            echo "Deven-<<>>>->"
 
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
