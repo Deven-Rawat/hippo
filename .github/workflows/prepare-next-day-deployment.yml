@@ -16,20 +16,14 @@ jobs:
       - name: Show default environment variables
         run: |
           echo "The job_id is: "
-
       - name: Checkout (check this)
         id: githublist
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Need all the tags for versioning
-      - name: git
           run: |
-            git --version
-            git config user.name "GitHub Actions Bot"
-            git config user.email "<>"
-            git status
-            git tag
-            git describe
+            echo "Deven-->"
+
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
         uses: muinmomin/webhook-action@v1.0.0
