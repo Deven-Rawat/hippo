@@ -23,7 +23,6 @@ jobs:
           fetch-depth: 0 # Need all the tags for versioning
           run: |
             LASTMERGES=$(git log --format="* %s. [Author %an]" prd..rc)
-            echo "::set-output name=LASTMERGES1::${LASTMERGES}"
             echo "Deven-->   {{LASTMERGES}}"
 
       - name: Slack message (List Jira Tickets to be released)
