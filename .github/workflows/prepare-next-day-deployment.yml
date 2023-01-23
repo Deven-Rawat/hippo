@@ -2,7 +2,6 @@ name: Prepare for next day deployment
 
 on:
   schedule:
-    # Runs at 3 pm weekdays (UK time)
     - cron: "*/5 * * * *"
 
 jobs:
@@ -16,13 +15,15 @@ jobs:
       - name: Show default environment variables
         run: |
           echo "The job_id is: "
+      - name: Show default environment variables Check
+        run: |
+          echo "Deven-<<>>>->"
+
       - name: Checkout (check this)
         id: githublist
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Need all the tags for versioning
-          run: |
-            echo "Deven-<<>>>->"
 
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
