@@ -24,9 +24,10 @@ jobs:
           fetch-depth: 0 # Need all the tags for versioning
 
       - name: GIT check
+        uses: actions/checkout@v2
         run: |
           echo ${{ github.event.head_commit.message }}
-          echo '--->'   ${git log --format="* %s. [Author %an]" prd..rc}
+          echo '--->'   $(git log --format="* %s. [Author %an]" prd..rc)
 
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
