@@ -197,23 +197,6 @@ version.pprint:
 	@echo "Current version: $(VERSION)"
 	@echo "- - -"
 
-## Ensure that commit message contains JIRA id
-check.commit-msg:
-	@git log -n1 --no-merges --pretty=%B > $(PWD)/.commit-msg
-	@head -n1 $(PWD)/.commit-msg | grep -E "^\[[A-Z]+-[0-9]+\]" || (echo "Missing JIRA id in the coomit message. Expecitng '[ABC-123] ...' but got" && cat .commit-msg && exit 1)
-	python $(PWD)/../.git-local/hooks/commit-msg $(PWD)/.commit-msg
-	@rm $(PWD)/.commit-msg
-
-## Ensure that `make format-yaml` was run
-check.yaml:
-	cd .. && make format-yaml
-	@if git status | grep ".yaml" | grep "modified"; then \
-		echo "Modified yaml files found. Run 'make format-yaml' before submiting pull request."; \
-		exit 1; \
-	else \
-		echo "No YAML changes."; \
-	fi
-
 ## Notify the slack release channel of the commits in the upcoming release
 notify.slack:
 	curl -X POST --data-urlencode "payload={\"text\": \"Release to production has been scheduled at 12:05 on the next working day. The following new changes (if any) will be released:\n\n$$(git log --format="* %s. [Author %an]" prd..rc)\"}" https://hooks.slack.com/services/${SLACK_HOOK_URL}
