@@ -34,7 +34,7 @@ jobs:
         uses: muinmomin/webhook-action@v1.0.0
         with:
           url: ${{ env.SLACK_WEBHOOK }}
-          data: '{ "channel": "C04KERNBD4J", "text": "Release to production has been scheduled at 12:05 on the next working day. The following new changes (if any) will be released:", "attachments": [{ "text" : "The pipeline finished",  "color": "#7CFC00" }] }'
+          data: '{ "channel": "C04KERNBD4J", "text": "Release to production has been scheduled at 12:05 on the next working day. The following new changes (if any) will be released: ${{jiraList}}", "attachments": [{ "text" : "The pipeline finished",  "color": "#7CFC00" }] }'
         env:
           SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
           GITHUB_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
