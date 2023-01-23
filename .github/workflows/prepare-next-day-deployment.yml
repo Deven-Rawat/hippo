@@ -2,7 +2,7 @@ name: Prepare for next day deployment
 
 on:
   schedule:
-    cron: '*/2 * * * *'
+    - cron: '*/2 * * * *'
 
 jobs:
 
