@@ -26,7 +26,7 @@ jobs:
       - name: GIT check
         run: |
           echo ${{ github.event.head_commit.message }}
-          git log --format="* %s. [Author %an]" prd..rc
+          echo git log --format="* %s. [Author %an]" prd..rc
 
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
