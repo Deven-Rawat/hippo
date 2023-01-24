@@ -30,7 +30,6 @@ jobs:
           jiraList=$(echo $(git log --format="%s. [Author %an] \n" uat..rc))
           echo "::set-output name=jiraListIds::${jiraList}"
 
-      - uses: rtCamp/action-slack-notify@v2
       - name: Slack message (List Jira Tickets to be released)
         if: ${{ success() }}
         uses: muinmomin/webhook-action@v1.0.0
@@ -42,13 +41,7 @@ jobs:
             "attachments": [
               {
                 "pretext": "Deployment started",
-                "color": "dbab09",
-                "fields": [
-                  {
-                    "title": "Status",
-                    "short": true,
-                    "value": "In Progress"
-                  }]
+                "color": "dbab09"
                 }
               ]
             }'
