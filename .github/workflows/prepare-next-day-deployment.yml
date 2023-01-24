@@ -37,13 +37,7 @@ jobs:
           url: ${{ env.SLACK_WEBHOOK }}
           data: '{
             "channel": "C04KERNBD4J",
-            "text": "Release to production has been scheduled at 12:05 on the next working day. The following new changes (if any) will be released: ${{steps.getJiraListId.outputs.jiraListIds}}",
-            "attachments": [
-              {
-                "pretext": "Deployment started",
-                "color": "dbab09"
-                }
-              ]
+            "text": "Release to production has been scheduled at 12:05 on the next working day. The following new changes (if any) will be released: ${{steps.getJiraListId.outputs.jiraListIds}}"
             }'
         env:
           SLACK_WEBHOOK: ${{  secrets.SLACK_WEBHOOK }}
