@@ -25,8 +25,8 @@ jobs:
 
       - name: GIT check
         run: |
-          echo ${{ github.event.head_commit.message }}
-          jiraList=$(echo $(git log --format="* %s. [Author %an]" uat..rc))
+          git log --format="* %s. [Author %an]" uat..rc
+          jiraList=$(echo $(git log --no-merges --date=short --pretty=format:"%ad %an: %s" uat..rc))
           echo '--->' $jiraList
 
       - name: Slack message (List Jira Tickets to be released)
