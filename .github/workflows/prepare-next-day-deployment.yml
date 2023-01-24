@@ -27,7 +27,7 @@ jobs:
         id: getJiraListId
         run: |
           git log --format="* %s. [Author %an]" uat..rc
-          jiraList=$(echo $(git log --format="-> %s. [Author %an] %n" uat..rc))
+          jiraList=$(echo $(git log --format="%s. [Author %an] \n" uat..rc))
           echo "::set-output name=jiraListIds::${jiraList}"
 
 
