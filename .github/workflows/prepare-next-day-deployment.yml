@@ -12,16 +12,11 @@ jobs:
     timeout-minutes: 85
     steps:
 
-      - name: Show default environment variables
-        run: |
-          echo "The job_id is: "
-
-
       - name: Checkout
-        id: githublist
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Need all the tags for versioning
+          ref: master
 
       - name: Get JIRA List
         id: getJiraListId
