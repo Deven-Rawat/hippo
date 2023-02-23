@@ -1,18 +1,20 @@
 name: Deploy to Production
 
-# Schedule deployment to Production
+
 on:
+  # Request Hotfix Deployment
   repository_dispatch:
     types:
       - slack-deploy-hotfix-command-odv2
+  # Schedule A Normal Deployment
   schedule:
     # Runs at 12:05 pm weekdays (UK time)
     - cron: "0/5 * * * *"
 
 env:
-  #To be replaced by Prod Env Id (atm UAT)
-  PROD_ENV_ID: "083ff91e-6ac5-4638-945c-3ee18acc40bf"
-  TARGET: "prod"
+  #Prod Env Id
+  PROD_ENV_ID: "91d6f394-c2ed-40aa-bc8d-3b29e2aaa645"
+  TARGET: "production"
 jobs:
 
   integrity:
@@ -25,7 +27,7 @@ jobs:
     steps:
       # Validate that the command is called from deployment-od2-prod
       - name: Checking source
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         env:
           CHANNEL_ID: ${{ github.event.client_payload.data.channel_id }}
         if: ${{ env.CHANNEL_ID !='C0353KHFXNJ' }}
@@ -38,7 +40,7 @@ jobs:
       # See: https://api.slack.com/authentication/verifying-requests-from-slack
       #
       - name: Validate Origin
-        uses: actions/github-script@v4.0.2
+        uses: actions/github-script@v6
         env:
           AGENT: ${{ github.event.client_payload.integrity.agent }}
           BODY: ${{ github.event.client_payload.integrity.body }}
@@ -79,12 +81,10 @@ jobs:
     needs: integrity
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Fetch Tags
-        run: |
-          git tag -l | xargs git tag -d
-          git fetch -t
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Need all the tags for versioning
+          ref: master
 
       - name: Tagging the build
         run: |
@@ -102,12 +102,10 @@ jobs:
       # Step 1
       #
       - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Fetch Tags
-        run: |
-          git tag -l | xargs git tag -d
-          git fetch -t
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Need all the tags for versioning
+          ref: master
 
       - name: Obtain file name for deployment
         id: filename
@@ -115,8 +113,8 @@ jobs:
           fileVersion=$(git describe --tags --match v3.0* rc)
           fileName=$(git describe --tags --match v3.0* rc).tar.gz
 
-          echo "::set-output name=fileName::${fileName}"
-          echo "::set-output name=fileVersion::${fileVersion}"
+          echo "fileName=${fileName}" >> $GITHUB_OUTPUT
+          echo "fileVersion=${fileVersion}" >> $GITHUB_OUTPUT
 
 
       # Get API access token and verify it.
@@ -129,8 +127,8 @@ jobs:
           -d '{ "username": "${{ env.USERNAME }}", "password": "${{ env.PASSWORD }}" }')
           token=$(echo $response | awk 'match($0, /access_token":"[^"]+"/) {print substr($0, RSTART+15)}' | cut -d '"' -f 1 )
           refresh=$(echo $response | awk 'match($0, /refresh_token":"[^"]+"/) {print substr($0, RSTART+16)}' | cut -d '"' -f 1 )
-          echo "::set-output name=token::$token"
-          echo "::set-output name=refresh::$refresh"
+          echo "token=$token" >> $GITHUB_OUTPUT
+          echo "refresh=$refresh" >> $GITHUB_OUTPUT
         env:
           USERNAME: ${{ secrets.MISSION_CONTROL_API_USERNAME }}
           PASSWORD: ${{ secrets.MISSION_CONTROL_API_PASSWORD }}
@@ -142,10 +140,10 @@ jobs:
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/authn/verify_token \
           -o /dev/null -w '%{http_code}\n' -s)
-          echo "::set-output name=code::$code"
+          echo "code=$code" >> $GITHUB_OUTPUT
       - name: Check Response Code from Verify JWT Token
         if: ${{ steps.jwt_token_verify.outputs.code != 200 }}
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             core.setFailed('The JWT token failed verification!')
@@ -159,26 +157,26 @@ jobs:
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/appconfigfiles)
-          echo "::set-output name=details::${response}"
+           echo "details=${response}" >> $GITHUB_OUTPUT
 
       - name: Get Lastest System Properties for Envrinment
         id: system-properties
         run: |
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-system-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
-          echo "::set-output name=id::${id}"
+          echo "id=${id}" >> $GITHUB_OUTPUT
 
 
       - name: Get Lastest AWS Keys for Envrinment
         id: aws-keys
         run: |
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "${{ env.TARGET }}-aws-credentials-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
-          echo "::set-output name=id::${id}"
+          echo "id=${id}" >> $GITHUB_OUTPUT
 
       - name: Get Lastest IP Configuration File ID
         id: latest-ip-whitelist
         run: |
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "hippo-ipfilter-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
-          echo "::set-output name=id::${id}"
+          echo "id=${id}" >> $GITHUB_OUTPUT
 
       - name: Get All Distribution Ids
         id: all-distribution-id
@@ -186,14 +184,14 @@ jobs:
           response=$(curl \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X GET https://api.${{ secrets.HOST }}/v3/distributions)
-          echo "::set-output name=allDistIds::${response}"
+          echo "allDistIds=${response}" >> $GITHUB_OUTPUT
           respLengthTemp=${#response}
-          echo "::set-output name=respLength::${respLengthTemp}"
+          echo "respLength=${respLengthTemp}" >> $GITHUB_OUTPUT
           echo ${respLengthTemp}
 
       - name: Distribution Ids Retrival failed
         if: ${{steps.all-distribution-id.outputs.respLength < 4}}
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             core.setFailed('Retrival of distibution ids failed ')
@@ -203,8 +201,14 @@ jobs:
         run: |
           latestId=$(echo '${{steps.all-distribution-id.outputs.allDistIds}}' | sed -e 's/+00:00/Z/g' | jq --compact-output '[.items[] | {id: .id , date: .createdAt, name: .name}] | map(select(.name | test("${{ steps.filename.outputs.fileName }}"))) | map(.id)')
           prodLatestDistId=$(echo ${latestId} | tr "[" " " | tr "]" " " | xargs)
-          echo "::set-output name=prodDistId::${prodLatestDistId}"
+          echo "prodDistId=${prodLatestDistId}" >> $GITHUB_OUTPUT
           echo  ${{steps.all-distribution-id.outputs.respLength}}
+
+      - name: Get latest Email SMTP properties File
+        id: brc-mail-smtp
+        run: |
+          id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "brc-mail-smtp-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
+          echo "id=${id}" >> $GITHUB_OUTPUT
 
       - name: Request Deployment from BR Cloud
         id: deployment
@@ -213,15 +217,15 @@ jobs:
           -H "Accept: application/json; charset=utf-8" \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X PUT https://api.${{ secrets.HOST }}/v3/environments/${{ env.ENVIRONMENT }}/deploy \
-          -d '{ "distributionId": "${{ env.DISTRIBUTION }}", "strategy" : "rollingupdate", "appConfigFileRoles": [ { "appConfigFileId": ${{ steps.aws-keys.outputs.id }}, "role": "file", "newFilename": "aws-credentials.properties" }, { "appConfigFileId": ${{ steps.system-properties.outputs.id }}, "role": "systemproperty" }, { "appConfigFileId": ${{ steps.latest-ip-whitelist.outputs.id }}, "role": "file", "newFilename": "hippo-ipfilter.properties" } ] }' \
+          -d '{ "distributionId": "${{ env.DISTRIBUTION }}", "strategy" : "rollingupdate", "appConfigFileRoles": [ { "appConfigFileId": ${{ steps.aws-keys.outputs.id }}, "role": "file", "newFilename": "aws-credentials.properties" }, { "appConfigFileId": ${{ steps.system-properties.outputs.id }}, "role": "systemproperty" }, { "appConfigFileId": ${{ steps.latest-ip-whitelist.outputs.id }}, "role": "file", "newFilename": "hippo-ipfilter.properties" }, { "appConfigFileId": ${{ steps.brc-mail-smtp.outputs.id }}, "role": "file", "newFilename": "brc-mail-smtp.properties" } ] }' \
           -o /dev/null -w '%{http_code}\n' -s)
-          echo "::set-output name=code::$code"
+          echo "code=$code" >> $GITHUB_OUTPUT
         env:
           DISTRIBUTION: ${{ steps.prod-distribution-ids.outputs.prodDistId }}
           ENVIRONMENT: ${{ env.PROD_ENV_ID }}
 
       - name: Check Response Code from Request Deployment
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         if: ${{ steps.deployment.outputs.code != 202 }}
         with:
           script: core.setFailed('Response code mismatch while requesting deployment from BR Cloud! Response ${{ env.CODE }}')
@@ -236,12 +240,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Fetch Tags
-        run: |
-          git tag -l | xargs git tag -d
-          git fetch -t
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Need all the tags for versioning
+          ref: master
 
       - name: Tagging the build
         run: |
