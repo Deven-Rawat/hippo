@@ -2,14 +2,9 @@ name: Deploy to Production - Deven
 
 
 on:
-  # Request Hotfix Deployment
-  repository_dispatch:
-    types:
-      - slack-deploy-hotfix-command-odv2
-  # Schedule A Normal Deployment
-  schedule:
-    # Runs at 12:05 pm weekdays (UK time)
-    - cron: "0/5 * * * *"
+  push:
+    branches:
+      - master
 
 env:
   #Prod Env Id
