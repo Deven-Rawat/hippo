@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 85
     if: ${{ !failure() }}
-    needs: [update-tag-hotfix,integrity]
     steps:
       #
       # Step 1
